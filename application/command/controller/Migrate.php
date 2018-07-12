@@ -22,25 +22,25 @@ class Migrate
 {
     public function index()
     {
-        $temp = trim( file_get_contents( __DIR__. "/../../config/xieye_id.php"));
-        if ($temp=='88') {
-            file_put_contents( __DIR__. "/../../config/xieye_id.php", "1");
-            $t = 1;
-        }else {
-            file_put_contents( __DIR__. "/../../config/xieye_id.php", "88");
-            $t = 88;
-        }
+//         $temp = trim( file_get_contents( __DIR__. "/../../config/xieye_id.php"));
+//         if ($temp=='88') {
+//             file_put_contents( __DIR__. "/../../config/xieye_id.php", "1");
+//             $t = 1;
+//         }else {
+//             file_put_contents( __DIR__. "/../../config/xieye_id.php", "88");
+//             $t = 88;
+//         }
         
-        $url = "http://www.test1.com/systemmanage/migrate/index";
+        $url = "http://192.168.31.241/systemmanage/migrate/index";
         $result = file_get_contents($url);
         echo "\n\n---   ". $url."   ---\n" .  br2nl(  $result);
         echo "\n---------\n";
         
-        if ($t ==88) {
-            file_put_contents( __DIR__. "/../../config/xieye_id.php", "1");
-        }else {
-            file_put_contents( __DIR__. "/../../config/xieye_id.php", "88");
-        }
+//         if ($t ==88) {
+//             file_put_contents( __DIR__. "/../../config/xieye_id.php", "1");
+//         }else {
+//             file_put_contents( __DIR__. "/../../config/xieye_id.php", "88");
+//         }
         
         ob_flush();
         flush();

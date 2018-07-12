@@ -4,20 +4,106 @@ namespace app\advise\controller;
 
 use BBExtend\Sys;
 use BBExtend\DbSelect;
-
+use BBExtend\model\Advise;
 /**
- * 234
+ * 通告列表
  * @author xieye
  *
  */
 class Index 
 {
-    // 1未绑定手机普通用户，2导师，3vip童星，4机构,5绑定手机普通用户，6一般童星，7签约童星
-    public function index($uid=10000, $startid=0, $length=10)
+    public function index($startid=0,$length=10,$uid=10000,$auth=-1,$address='',
+            $min_age=-1,$max_age=-1,
+            $sex=-1,$card_type=-1,$type=-1
+            
+            )
     {
-        $uid = intval($uid);
-        $startid = intval($startid);
-        $length = intval($length);
+        $startid=intval($startid);
+        $length=intval($length);
+        
+        $page = $startid/$length;
+        $page = intval($page)+1;
+        
+        //  $db = Sys::get_container_dbreadonly();
+        
+        $db = Sys::get_container_db_eloquent();
+        
+        $paginator = $db::table('bb_advise')->select(['id',]);
+        //$paginator =  $paginator->where( "has_sign", 1 );
+        
+        
+        if ($address) {
+            $paginator =  $paginator->where( "address", $address );
+        }
+        // 将来修改，应该合并条件。
+        if ($min_age!=-1 && $max_age!=-1) {
+            $min_age = intval( $min_age );
+            $max_age = intval( $max_age );
+            
+            //$year = date("Y") - $min_age;
+            
+            $paginator = $paginator->whereExists(function ($query) use ($min_age,$max_age, $db) {
+                $query->select($db::raw(1))
+                ->from('bb_advise_role')
+                ->whereRaw('bb_advise_role.advise_id = bb_advise.id')
+                ->whereRaw("bb_advise_role.min_age >= {$min_age}" )
+                ->whereRaw("bb_advise_role.max_age <= {$max_age}" )
+                ;
+            });
+        }
+        
+        if ($auth!=-1) {
+            $auth=intval($auth);
+            $paginator =  $paginator->where( "auth", $auth );
+        }
+        
+        
+        if ($sex!=-1) {
+            $sex = intval( $sex );
+            $paginator = $paginator->whereExists(function ($query) use ($sex, $db) {
+                $query->select($db::raw(1))
+                ->from('bb_advise_role')
+                ->whereRaw('bb_advise_role.advise_id = bb_advise.id')
+                ->whereRaw("bb_advise_role.sex = {$sex}" )
+                ;
+            });
+        }
+        
+        // 0免费，1影视，2娱乐，3特殊试镜卡
+        if ($card_type!=-1) {
+            $cart_type =intval($cart_type);
+            if ($cart_type==3) {
+                $paginator =  $paginator->where( "audition_card_type>2" );
+            }else {
+                $paginator =  $paginator->where( "audition_card_type", $cart_type );
+            }
+        }
+        
+        if ($type!=-1) {
+            $type =intval($type);
+            $paginator =  $paginator->where( "type", $type );
+        }
+        
+        
+        $paginator = $paginator->orderBy('id', 'desc')->paginate($length, ['*'],'page',$page);
+     //   dump($paginator);
+        
+        $new=[];
+        foreach ($paginator as $v) {
+            $id = $v->id;
+            $advise = Advise::find($id);
+            $temp = $advise->get_index_info();
+            $new[]= $temp;
+        }
+        
+        
+        return [
+                'code'=>1,
+                'data'=>[
+                        'list' =>$new,
+                        'is_bottom' =>(count($new) == $length)?0:1,
+                ]
+        ];
         
     }
     
