@@ -24,7 +24,11 @@ class Index
     
     public function type_list(){
         $db = Sys::get_container_dbreadonly();
-        $sql="";
+        $sql="select * from bb_advise_type order by id";
+        $result = $db->fetchAll($sql);
+        return ['code'=>1,'data'=>[
+                'list' => $result,
+        ]];
         
     }
    
