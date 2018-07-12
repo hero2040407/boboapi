@@ -24,7 +24,7 @@ class Robotnews
     {
         $db = Sys::get_container_db_eloquent();
         $dbzend = Sys::get_container_dbreadonly();
-        
+        Sys::debugxieye("record_count:{$record_count},people_count:{$people_count}");
         $redis = Sys::getredis11();
         $key = "index:recommend:list:news";
         
@@ -115,7 +115,7 @@ limit {$record_count}
 //                         'create_time' => time(),
 //                         'is_robot' =>1,
 //                 ]);
-                $look_random = mt_rand(1,600);
+                $look_random = mt_rand(10,100);
                 $db::table('web_article')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);
