@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$res.title}</title>
+    <link rel="stylesheet" href="/race/css/swiper.min.css">
+    <style>
+        .swiper-container {position: absolute;top:0;left:0;width: 100%;height: 100%;background-color: black;z-index:1001;}
+        .swiper-slide { text-align: center;    font-size: 18px;    background: #fff;
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+        .swiper-slide img{width: 100%;height: 100%;}
+    </style>
+</head>
+<body class="index_body">
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide btn"><img src="/race/images/1.jpg" /></div>
+        <div class="swiper-slide btn"><img src="/race/images/2.jpg" /></div>
+        <div class="swiper-slide"><a href="/race/entered/entered/qd_id/{$res.id}" ><img src="/race/images/3.png" /></a></div>
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination"></div>
+</div>
+<!-- Swiper JS -->
+<script src="/race/js/swiper.min.js"></script>
+
+<!-- Initialize Swiper -->
+<script>
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        nextButton: '.btn',
+        paginationClickable: true
+    });
+
+</script>
+</body>
+<script type="text/javascript" src="/race/js/common.js"></script>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

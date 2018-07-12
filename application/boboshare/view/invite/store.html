@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>邀请好友得现金</title>
+    <link rel="stylesheet" type="text/css" href="/invite/css/store.css">
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+</head>
+<body>
+<div class="top_pic">
+    <img src="{$store.logo}" alt="{$store.name}" />
+</div>
+
+<div class="index_main">
+    <div class="form_line">
+        <div class="show_line">
+            <div class="input_name">手机号码</div>
+            <div class="input_line"><input name="phone" id="phone" type="number" placeholder="请输入您的手机号码" class="form_input" value=""/></div>
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line2">
+            <div class="input_name">验证码</div>
+            <div class="input_line2">
+                <div class="input_phone">
+                    <input name="code" id="code" type="text" placeholder="请输入收到的验证码" class="form_input"/>
+                </div>
+                <input id="btnSendCode" type="button" value="获取验证码" onclick="sendMessage()" />
+            </div>
+        </div>
+    </div>
+    <div class="form_line3"><button id="index_submit" onclick="check();return false;">下载bobo赢百万大奖</button></div>
+    <div class="index_bom"><img src="/invite/images/img_buchenggong.png" /><div class="index_bominfo">下载后请使用验证成功的手机号登录</div></div>
+</div>
+<div id="fade" class="black_overlay"></div>
+<div id="mydiv" class="white_content">
+    <div id="cue_info"></div>
+    <div id="sure_btn" class="sure_btn" onclick="CloseDiv('mydiv','fade');">确 定</div>
+</div>
+<div id="loading"><img src="/race/images/loading.gif" /></div>
+<input id="store_id" type="hidden" value="{$store_id}"/>
+</body>
+<script type="text/javascript" src="/invite/js/store_common.js"></script>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

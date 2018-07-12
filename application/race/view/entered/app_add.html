@@ -1,0 +1,367 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>请创建活动档案</title>
+    <link rel="stylesheet" type="text/css" href="/race/css/style.css">
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+    <script type='text/javascript' src='/race/js/LocalResizeIMG.js'></script>
+    <script type='text/javascript' src='/race/js/patch/mobileBUGFix.mini.js'></script>
+</head>
+<body class="index_body">
+<div class="index_main">
+    <div class="index_toppic"><img src="{$banner}" /></div>
+    <div id="addshow">
+        {eq name="$has_pic" value="1"}
+        <div class="upload_user_pic">
+            <input type="file" id="user_pic" name="user_pic" value="请点击上传图片" style="display:none;" />
+            <a href="javascript:void(0);" onclick="user_pic.click()" class="uploadbtn">
+                <div id="user_pic_show"><img src="/race/images/img_touxiang.png" /></div>
+                <div>点击上传个人照片</div>
+            </a>
+        </div>
+        {/eq}
+        <form id="add">
+            <input name="pic" id="user_pic_url" type="text" style="display: none" value=""/>
+
+            {foreach name="check_result1" item="result1" key="k_result1" }
+            <div class="show_line_checkboxtitle">{$k_result1}</div>
+            <div class="form_line_checkbox">
+                <div class="show_checkbox">
+                    {foreach name="result1" item="vo"}
+                    <div class="check">
+                        <input name="type{$vo.type}_{$vo.id}" value="1" id="type{$vo.type}_{$vo.id}" type="checkbox" class="form_input_checkbox" style="display: none" />
+                        <div class="show_one_chechbox">
+                            <a href="javascript:void(0);" onclick='type{$vo.type}_{$vo.id}.click();if($("#type{$vo.type}_{$vo.id}").is(":checked")==true){$("#type{$vo.type}_{$vo.id}_check").attr("src","/race/images/img_check.png");}else{$("#type{$vo.type}_{$vo.id}_check").attr("src","/race/images/img_uncheck.png");}' >
+                                <img src="/race/images/img_uncheck.png" id="type{$vo.type}_{$vo.id}_check" class="check_pic"/>
+                                <span>{$vo.title}</span>
+                            </a>
+                        </div>
+                    </div>
+                    {/foreach}
+                </div>
+            </div>
+            {/foreach}
+            <div style="display: none;">{$i=1}</div>
+            {foreach name="check_result5" item="result5" key="k_result5" }
+            <div class="add_form_line">
+                <div class="show_line">
+                    <div class="input_name"><span>{$k_result5}</span></div>
+                    <select name="type5" id="select_{$i}" class="form_input add_form_input_name" style="width: 4.6rem;height:0.8rem;">
+                        {foreach name="result5" item="vo"}
+                        <option value="1" id="type{$vo.type}_{$vo.id}">{$vo.title}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <script type="text/javascript">
+                var  name = $("#select_{$i}").children('option:selected').attr('id');
+                $("#select_{$i}").attr("name",name);
+                $("#select_{$i}").change(function(){
+                    var  name = $(this).children('option:selected').attr('id');
+                    $("#select_{$i}").attr("name",name);
+                })
+            </script>
+            <div style="display: none;">{$i++}</div>
+            {/foreach}
+
+            {volist name="res" id="vo"}
+            {eq name="$vo.type" value="2"}
+            <div class="add_form_line">
+                <div class="show_line">
+                    <div class="input_name"><span>{$vo.title}</span></div>
+                    <input name="type{$vo.type}_{$vo.id}" id="type{$vo.type}_{$vo.id}" type="text" placeholder="{$vo.info}" class="form_input add_form_input_name" />
+                </div>
+            </div>
+            {/eq}
+            {eq name="$vo.type" value="3"}
+            <div class="add_form_line">
+                <div class="show_file_line">
+                    <div class="show_file_line_c">
+                        <div class="input_name"><span>{$vo.title}</span></div>
+                        <div id="type{$vo.type}_{$vo.id}_ts" class="form_input_file_ts"><span>{$vo.info|default="请上传"}</span></div>
+                    </div>
+                    <input type="file" id="file{$vo.type}_{$vo.id}" style="display:none;" />
+                    <input id="type{$vo.type}_{$vo.id}" name="type{$vo.type}_{$vo.id}" type="text" style="display: none" value="" />
+                    <div class="uploadfilebtn"><a href="javascript:void(0);" onclick="file{$vo.type}_{$vo.id}.click();"><img src="/race/images/bnt_wenjianjia.png"/></a></div>
+                </div>
+            </div>
+            {/eq}
+            {eq name="$vo.type" value="4"}
+            <div class="form_line_textarea">
+                <textarea name="type{$vo.type}_{$vo.id}" id="type{$vo.type}_{$vo.id}" type="text" placeholder="{$vo.info}" class="form_input_textarea"></textarea>
+            </div>
+            {/eq}
+
+            {/volist}
+            <input name="uid" id="uid" type="hidden" value="{$uid}"/>
+            <input name="ds_id" id="ds_id" type="hidden" value="{$ds_id}"/>
+            <div class="add_form_line2"><button id="add_submit" class="gradient" onclick="check();return false;">提 交</button></div>
+        </form>
+    </div>
+    <div class="index_bompic"><img src="/race/images/bompic.png" /></div>
+</div>
+<div id="fade" class="black_overlay"></div>
+<div id="mydiv" class="white_content">
+    <div id="cue_info"></div>
+    <div id="sure_btn" class="sure_btn gradient" onclick="CloseDiv('mydiv','fade');">确 定</div>
+</div>
+<div id="loading"><img src="/race/images/loading.gif" /></div>
+</body>
+<script type="text/javascript">
+    var nn=0;
+    var btn = 1;
+    function check(){
+        if(nn)
+        {
+            return;
+        }
+        {volist name="res" id="vo"}
+        {eq name="$vo.type" value="1"}
+        if($('#type{$vo.type}_{$vo.id}').is(':checked')) {
+            type{$vo.type}_{$vo.id} = 1;
+        }else{
+            type{$vo.type}_{$vo.id} =0 ;
+        }
+        {/eq}
+
+        {eq name="$vo.type" value="2"}
+        var type{$vo.type}_{$vo.id} = $("#type{$vo.type}_{$vo.id}").val();
+        if(type{$vo.type}_{$vo.id}=='') {
+            $("#cue_info").html('请输入!'+"{$vo.title}");
+            ShowDiv('mydiv','fade');
+            btn = 1;
+            return false;
+        }
+        {/eq}
+        {eq name="$vo.type" value="3"}
+        var type{$vo.type}_{$vo.id} = $("#type{$vo.type}_{$vo.id}").val();
+        if(type{$vo.type}_{$vo.id}=='') {
+            $("#cue_info").html("请上传一个{$vo.title}文件!");
+            ShowDiv('mydiv','fade');
+            btn = 1;
+            return false;
+        }
+        {/eq}
+        {eq name="$vo.type" value="4"}
+        var type{$vo.type}_{$vo.id} = $("#type{$vo.type}_{$vo.id}").val();
+        if(type{$vo.type}_{$vo.id}=='') {
+            $("#cue_info").html('请输入'+"{$vo.title}");
+            ShowDiv('mydiv','fade');
+            btn = 1;
+            return false;
+        }
+        {/eq}
+        {/volist}
+    else
+        {
+            nn = 1;
+            loading();
+            $("#index_submit").css('background','url("/race/images/yigedanwei_2.png")');
+            setTimeout(function(){
+                $("#index_submit").css('background','url("/race/images/yigedanwei.png")');
+            },500);
+            setTimeout(function(){
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/race/register/dangan",
+                    data: $('#add').serialize(),// 你的formid
+                    async: false,
+                    error: function (Request) {
+                        alert("网络故障,请重试!");
+                    },
+                    success: function (obj) {
+                        if (obj.code == 10){
+                            nn = 0;
+                            $("#cue_info").html("大赛比赛开始时间未到!");
+                            ShowDiv('mydiv','fade');
+                            btn = 1;
+                            return false;
+                        } else if (obj.code == 11){
+                            nn = 0;
+                            $("#cue_info").html("用户未报名!");
+                            ShowDiv('mydiv','fade');
+                            btn = 1;
+                            return false;
+                        } else if (obj.code == 13){
+                            nn = 0;
+                            if(obj.data.money > 0){
+                                $("#cue_info").html("资料创建成功<br />请去支付报名费用!");
+                                ShowDiv('mydiv','fade');
+                                btn = 3;
+                                return false;
+                            }else{
+                                $("#cue_info").html("资料创建成功<br />请上传视频!");
+                                ShowDiv('mydiv','fade');
+                                btn = 2;
+                                return false;
+                            }
+                            return false;
+                        }else if (obj.code == 14 || obj.code == 15 || obj.code == 16){
+                            nn = 0;
+                            $("#cue_info").html("您已报名成功并上传视频,无需再次报名!");
+                            ShowDiv('mydiv','fade');
+                            btn = 1;
+                            return false;
+                        }else if (obj.code == 18){
+                            nn = 0;
+                            $("#cue_info").html("资料创建成功<br />请支付报名费用!");
+                            ShowDiv('mydiv','fade');
+                            btn = 3;
+                            return false;
+                        }else if (obj.code == 19){
+                            nn = 0;
+                            $("#cue_info").html("大赛已经开始!");
+                            ShowDiv('mydiv','fade');
+                            btn = 1;
+                            return false;
+                        }else if (obj.code == 21){
+                            nn = 0;
+                            $("#cue_info").html("大赛已经结束!");
+                            ShowDiv('mydiv','fade');
+                            btn = 1;
+                            return false;
+                        }else{
+                            nn = 0;
+                            $("#cue_info").html(obj.message);
+                            ShowDiv('mydiv','fade');
+                            btn = 1;
+                            return false;
+                        }
+                    }
+                });
+            },1000);
+        }
+    }
+
+    $(document).ready(function(e) {
+        $('#user_pic').localResizeIMG({
+            width: 400,
+            quality: 1,
+            success: function (result) {
+                var submitData={
+                    base64_string:result.clearBase64,
+                    ds_id:"{$ds_id}",
+                    uid:"{$uid}",
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/race/entered/ajaxupload",
+                    data: submitData,
+                    dataType:"json",
+                    success: function(data){
+                        if (0 == data.code) {
+                            alert(data.message);
+                            return false;
+                        }else{
+                            var attstr= '<img src="'+data.url+'">';
+                            $("#user_pic_url").val(data.url);
+                            $("#user_pic_show").html(attstr);
+                            return false;
+                        }
+                    },
+                    complete :function(XMLHttpRequest, textStatus){
+                    },
+                    error:function(XMLHttpRequest, textStatus, errorThrown){ //上传失败
+                        alert("网络故障,请重试!");
+                    }
+                });
+            }
+        });
+
+
+        {volist name="res" id="vo"}
+        {eq name="$vo.type" value="3"}
+        $("#file{$vo.type}_{$vo.id}").localResizeIMG({
+            width: 400,
+            quality: 1,
+            success: function (result) {
+                var submitData={
+                    base64_string:result.clearBase64,
+                    ds_id:"{$ds_id}",
+                    uid:"{$uid}",
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/race/entered/ajaxupload",
+                    data: submitData,
+                    dataType:"json",
+                    beforeSend:function(XMLHttpRequest){
+                        $("#type{$vo.type}_{$vo.id}_ts").text("上传中...");
+                    },
+                    success: function(data){
+                        if (0 == data.code) {
+                            alert(data.message);
+                            return false;
+                        }else{
+                            $("#type{$vo.type}_{$vo.id}_ts").text("上传成功!");
+                            $("#type{$vo.type}_{$vo.id}").val(data.url);
+                            return false;
+                        }
+                    },
+                    complete :function(XMLHttpRequest, textStatus){
+                    },
+                    error:function(XMLHttpRequest, textStatus, errorThrown){ //上传失败
+                        alert("网络故障,请重试!");
+                    }
+                });
+            }
+        });
+        {/eq}
+        {/volist}
+    });
+
+    function loading(){
+        $("#fade").show();
+        $("#loading").show();
+    }
+    //弹出隐藏层
+    function ShowDiv(show_div,bg_div){
+        $("#loading").hide();
+        document.getElementById(show_div).style.display='block';
+        document.getElementById(bg_div).style.display='block' ;
+        var bgdiv = document.getElementById(bg_div);
+        bgdiv.style.width = document.body.scrollWidth;
+        $("#"+bg_div).height($(document).height());
+    }
+    //关闭弹出层
+    function CloseDiv(show_div,bg_div)
+    {
+        document.getElementById(show_div).style.display='none';
+        document.getElementById(bg_div).style.display='none';
+        switch (btn){
+            case 1:
+                break;
+            case 2:
+                setTimeout(function(){window.webkit.messageHandlers.HtmlDict.postMessage({"uploadVideo": true});},100);
+                setTimeout(function(){htmlModel.jsCallUploadVideo();},100);
+                setTimeout(function(){window.android.jsCallUploadVideo();},100);
+                break;
+            case 3:
+                setTimeout(function(){window.webkit.messageHandlers.HtmlDict.postMessage({"pay": true});},100);
+                setTimeout(function(){htmlModel.jsCallPayVC();},100);
+                setTimeout(function(){window.android.jsCallPayVC();},100);
+                break;
+        }
+    }
+</script>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

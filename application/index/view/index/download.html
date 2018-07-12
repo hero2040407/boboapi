@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>APP下载-怪兽bobo</title>
+	<script type="text/javascript">
+		function browserRedirect() {
+			var sUserAgent = navigator.userAgent.toLowerCase();
+			var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+			var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+			var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+			var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+			var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+			var bIsAndroid = sUserAgent.match(/android/i) == "android";
+			var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+			var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+			var wx = sUserAgent.match(/MicroMessenger/i) == "micromessenger";
+
+			if (wx) {
+				window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.yimwing.cloud";
+			}else if(bIsIpad || bIsIphoneOs) {
+				window.location.href="https://itunes.apple.com/us/app/怪兽bobo-for-iphone/id1212223506?l=zh&ls=1&mt=8";
+			}else{
+				document.writeln("怪兽bobo安卓客户端正在下载...");
+				window.location.href="http://bobo-sql.oss-cn-beijing.aliyuncs.com/app-bobo-release.apk";
+			}
+		}
+		browserRedirect();
+	</script>
+
+</head>
+<body>
+<div style="width: 100%;">
+	<div  style="margin: 0 auto; text-align: center;"><img src='/skin/images/xiaog.png'  style="margin: 0 auto; width: 600px;"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>请下载app去上传视频</title>
+    <link rel="stylesheet" type="text/css" href="/race/css/style.css">
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+    <script type='text/javascript' src='/race/js/LocalResizeIMG.js'></script>
+    <script type='text/javascript' src='/race/js/patch/mobileBUGFix.mini.js'></script>
+</head>
+<body class="index_body">
+<div class="index_main">
+    <div class="index_toppic"><img src="{$banner}" /></div>
+    <div id="addshow">
+        <div class="add_form_line3">
+            恭喜你，已经报名成功！
+        </div>
+        <div class="add_form_line4">
+            萌童时代（MTE）2017国际少儿模特大赛正在火热进行中，
+            如果你在海选中不幸落选，不要灰心，请上传更优秀的视频到怪兽bobo，参加复活赛，
+            我们将从中挑选50位小朋友参加全国总决赛，名额有限，快快行动起来吧！
+        </div>
+        <div class="add_form_line2">
+            <button id="add_submit" onclick="openApp()">立即上传视频</button>
+        </div>
+    </div>
+    <div class="index_bompic"><img src="/race/images/bompic.png" /></div>
+</div>
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+<script type="text/javascript">
+    iphoneSchema='alipaybobo://';
+    iphoneDownUrl='https://itunes.apple.com/us/app/怪兽bobo-for-iphone/id1212223506?l=zh&ls=1&mt=8';
+    androidSchema='alipaybobo://com.xingbo/';
+    androidDownUrl='http://upload.guaishoubobo.com/app-bobo-release.apk';
+
+    function openApp(){
+        if(isWeixin()){
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.yimwing.cloud";
+        }else{
+            if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
+                var loadDateTime = new Date();
+                window.setTimeout(function() {
+                    var timeOutDateTime = new Date();
+                    if (timeOutDateTime - loadDateTime < 5000) {
+                        window.location.href = iphoneDownUrl;
+                    } else {
+                        window.close();
+                    }
+                },25);
+                window.location.href = iphoneSchema;
+            }else if (navigator.userAgent.match(/android/i)) {
+                try {
+                    window.location.href = androidSchema;
+                    setTimeout(function(){
+                        window.location.href=androidDownUrl;
+                    },500);
+                } catch(e) {}
+            }
+        }
+    }
+    function isWeixin(){
+        var ua = navigator.userAgent.toLowerCase();
+        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+</script>
+<script type="text/javascript" src="/race/js/Adaptive.js"></script>
+</html>

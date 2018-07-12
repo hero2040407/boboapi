@@ -1,0 +1,15 @@
+微信支付
+/shop/api/wxpay_notify
+
+
+支付宝支付
+/shop/api/alipay_notify
+
+
+阿里云视频转换
+/api/alihuidiao/index
+
+微信关注接口。
+/user/weixin/notify
+
+

@@ -1,0 +1,34 @@
+
+注意事项：
+
+重启数据库的顺序：
+1、停止从
+2、停止主
+3、启动主
+4、启动从
+
+
+以下正式服：
+
+
+
+
+以下测试服：
+停止从
+mysqld_multi stop 3307
+
+停止主
+mysqld_multi stop 3306
+
+启动主
+mysqld_multi start 3306
+
+启动从
+mysqld_multi start 3307
+
+测试服下：
+命令行下，进入mysql客户端
+进入主客户端
+mysql -uroot -pChenyueAbc.123 -h127.0.0.1 -P3306
+进入从客户端
+mysql -uroot -pChenyueAbc.123 -h127.0.0.1 -P3307

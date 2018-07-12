@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$activity.title}-怪兽BoBo活动分享</title>
+    <link rel="stylesheet" type="text/css" href="/share/css/task_activity.css?v=1.3">
+    <script type="text/javascript" src="/share/js/jquery.min.js"></script>
+    {neq name="$activity.room_id" value="0"}
+    <script type="text/javascript" src="/share/sewise.player.min.js"></script>
+    {/neq}
+</head>
+<body>
+
+<header>
+	<div>
+        {eq name="type" value="0"}<img src="/share/images/logo0.jpg" />{/eq}
+        {eq name="type" value="2"}<img src="/share/images/logo2.jpg" />{/eq}
+    </div>
+    <div class="button">
+        <a href="http://apk.guaishoubobo.com/downloads/">
+            {eq name="type" value="0"}<img src="/share/images/button0.gif" />{/eq}
+            {eq name="type" value="2"}<img src="/share/images/button2.gif" />{/eq}
+        </a>
+    </div>
+    <div>
+        <div class="wrap" id='wrap'>
+            <ul id="pic">
+                {volist name="bigpic_list" id="vo" key="k"}
+                <li><img src="{php}if(strpos($vo['picpath'] ,'http') === false){echo $share_server;}{/php}{$vo.picpath}" alt="" /></li>
+                {/volist}
+            </ul>
+            <ol id="list">
+                {volist name="bigpic_list" id="vo" key="k"}
+                <li {eq name="type" value="1"}class="on"{/eq}>{$k}</li>
+                {/volist}
+            </ol>
+        </div>
+    </div>
+</header>
+
+<div class="contain">
+    {neq name="$activity.room_id" value="0"}
+    <div class="banner">
+        <div class="user">
+            <img class="icon" src="{$videodata.pic|default='/share/images/default_icon.png'}" />
+            <div class="userinfo">
+                <div>
+                    <span id="nickname">{$videodata.nickname}</span>
+                    {eq name="videodata.sex" value="0"}<img class="sex" src="/share/images/nv.png" />{/eq}
+                    {eq name="videodata.sex" value="1"}<img class="sex" src="/share/images/nan.png" />{/eq}
+                    <span id="age">{$videodata.age}岁</span>
+                    <span id="like"><img class="shou1" src="/share/images/shou1.jpg" />{$videodata.like}</span>
+                </div>
+                <div>
+                    <span id="address"><img class="address" src="/share/images/address.jpg" />{$videodata.address}</span>
+                    <span id="sqlz">
+                        {eq name="type" value="0"}<img src="/share/images/sqlz.jpg" />{/eq}
+                        {eq name="type" value="2"}<img src="/share/images/tyxzb.jpg" />{/eq}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="player" class ="movie_frame"></div>
+
+        <div class="label">
+            <span id="label">{$videodata.labelname}</span><span id="videotitle">{$videodata.title}</span>
+        </div>
+    </div>
+    {/neq}
+
+    <div class="ac_info">
+        <div class="ac_info_titleline">
+            <div class="detail_link"><a href="{$activity.detail_link}" ><img src="/share/images/img_jiantou.png" /></a></div>
+            <div class="introduce_labelimg"><img src="/share/images/bnt_introduce.png" /></div>
+            <div class="introduce_title">活动介绍</div>
+        </div>
+        <div class="ac_info_text" id="ac_info">
+            {$activity.info}
+        </div>
+        {eq name="activity.type" value="3"}
+        <div class="ac_info_titleline">
+            <div class="introduce_labelimg"><img src="/share/images/bnt_pk_details.png" /></div>
+            <div class="introduce_title">PK详情</div>
+        </div>
+        <div class="pk_info_progress">
+            <div class="pk_info_progress_right">{$activity.blue_score|default='0'}分</div>
+            <div class="pk_info_progress_left">{$activity.red_score|default='0'}分</div>
+        </div>
+        <div class="pk_info_count">
+            <div class="pk_info_blue">蓝方战队</div>
+            <div class="pk_info_red">红方战队</div>
+        </div>
+        <div class="pk_info_count">
+            <div class="pk_info_count_right"><img src="/share/images/bnt_people.png" />&nbsp;{$activity.red_count|default='0'}人&nbsp;&nbsp;<img src="/share/images/bnt_fabulous.png" />&nbsp;{$activity.red_like|default='0'}赞 </div>
+            <div class="pk_info_count_left"><img src="/share/images/bnt_people.png" />&nbsp;{$activity.blue_count|default='0'}人&nbsp;&nbsp;<img src="/share/images/bnt_fabulous.png" />&nbsp;{$activity.blue_like|default='0'}赞 </div>
+        </div>
+        {/eq}
+    </div>
+
+    <div class="item_name_tt">
+        <ul>
+            <li id="tab_tt1" onclick="return ChangItermtt(1);" class="thisiterm_tt">排行榜<p id="underline_1"></p></li>
+            <li id="tab_tt2" onclick="return ChangItermtt(2);">最新<p id="underline_2"></p></li>
+        </ul>
+    </div>
+    {eq name="$activity.type" value="3"}
+    <div class="item_name_t">
+        <ul>
+            <li id="tab_t1" onclick="return ChangItermt(1)" class="thisiterm_t">全部</li>
+            <li id="tab_t2" onclick="return ChangItermt(2)">红方</li>
+            <li id="tab_t3" onclick="return ChangItermt(3)">蓝方</li>
+        </ul>
+    </div>
+    {/eq}
+    <div class="favorable" id="record_list">
+
+    </div>
+    <div class="more">
+        <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom.gif" /></a>
+    </div>
+</div>
+<input type="hidden" id="activity_id" value="{$activity.id}">
+</body>
+<script type="text/javascript">
+    var list_n=1;
+    var content = document.getElementById("ac_info").innerHTML;
+    content = content.replace(/\n/g, '_@').replace(/\r/g, '_#');
+    content = content.replace(/_#_@/g, '<br/>');//IE7-8
+    content = content.replace(/_@/g, '<br/>');//IE9、FF、chrome
+    content = content.replace(/\s/g, '&nbsp;');//空格处理
+    content = content.replace(/【/g,"<p style='color:#F9A336'>【");
+    content = content.replace(/】/g,"】</p>");
+    document.getElementById("ac_info").innerHTML = content;
+
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+
+    window.onload=function(){
+        var wrap=document.getElementById('wrap'),
+                pic=document.getElementById('pic').getElementsByTagName("li"),
+                list=document.getElementById('list').getElementsByTagName('li'),
+                index=0,
+                timer=null;
+
+        // 定义并调用自动播放函数
+        timer = setInterval(autoPlay, 2000);
+
+//        // 鼠标划过整个容器时停止自动播放
+//        wrap.onmouseover = function () {
+//            clearInterval(timer);
+//        }
+
+//        // 鼠标离开整个容器时继续播放至下一张
+//        wrap.onmouseout = function () {
+//            timer = setInterval(autoPlay, 2000);
+//        }
+        // 遍历所有数字导航实现划过切换至对应的图片
+        for (var i = 0; i < list.length; i++) {
+            list[i].onmouseover = function () {
+                clearInterval(timer);
+                index = this.innerText - 1;
+                changePic(index);
+            };
+        }
+
+        function autoPlay () {
+            if (++index >= pic.length) index = 0;
+            changePic(index);
+        }
+
+        // 定义图片切换函数
+        function changePic (curIndex) {
+            for (var i = 0; i < pic.length; ++i) {
+                pic[i].style.display = "none";
+                list[i].className = "";
+            }
+            pic[curIndex].style.display = "block";
+            list[curIndex].className = "on";
+        }
+
+    };
+    {neq name="activity.room_id" value="0"}
+        setTimeout(function () {
+            SewisePlayer.setup({
+                server: "vod",
+                type: "mp4",
+                autostart: "false",
+                poster: "{$videodata.big_pic}",
+                videourl:"{$videodata.video_path}",
+                skin: "vodFoream",
+                title: "",
+                lang: "zh_CN",
+                buffer:1,
+                topbardisplay:'disable',
+                claritybutton: 'disable'
+            }, "player");
+        }, 300);
+    {/neq}
+
+    function ChangItermtt(n) {
+        var str='';
+        for(var i=1;i<=2;i++){
+            $("#underline_"+i).hide();
+            $("#tab_tt"+i).removeClass();
+        }
+        $("#underline_"+n).show();
+        $("#tab_tt"+n).addClass('thisiterm_tt');
+        list_n = n;
+        ChangItermt(1);
+    }
+
+    function ChangItermt(nn) {
+        var actype,pksort,str='';
+        for(var i=1;i<=3;i++){
+            $("#tab_t"+i).removeClass();
+        }
+        $("#tab_t"+nn).addClass('thisiterm_t');
+
+        if (list_n == 1){
+            if (nn == 1){actype = 0;pksort =0}
+            if (nn == 2){actype = 0;pksort =11}
+            if (nn == 3){actype = 0;pksort =12}
+        }else{
+            if (nn == 1){actype = 1;pksort =0}
+            if (nn == 2){actype = 1;pksort =11}
+            if (nn == 3){actype = 1;pksort =12}
+        }
+        $.ajax({
+            type: "get",
+            url: '/task/taskactivityapi/get_user_list',
+            async: true,
+            data:{'uid':16666,'activity_id':$("#activity_id").val(),'min_page':0,'max_page':10,'type':actype,'sort':pksort},
+            success: function(obj) {
+                if(obj.code == 1){
+                    $.each(obj.data, function(i, vo) {
+                        j= i+1;
+                        if(j>3)j=0;
+                        str += '<div class="fb"><div class="fb-lt"><a href="/boboshare?type=3&id='+vo.room_id+'" ><img class="bigpic" src="'+vo.big_pic ;
+                        str += '" /></a> <img class="no_bg" src="/share/images/number_'+j+'.png" /><div class="no">NO.'+(i+1)+'</div><div class="fb-name"><img class="icon2" src="'+vo.pic;
+                        str += '" /><div class="nickname2"><p> ' +vo.title + '</p><p><span> '+vo.nickname+'</span><span class="like2">&nbsp;'+vo.like ;
+                        str += '</span><img class="shou2" src="/share/images/bnt_fabulous_white.png" /></p></div></div></div></div>';
+                    });
+                    $("#record_list").html(str);
+                }
+            }
+        });
+    }
+    ChangItermtt(1);
+</script>
+</html>

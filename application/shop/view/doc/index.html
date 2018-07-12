@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8"/>
+    <title>怪兽BOBO接口文档</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/public/js/yaml4/demos/css/flexible-grids.css" rel="stylesheet" type="text/css"/>
+    <script src="/public/js/jquery-1.9.1.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="/public/js/yaml4/lib/html5shiv/html5shiv.js"></script>
+    <![endif]-->
+<style>
+.ym-gbox {
+    padding: 0 1em;
+}
+h4 {
+    
+    font-size: 150%;
+    line-height: 1;
+    margin: 0 0 0.2em 0;
+    
+}
+
+.font3{
+  font-size:80%;
+}
+
+
+ 
+
+</style>
+
+<script>
+$(document).ready(function(){
+    $('.font3').hide();
+    
+});
+
+
+ function click1(){
+     
+     if (click1.aa==0) {
+       $('.font3').show();
+       click1.aa=1;
+       $('#x1').html("隐藏修改日期");
+     }else {
+         $('.font3').hide();
+         click1.aa=0;
+         $('#x1').html("显示修改日期");
+     }
+     
+ }
+ click1.aa = 0;
+</script>
+
+</head>
+
+<body>
+
+<main>
+    <div class="ym-wrapper">
+        <div class="ym-wbox">
+            <section class="box info">
+                <div class='center'><h1>怪兽BOBO接口文档</h1></div>
+   
+                <div style='float:right'><a id='x1' href='#' onclick='click1();return false;'>显示修改日期</a></div>
+                
+                <div class="ym-grid linearize-level-1 xieye1">
+                    <div class="ym-g66 ym-gl">
+
+                        <div class="ym-grid linearize-level-2">
+                        
+                        
+                            <!-- 最左边的列 -->
+                            <article class="ym-g50 ym-gl">
+                                {$left_list}
+                              
+                            </article>
+                            
+                            <!-- 中间的列 -->
+                            <article class="ym-g50 ym-gr">
+                               {$middle_list}
+                                
+                            </article>
+                        </div>
+
+                    </div>
+                    
+                    <!-- 最右侧的列 -->
+                    <article class="ym-g33 ym-gr">
+                        <div class="ym-gbox-right secondary">
+                        {$right_list}
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            
+        </div>
+    </div>
+</main>
+
+
+<!-- full skip link functionality in webkit browsers -->
+<script src="/public/js/yaml4/yaml/core/js/yaml-focusfix.js"></script>
+</body>
+</html>

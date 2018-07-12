@@ -1,0 +1,86 @@
+公众平台后台
+
+说明 该公众平台，基本配置-》 开放平台帐号绑定
+
+设置 -》 公众号设置 -》 功能设置-》 js接口安全域名
+设置 -》 公众号设置 -》 功能设置-》 网页授权域名
+设置 -》 公众号设置 -》 功能设置-》 业务域名，注意，这3个可以统一。
+
+
+
+开发 -》 接口权限 -》 网页服务 -》 网页授权获取用户基本信息 （注：其实就是上面两个设置。），但是这里可以确认（显示已设置）
+
+开发 -》 基本配置 -》 开发者ID -》 AppSecret应用密钥生成。
+
+微信支付 -》 开发配置 -》 支付授权目录，填写。
+
+jsapi文档
+如何获取openid
+https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN
+
+
+
+
+
+redis 我开了另一个端口，于是总共有两个redis
+1\
+sh /root/xieyeshell/redis6380_start.sh
+另一个redis自动启动
+/usr/local/redis/redis-server
+
+
+
+这是一个队列服务。
+2\
+service beanstalkd  start
+
+查看帮助
+beanstalkd -h
+
+
+这是处理队列的守护进程，开启命令
+
+supervisord -c /etc/supervisord.conf
+
+注：当停止supervisord时，需要
+（1）ps aux|grep super，查出这个进程，
+（2）然后kill，
+（3）查找supervisord曾经管理的子进程。ps aux|grep /public/index.php
+（4）对子进程kill。这是顺序，不能搞反。
+
+为了简便起见，我写了php程序, 一下关闭所有队列守护进程
+ php /var/www/html/public/index.php /systemmanage/phean/close
+
+============
+某一个队列使用示例
+脚本文件
+/root/xieyeshell/phean_dianping.sh
+内容是
+/usr/bin/php /var/www/html/public/index.php /systemmanage/phean/run_dianping  >> /tmp/phean.log 2>&1
+==============
+
+
+
+
+==============
+队列说明，首先是
+/etc/supervisord.conf，里面指明了5个sh文件。
+例如：
+/root/xieyeshell/phean_dasai.sh
+里面的内容是：
+/usr/bin/php /var/www/html/public/index.php /systemmanage/phean/run_dasai >> /tmp/phean.log 2>&1
+
+=============
+
+
+
+
+
+oss阿里云使用，记得使用完需卸载目录
+ vim /etc/passwd-ossfs
+ mkdir /mnt/temposs
+ossfs bobo-upload /mnt/temposs -ourl=http://oss-cn-beijing.aliyuncs.com
+ls /mnt/temposs
+
+下面的命令是卸载
+fusermount -u /mnt/temposs

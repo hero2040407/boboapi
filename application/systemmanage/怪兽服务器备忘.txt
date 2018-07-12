@@ -1,0 +1,6 @@
+20171218
+表bb_tongji_log过大了，有700万行。
+
+我备份到 
+/mnt/vdb1/backup/bb_tongji_log/下。
+

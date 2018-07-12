@@ -1,0 +1,55 @@
+
+童星处理：
+
+1、
+update bb_users set role=1 where role =3
+
+2、bb_users_info（用户附加信息表）
+delete from bb_users_info;
+
+
+3、清除童星申请表。
+delete from bb_vip_application_log
+
+4、设置真正的童星。
+php /var/www/html/public/index.php /apptest/vip/check
+
+
+
+
+
+
+
+机构处理：
+ 
+1、
+update bb_users set role=1 where role =4
+
+2、bb_brandshop（机构表）;
+
+
+3、清除机构申请表。
+delete from bb_brandshop_application
+
+4、设置真正的机构。
+php /var/www/html/public/index.php /apptest/vip/check_jigou
+
+ 
+ 
+ 
+ 
+ 
+导师处理：
+1、
+update bb_users set role=1 where role =2
+
+2、bb_users_starmaker（导师表）;
+
+
+3、清除机构申请表。
+delete from bb_starmaker_application
+
+4、设置真正的导师。
+php /var/www/html/public/index.php /apptest/vip/check_daoshi
+
+

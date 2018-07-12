@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name='apple-mobile-web-app-status-bar-style' content='black'>
+    <meta name='format-detection' content='telephone=no'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>邀好友赢现金</title>
+    <link rel="stylesheet" type="text/css" href="/invite/css/invite.css">
+    <script type="text/javascript" src="/share/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/invite/js/jquery.qrcode.js" ></script>
+    <script type="text/javascript" src="/invite/js/qrcode.js" ></script>
+    <script type="text/javascript" src="/invite/js/utf.js" ></script>
+</head>
+<body class="index_body">
+<div class="main index_main">
+    <div class="rule_btn">
+        <div class="rule_btn_c" onclick="go_url();"></div>
+    </div>
+    <div class="qrcode"><div class="qrcode_c" id="qrcodeTable" onclick="qrcode();" ></div></div>
+    <div class="change_info">
+        <div class="change_text_l">已成功邀请 <span id="invite_count">0</span> 人</div>
+        <div class="change_text_c">获 <span id="invite_num">0</span> 积分</div>
+        <div class="change_text_r" onclick="exchange();">立即兑换</div>
+    </div>
+    <div class="share_btn">
+        <img src="/invite/images/btn.png" onclick="share();" />
+    </div>
+</div>
+<div id="fade" class="qrcode_black_overlay" onclick="CloseDiv('mydiv','fade')"></div>
+<div id="mydiv" class="qrcode_white_content">
+    <div class="user_pic"><img src="{$user.pic}" onerror="this.src='/share/images/default.jpg';this.onerror=null"/></div>
+    <div class="user_nickname">{$user.nickname|default='怪兽bobo'}</div>
+    <div class="big_qrcode" id="qrcodeCanvas"></div>
+    <div class="big_qrcode_text">让朋友扫一扫上面的二维码,邀请Ta加入怪兽bobo</div>
+</div>
+<input id="uid" value="{$uid}" style="display: none;" />
+<input id="share_server" value="{$share_server}" style="display: none;" />
+<input id="sharePicUrl" value="{$share_server}{$info.invite_share_pic}" placeholder="必须jpg文件,否则微信分享不出去!" style="display: none;" />
+<input id="shareTitle" value="{$info.invite_share_title}" style="display: none;" />
+<input id="shareNote" value="{$info.invite_share_content}" style="display: none;" />
+<input id="shareUrl" value="{$share_server}/boboshare/invite/share/uid/{$uid}" style="display: none;" />
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+
+    jQuery('#qrcodeTable').qrcode({
+        render    : "canvas",                <!--二维码生成方式 -->
+        text    : $("#shareUrl").val() , <!-- 二维码内容  -->
+        width : "100",               //二维码的宽度
+        height : "100",
+        background : "#fff",       //二维码的后景色
+        foreground : "#000",        //二维码的前景色
+        src: ''             //二维码中间的图片
+    });
+    jQuery('#qrcodeCanvas').qrcode({
+        render    : "canvas",
+        text    : $("#shareUrl").val(),
+        width : "200",               //二维码的宽度
+        height : "200",              //二维码的高度
+        background : "#fff",       //二维码的后景色
+        foreground : "#000",        //二维码的前景色
+        src: ''             //二维码中间的图片
+    });
+
+    setTimeout(function(){
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/user/invite/get_info",
+            data: {'uid':$("#uid").val()},
+            success: function (msg){
+                if(msg.code == 1){
+                    $("#invite_count").html(msg.data.count);
+                    $("#invite_num").html(msg.data.sum);
+                    return false;
+                }
+            }
+        });
+    },100);
+
+    function go_url() {
+        setTimeout(function(){
+            window.webkit.messageHandlers.HtmlDict.postMessage({"goUrl": $("#share_server").val()+"/invite/rule.html"});
+        },100);
+        setTimeout(function(){
+            window.android.goUrl($("#share_server").val()+"/invite/rule.html");
+        },100);
+    }
+    function share() {
+        setTimeout(function(){
+            window.webkit.messageHandlers.HtmlDict.postMessage({'showShare':{'pic':$("#sharePicUrl").val(),'urlPath':$("#shareUrl").val(),'title':$("#shareTitle").val(),'content':$("#shareNote").val()}});
+        },100);
+        setTimeout(function(){
+            window.android.share("{'sharePicUrl':'"+$("#sharePicUrl").val()+"','shareUrl':'"+$("#shareUrl").val()+"','shareTitle':'"+$("#shareTitle").val()+"','shareNote':'"+$("#shareNote").val()+"'}");
+        },100);
+    }
+
+    function exchange() {
+        setTimeout(function(){
+            window.webkit.messageHandlers.HtmlDict.postMessage({"goScoreExchange": true});
+        },100);
+        setTimeout(function(){
+            window.android.goScoreExchange();
+        },100);
+    }
+
+    function qrcode() {
+        ShowDiv('mydiv','fade');
+    }
+
+    //弹出隐藏层
+    function ShowDiv(show_div,bg_div){
+        $("#loading").hide();
+        document.getElementById(show_div).style.display='block';
+        document.getElementById(bg_div).style.display='block' ;
+        var bgdiv = document.getElementById(bg_div);
+        bgdiv.style.width = document.body.scrollWidth;
+        $("#"+bg_div).height($(document).height());
+    }
+    //关闭弹出层
+    function CloseDiv(show_div,bg_div)
+    {
+        document.getElementById(show_div).style.display='none';
+        document.getElementById(bg_div).style.display='none';
+    }
+
+
+</script>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>查看导师详情</title>
+    <link rel="stylesheet" type="text/css" href="/skin/css/starmaker.css">
+    <script type="text/javascript" src="/skin/js/jquery-2.0.3.min.js"></script>
+    <link rel="stylesheet" href="/skin/css/swiper.min.css">
+</head>
+<body>
+<div class="main">
+    {neq name="res.detail_img" value=""}
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            {volist name="res.detail_img" id="vo"}
+            <div class="swiper-slide btn"><img src="{$vo}" /></div>
+            {/volist}
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+    <script type="text/javascript" src="/skin/js/swiper.min.js"></script>
+    <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            nextButton: '.swiper-button-next',
+            prevButton: '.swiper-button-prev',
+            paginationClickable: true,
+            centeredSlides: true,
+            autoplay: 2500,
+            autoplayDisableOnInteraction: false
+        });
+    </script>
+    {/neq}
+    <div class="info_line">
+        <div class="info_line_title"><img src="/skin/images/img_dsjs@2x.png" /><div class="info_title">导师介绍</div><div class="info_title_num">(点评{$people_num}个小朋友)</div></div>
+        <div class="info_line_content">
+            <div class="info_user_pic"><img src="{$user.pic}" /></div>
+            <div class="info_user_nickname">{$user.nickname}</div>
+        </div>
+        <div class="info_line_content">{$res.detail_jieshao|nl2br}</div>
+    </div>
+    <hr>
+    <div class="info_line">
+        <div class="info_line_title"><img src="/skin/images/img_hjjs@2x.png" /><div class="info_title">获奖介绍</div></div>
+        <div class="info_line_content">{$res.detail_huojiang|nl2br}</div>
+    </div>
+    <hr>
+    <div class="info_line">
+        <div class="info_line_title"><img src="/skin/images/img_ssxsl@2x.png" /><div class="info_title">适宜星势力</div></div>
+        <div class="info_line_content">{$res.detail_shiyi|nl2br}</div>
+    </div>
+    <hr>
+    <div class="info_line">
+        <div class="info_line_title"><img src="/skin/images/img_dsyx@2x.png" /><div class="info_title">导师印象</div></div>
+        <div class="info_line_content">
+            {volist name="res.detail_yinxiang" id="vo"}
+            <div class="detail_yinxiang">{$vo}</div><div class="v_line">&nbsp;</div>
+            {/volist}
+        </div>
+    </div>
+    <hr>
+    <div class="info_line">
+        <div class="info_line_title"><img src="/skin/images/img_sxsj@2x.png" /><div class="info_title">本周上线时间</div></div>
+        <div class="info_line_content">
+            {volist name="res.detail_shangxian" id="vo"}
+            <div class="detail_shangxian">{$vo}</div>
+            {/volist}
+        </div>
+    </div>
+    <div class="info_line">
+        <br /><br /><br />
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

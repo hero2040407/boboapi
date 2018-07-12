@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$res.title}</title>
+    <link rel="stylesheet" type="text/css" href="/race/css/style.css?v=1.0">
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+    <script type="text/javascript" src="/race/js/jsAddress.js"></script>
+</head>
+<body class="index_body">
+<div class="index_main">
+    <div class="index_toppic"><img src="{$res.banner}" /></div>
+    <div class="form_line">
+        <div class="show_line">
+            <div class="xinghao"> </div>
+            <div class="input_name">赛　　区</div>
+            <div class="input_line index_area">{$res.area}</div>
+            <input name="qd_id" value="{$res.id}" id="qd_id" type="hidden" />
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line">
+            <div class="xinghao"><img src="/race/images/xinghao.png" /></div><div class="input_name">所在城市</div>
+            <div class="input_line">
+                <select name="area1_name" id="Select1"  class="form_input form_input_area1_name" ></select>
+                <select name="area2_name" id="Select2"  class="form_input form_input_area2_name" ></select>
+                <select id="Select3" style="display:none;"></select>
+            </div>
+            <script type="text/javascript">
+                addressInit('Select1', 'Select2', 'Select3', "浙江", "杭州市", "");
+            </script>
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line">
+            <div class="xinghao"><img src="/race/images/xinghao.png" /></div><div class="input_name">姓　　名</div>
+            <div class="input_line"><input name="name" id="name" type="text" placeholder="请输入你的真实姓名" class="form_input form_input_name" /></div>
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line">
+            <div class="xinghao"><img src="/race/images/xinghao.png" /></div><div class="input_name">出生年月</div>
+            <div class="input_line">
+                <select name="year" id="year"  class="form_input form_input_year" >
+                    {for start="1999" end="2018"}
+                    <option value={$i}>{$i}</option>
+                    {/for}
+                </select>
+                年
+                <select name="month" id="month"  class="form_input form_input_month" >
+                    {for start="1" end="13"}
+                    {lt name="i" value="10"}<option value="0{$i}">0{$i}</option>{else/}<option value={$i}>{$i}</option>{/lt}
+                    {/for}
+                </select>
+                月
+            </div>
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line">
+            <div class="xinghao"><img src="/race/images/xinghao.png" /></div><div class="input_name">选择性别</div>
+            <div class="input_line">
+                <select name="sex" id="sex"  class="form_input form_input_sex" >
+                    <option value='0' style="text-align: center">女</option>
+                    <option value='1' style="text-align: center">男</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line">
+            <div class="xinghao"><img src="/race/images/xinghao.png" /></div><div class="input_name"> 手机号码</div>
+            <div class="input_line"><input name="phone" id="phone" type="number" placeholder="请输入你的联系方式" class="form_input form_input_phone" /></div>
+        </div>
+    </div>
+    <div class="form_line">
+        <div class="show_line2">
+            <div class="xinghao"><img src="/race/images/xinghao.png" />　</div>
+            <div class="form_input form_input_code"><input name="code" id="code" type="text" placeholder="请输入短信验证码" /></div>
+            <input id="btnSendCode" class="gradient" type="button" value="获取短信验证码" onclick="sendMessage()" />
+        </div>
+    </div>
+    <!--<div class="form_line">-->
+        <!--<div class="show_line2">-->
+            <!--<input id="inputcaptcha" name="captcha" type="text"  placeholder="请输入图形验证码" class="form_input form_input_captcha" />-->
+            <!--<img id="captcha" src="/race/register/captcha" alt="点击更换" onclick="this.src='/race/register/captcha?' + Math.random(); " /><span id="captcha_ts">点击图<br />片更换</span>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="form_line3"><button id="index_submit" class="gradient" onclick="check({$is_jump});return false;">提 交</button></div>
+    <div class="index_bompic"><img src="/race/images/bompic.png" /></div>
+</div>
+<div id="fade" class="black_overlay"></div>
+<div id="mydiv" class="white_content">
+    <div id="cue_info"></div>
+    <div id="sure_btn" class="sure_btn gradient" onclick="CloseDiv('mydiv','fade');">确 定</div>
+</div>
+<div id="loading"><img src="/race/images/loading.gif" /></div>
+</body>
+<script type="text/javascript" src="/race/js/common.js"></script>
+{eq name="end" value="1"}
+<script type="text/javascript">
+    end();
+</script>
+{/eq}
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

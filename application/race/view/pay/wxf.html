@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>打赏付费-微信支付</title>
+    <link rel="stylesheet" type="text/css" href="/race/css/style.css">
+    <script type="text/javascript" src="/race/js/Adaptive.js"></script>
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+</head>
+<body class="index_body">
+<div class="gopay_main">
+    <div class="gopay_line">
+        <img src="/race/images/ok.png" class="gopay_img_ok"/>
+    </div>
+    <div class="gopay_img_ts">
+        <p>请支付打赏所需费用!</p>
+        <p>金额:<span id="money">{$money}元</span></p>
+    </div>
+    <div id="user_edit_state"></div>
+    <button id="gopay" onclick="callpay()">去付费</button>
+    <!--<button id="exit"  onclick="exit();return false;">取 消</button>-->
+    <div class="add_form_line"></div>
+</div>
+<div id="fade" class="black_overlay"></div>
+<div id="mydiv" class="white_content">
+    <div id="cue_info"></div>
+    <div id="sure_btn" class="sure_btn" onclick="CloseDiv('mydiv','fade');">确 定</div>
+</div>
+<div id="loading"><img src="/race/images/loading.gif" /></div>
+</body>
+<script type="application/javascript">
+    var btn = 1;
+    //调用微信JS api 支付
+    function jsApiCall()
+    {
+        WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',
+                {$jsApiParameters},
+                function(res){
+                    if(res.err_msg=='get_brand_wcpay_request:ok'){
+                        $("#cue_info").html("恭喜您支付成功<br />您支持的小主播已经收到奖励了!");
+                        ShowDiv('mydiv','fade');
+                        btn = 2;
+                        return false;
+                    }else{
+                        $("#cue_info").html("支付失败<br />请重新尝试!");
+                        ShowDiv('mydiv','fade');
+                        btn = 1;
+                        return false;
+                    }
+
+                    //WeixinJSBridge.log(res.err_msg);
+                    //alert(res.err_code+res.err_desc+res.err_msg);
+                }
+        );
+    }
+
+    function callpay()
+    {
+        loading();
+        setTimeout(function(){
+            $("#index_submit").css('background','url("/race/images/yigedanwei.png")');
+            if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                    document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+                }
+            }else{
+                jsApiCall();
+            }
+        },1000);
+    }
+    function loading(){
+        $("#fade").show();
+        $("#loading").show();
+    }
+    //弹出隐藏层
+    function ShowDiv(show_div,bg_div){
+        $("#loading").hide();
+        document.getElementById(show_div).style.display='block';
+        document.getElementById(bg_div).style.display='block' ;
+        var bgdiv = document.getElementById(bg_div);
+        bgdiv.style.width = document.body.scrollWidth;
+        $("#"+bg_div).height($(document).height());
+    }
+    //关闭弹出层
+    function CloseDiv(show_div,bg_div)
+    {
+        document.getElementById(show_div).style.display='none';
+        document.getElementById(bg_div).style.display='none';
+        switch (btn){
+            case 1:
+                break;
+            case 2:
+                setTimeout(function(){window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.yimwing.cloud";},500);
+                break;
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name='apple-mobile-web-app-status-bar-style' content='black'>
+    <meta name='format-detection' content='telephone=no'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>领取新手大礼包</title>
+    <link rel="stylesheet" type="text/css" href="/invite/css/invite.css">
+    <script type="text/javascript" src="/share/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="main">
+    <div class="main_top"></div>
+    <div class="center_btn">
+        <div class="form_line">
+            <div class="show_line">
+                <div class="input_name">手机号码</div>
+                <div class="input_line"><input name="phone" id="phone" type="number" placeholder="请输入手机号码" class="form_input" value=""/></div>
+            </div>
+        </div>
+        <div class="form_line">
+            <div class="show_line2">
+                <div class="input_name">验证码</div>
+                <div class="input_line2">
+                    <div class="input_phone">
+                        <input name="code" id="code" type="text" placeholder="请输入验证码" class="form_input"/>
+                    </div>
+                    <input id="btnSendCode" type="button" value="获取验证码" onclick="sendMessage()" />
+                </div>
+            </div>
+        </div>
+        <div class="down_note">下载APP后,请使用该手机号登录</div>
+        <div class="open_download" onclick="check();"><img src="/invite/images/share_btn.png" /></div>
+    </div>
+    <div class="bottom_img_list"><img src="/invite/images/bobo-zhanshi.jpg" /></div>
+</div>
+<div id="fade" class="black_overlay" onclick="CloseDiv('mydiv','fade')"></div>
+<div id="mydiv" class="white_content">
+    <div id="cue_info"></div>
+    <div id="sure_btn" class="sure_btn" onclick="CloseDiv('mydiv','fade');">确 定</div>
+</div>
+<input type="hidden" id="uid" value="{$uid}" />
+</body>
+<script type="text/javascript" src="/invite/js/common.js"></script>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

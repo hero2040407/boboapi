@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name='apple-mobile-web-app-status-bar-style' content='black'>
+    <meta name='format-detection' content='telephone=no'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$data.nickname|default='怪兽bobo'}的视频分享</title>
+    <link rel="stylesheet" type="text/css" href="/share/css/style.css?v=1.4">
+    <script type="text/javascript" src="/share/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/share/sewise.player.min.js"></script>
+</head>
+<body class="index_body">
+
+<header>
+    <a href="http://apk.guaishoubobo.com/downloads/">
+        <div class="top_logo">
+            <img src="/share/images/top_logo.png">
+        </div>
+    </a>
+</header>
+
+<div class="contain">
+    <div class="banner">
+        {if condition="$data.audit neq 1"}
+        <div class="push_done"><img src="/share/images/push_off_logo.png" ><p>该视频未认证,下载怪兽BoBo可以观看其他视频@^^@</p></div>
+        {else /}
+        <div id="player" class ="movie_frame"></div>
+        {/if}
+    </div>
+    <div class="user">
+        <img class="icon" src="{$data.pic|default='/share/images/default_icon.png'}" onerror="this.src='/share/images/default_icon.png';this.onerror=null"/>
+        <div class="userinfo">
+            <div class="like" onclick="return Click_like('{$type}','{$id}')">
+                {eq name="data.like_state" value="1"}<img class="zan" src="/share/images/dianzan.png"/>{/eq}
+                {eq name="data.like_state" value="0"}<img class="zan" src="/share/images/weidianzan.png"/>{/eq}
+                <div class="like_num" id="like_num">{$data.like}</div>
+            </div>
+            <div class="userline">
+                <span class="nickname">{$data.nickname}</span>
+                {eq name="data.sex" value="0"}<img class="sex" src="/share/images/bobo_personal_sex_girl.png"/>{/eq}
+                {eq name="data.sex" value="1"}<img class="sex" src="/share/images/bobo_personal_sex_boy.png"/>{/eq}
+                <span class="age">{$data.age} 岁</span>
+            </div>
+            <div class="userline">
+                <img class="addressimg" src="/share/images/address.jpg"/><div class="address">{$data.address}</div>
+            </div>
+        </div>
+        <div class="title"><span>{$data.labelname}</span>{$data.title}</div>
+    </div>
+    <div class="give">
+        <div class="send_give"><span onclick="ShowDiv('mydiv','fade');">帮TA打赏</span></div>
+        <div class="send_give_info"> </div>
+        <div class="give_num">已有<span>{$gold.gold_people_num|default='0'}</span>人为快乐宝贝打赏了红包,共<span>{$gold.gold_sum|default='0'}</span>Bo豆.</div>
+    </div>
+    <div class="item_name">
+        <ul>
+            <li id="tab_t1" onclick="return ChangIterm(1)" class="thisiterm">评论({$data.comments_count})</li>
+            <li id="tab_t2" onclick="return ChangIterm(2)"><span style="float: left">|</span>Ta的视频({$data.record_count})</li>
+            <li id="tab_t3" onclick="return ChangIterm(3)"><span style="float: left">|</span>今日疯传</li>
+        </ul>
+    </div>
+    <div class="favorable" id="tab_1">
+        <div id="send_comment">
+            {neq name="data.id" value="0"}<input type="text" id="comment_content" value="" placeholder="写评论"><div id="send_comment_button" onclick="return send_comment('{$type}','{$data.id}')">发送</div>{/neq}
+        </div>
+        {volist name="comment" id="vo" key="k"}
+        <div class="comments">
+            <div class="comments_info">
+                <div class="comments_userline">
+                    <span class="comments_time">{$vo.time|date="m-d H:i",###}</span>
+                    <img class="comments_icon" src="{$vo.pic|default='/share/images/default_icon.png'}" onerror="this.src='/share/images/default_icon.png';this.onerror=null"/>
+                    {eq name="vo.nickname" value=""}<span class="comments_nickname">匿名用户</span>{else /}
+                    <span class="comments_nickname">{$vo.nickname}</span>
+                    {eq name="vo.sex" value="0"}<img class="comments_sex" src="/share/images/bobo_personal_sex_girl.png"/>{/eq}
+                    {eq name="vo.sex" value="1"}<img class="comments_sex" src="/share/images/bobo_personal_sex_boy.png"/>{/eq}
+                    <span class="comments_age">{$vo.age}岁</span>
+                    {/eq}
+                </div>
+                <div class="content">
+                    <div class="comments_like"  onclick="return Comments_like('{$type}','{$vo.id}')">
+                        {eq name="vo.like_state" value="1"}<img class="comments_zans comments_zan{$vo.id}" src="/share/images/dianzan.png"/>{/eq}
+                        {eq name="vo.like_state" value="0"}<img class="comments_zans comments_zan{$vo.id}" src="/share/images/weidianzan.png"/>{/eq}
+                        <span id="comments_like_num{$vo.id}">{$vo.like}</span>
+                    </div>
+                    <div id="content{$k}" class="content_text">{$vo.content}</div>
+                    <div class="reply">{neq name="vo.reply_count" value="0"}{php}echo rand(0,6);{/php}小时前  {$vo.reply_count}条回复{/neq}</div>
+                </div>
+            </div>
+        </div>
+        {/volist}
+        <div class="more">
+            <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom.gif"></a>
+        </div>
+    </div>
+
+    <div class="favorable"  id="tab_2">
+        {volist name="my_record_list" id="vo"}
+        <div class="fb">
+            <div class="fb-lt">
+                <a href="{$vo.sharelink}"><img src="{$vo.big_pic|default='/share/images/default.jpg'}"  onerror="this.src='/share/images/default.jpg';this.onerror=null"></a>
+                <div class="fb-title"><p>{$vo.title|default='欢迎来到我的直播间!'}</p></div>
+            </div>
+        </div>
+        {/volist}
+        <div class="more">
+            <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom2.gif"></a>
+        </div>
+    </div>
+    <div class="favorable"  id="tab_3">
+        {volist name="all_record_list" id="vo"}
+        <div class="fb">
+            <div class="fb-lt">
+                <a href="{$vo.sharelink}"><img src="{$vo.big_pic|default='/share/images/default.jpg'}"  onerror="this.src='/share/images/default.jpg';this.onerror=null"></a>
+                <div class="fb-title"><p>{$vo.title|default='欢迎来到我的直播间!'}</p></div>
+            </div>
+        </div>
+        {/volist}
+        <div class="more">
+            <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom3.gif"></a>
+        </div>
+    </div>
+</div>
+<div id="fade" class="black_overlay"></div>
+<div id="mydiv" class="white_content">
+    <div class="reward_content">
+        <div id="close_btn"><img src="/share/images/bnt_close.png" onclick="close_reward();" /></div>
+        <div class="reward_list">
+            <ul>
+                <li><div class="reward_money" id="reward_money1" onclick="select_reward(1)">1元</div></li>
+                <li><div class="reward_money" id="reward_money2" onclick="select_reward(2)">2元</div></li>
+                <li><div class="reward_money" id="reward_money5" onclick="select_reward(5)">5元</div></li>
+                <li><div class="reward_money" id="reward_money10" onclick="select_reward(10)">10元</div></li>
+                <li><div class="reward_money" id="reward_money15" onclick="select_reward(15)">15元</div></li>
+                <li><div class="reward_money" id="reward_money20" onclick="select_reward(20)">20元</div></li>
+            </ul>
+        </div>
+        <div class="reward_input">
+            <input type="number" id="reward_input_num" value="" placeholder="选择或输入金额" />元
+        </div>
+        <div id="sure_btn">
+            <img src="/share/images/shang.png" onclick="go_pay();" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/share/js/common.js"></script>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+    $("video").attr("webkit-playsinline","true");
+    $("video").attr("playsinline","true")
+//    $("video").attr("controls","controls")
+//    $("video").attr("width","640")
+//    $("video").attr("height","480")
+</script>
+</body>
+<script type="text/javascript">
+    var btn = 1;
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+
+    $(document).ready(function(){
+        setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+            $('#player').hide();
+                SewisePlayer.setup({
+                server: "{$data.livetype}",
+                type: "{$data.type}",
+                autostart: "false",
+                poster:"{$data.bigpic}",
+                "{$data.urltype}":"{$data.url}",
+                skin:"vodFoream",
+                title:"",
+                lang:"zh_CN",
+                buffer:1,
+                topbardisplay:'disable',
+                claritybutton: 'disable'
+            }, "player");
+            $('#player').show();
+        }, 300);
+    });
+    $("#reward_input_num").focus(function(){
+        $('.reward_money').css('background-image','url(/share/images/reward_btn_bg.png)');
+    });
+    function select_reward(id) {
+        $('.reward_money').css('background-image','url(/share/images/reward_btn_bg.png)');
+        $('#reward_money'+id).css('background-image','url(/share/images/reward_btn_bg_a.png)');
+        $("#reward_input_num").val(id);
+    }
+    function go_pay() {
+        var num = parseFloat($("#reward_input_num").val());
+        if(num){
+            if(num < 0.1 || parseInt(num*100)%10 != 0 ){
+                alert('有单位为分的金额无法转换成Bo豆,请不要输入单位为分或者小于1分的金额!');
+                return;
+            }
+        }
+        btn = 2 ;
+        CloseDiv('mydiv','fade');
+    }
+    function close_reward() {
+        btn = 1 ;
+        CloseDiv('mydiv','fade');
+    }
+    //弹出隐藏层
+    function ShowDiv(show_div,bg_div){
+        $('#player').hide();
+        document.getElementById(show_div).style.display='block';
+        document.getElementById(bg_div).style.display='block' ;
+        var bgdiv = document.getElementById(bg_div);
+        bgdiv.style.width = document.body.scrollWidth;
+        $("#"+bg_div).height($(document).height());
+    }
+    //关闭弹出层
+    function CloseDiv(show_div,bg_div)
+    {
+        switch (btn){
+            case 1:
+                $('#player').show();
+                break;
+            case 2:
+                var reward_money = 1;
+                if($("#reward_input_num").val() != ''){
+                    reward_money = $("#reward_input_num").val();
+                }else{
+                    alert('请选择或者输入金额');
+                    return;
+                }
+                window.location.href="/race/pay/wxf?room_id={$id}&money="+reward_money;
+                break;
+        }
+        document.getElementById(show_div).style.display='none';
+        document.getElementById(bg_div).style.display='none';
+    }
+    //通过config接口注入权限验证配置
+    wx.config({
+        debug : false,
+        appId : 'wx190ef9ba551856b0',
+        timestamp : "{$timestamp}",
+        nonceStr : "1234567890123",
+        signature : "{$signature}",
+        jsApiList : ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo']
+    });
+    wx.ready(function(){
+        var s_title = "{$data.nickname|default='怪兽bobo'}视频分享",  // 分享标题
+            s_link = "{$share_url}",  // 分享链接
+            s_desc = "{$data.title|default='怪兽bobo'}#快来怪兽BOBO#{$data.nickname|default='怪兽bobo'}的视频秀!好萌,好有才",
+            s_imgUrl = "{$data.bigpic|default='https://bobo.yimwing.com/share/images/logo.jpg'}"; // 分享图标
+        //朋友圈
+        wx.onMenuShareTimeline({
+            title: s_title, // 分享标题
+            link: s_link, // 分享链接
+            imgUrl: s_imgUrl, // 分享图标
+            success: function () {
+            },
+            cancel: function () {
+            }
+        });
+        //发送给好友
+        wx.onMenuShareAppMessage({
+            title: s_title, // 分享标题
+            desc: s_desc, // 分享描述
+            link: s_link, // 分享链接
+            imgUrl: s_imgUrl, // 分享图标
+            type: '', // 分享类型,music、video或link，不填默认为link
+            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            success: function () {
+            },
+            cancel: function () {
+
+            }
+        });
+        //QQ好友
+        wx.onMenuShareQQ({
+            title: s_title, // 分享标题
+            desc: s_desc, // 分享描述
+            link: s_link, // 分享链接
+            imgUrl: s_imgUrl, // 分享图标
+            success: function () {
+            },
+            cancel: function () {
+            }
+        });
+        //腾讯微博
+        wx.onMenuShareWeibo({
+            title: s_title, // 分享标题
+            desc: s_desc, // 分享描述
+            link: s_link, // 分享链接
+            imgUrl: s_imgUrl, // 分享图标
+            success: function () {
+            },
+            cancel: function () {
+            }
+        });
+    });
+</script>
+
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>品牌馆申请</title>
+    <link rel="stylesheet" type="text/css" href="/skin/css/apply.css">
+    <script type="text/javascript" src="/skin/js/jquery-2.0.3.min.js"></script>
+</head>
+<body>
+<div class="main">
+    <div class="info_line">
+        <div class="info_top_title">头　像</div>
+        <div class="info_top_content">
+            <img id="pic" src="{$user.pic|default='/public/toppic/bobo_share.png'}" onerror="this.src='/public/toppic/bobo_share.png';this.onerror=null"/>
+        </div>
+    </div>
+    <hr>
+    <div class="info_line">
+        <div class="form_line_title">机构名称:</div>
+        <input class="form_line_input" type="text" id="name" name="name" placeholder="机构名">
+    </div>
+    <div class="info_line">
+        <div class="form_line_title">联系人:</div>
+        <input class="form_line_input" type="text" id="linkman" name="linkman" placeholder="联系人称呼">
+    </div>
+    <div class="info_line">
+        <div class="form_line_title">联系方式:</div>
+        <input class="form_line_input" type="number" id="phone" name="phone"  placeholder="请输入正确的联系方式">
+    </div>
+    <div class="info_line">
+        <div class="form_line_title">实体地址:</div>
+        <input class="form_line_input" type="text" id="address" name="address" placeholder="需要正确填写地址">
+    </div>
+
+    <div class="info_line">
+        <div class="form_line_title">机构简介:</div>
+        <textarea class="form_line_textarea" id="info" name="info"></textarea>
+    </div>
+    <div class="info_line">
+        <div class="form_line_tip">
+		<p>提交申请后客服将于3日内与您联系沟通认证</p>
+		<p>届时请提供认证的相关材料</p>
+		</div>
+    </div>
+    <div class="info_line">
+        <div class="submit" onclick="data_summit();">确认提交申请</div>
+    </div>
+    <input type="hidden" id="uid" name="uid" value="{$user.uid}">
+    <div class="info_line">
+        <br /><br /><br />
+    </div>
+</div>
+<div id="fade" class="black_overlay" onclick="CloseDiv('mydiv','fade')"></div>
+<div id="mydiv" class="white_content">
+    <div class="tip_content">
+        <div id="close_btn"><img src="/share/images/bnt_close.png" onclick="CloseDiv('mydiv','fade');" /></div>
+        <div class="tip_title">提交申请成功</div>
+        <div class="tip_title_text">客服将于3日内与您联系沟通认证,届时请提供认证需要的相关资料</div>
+        <div class="tip_title_pic"><img src="/skin/images/tip_title_pic.png" onerror="this.src='/share/images/default.jpg';this.onerror=null"/></div>
+        <div id="sure_btn" class="sure_btn" onclick="CloseDiv('mydiv','fade');">确 定</div>
+    </div>
+</div>
+<div id="loading"><img src="/race/images/loading.gif" /></div>
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+
+    function data_summit() {
+//        if(window.android){
+//            window.android.jsFinishView();
+//        }else if(window.webkit){
+//            window.webkit.messageHandlers.HtmlDict.postMessage({'jsFinishView':true});
+//        }
+        var uid = $("#uid").val();
+        var name = $("#name").val();
+        if (isNull(name)) {
+            alert("机构名不能为空");
+            $('#name').focus();
+            return false;
+        }
+        var linkman = $("#linkman").val();
+        if (isNull(linkman)) {
+            alert("联系人不能为空");
+            $('#linkman').focus();
+            return false;
+        }
+        var phone = $("#phone").val();
+        if (!isPhone(phone)) {
+            alert('请输入有效的手机号码！');
+            $('#phone').focus();
+            return false;
+        }
+        var address = $("#address").val();
+        if (isNull(address)) {
+            alert("地址不能为空");
+            $('#name').focus();
+            return false;
+        }
+        var info = $("#info").val();
+        if (isNull(info)) {
+            alert("简介不能为空");
+            $('#info').focus();
+            return false;
+        }
+        $.ajax({
+            cache: false,
+            async: false,
+            type:"POST",
+            url:"/index/brandshop/apply_summit",
+            data:{'uid':uid,'name':name,'phone':phone,'linkman':linkman,'address':address,'info':info},
+            datatype: "json",
+            beforeSend:function(){$("#loading").show();},
+            success:function(data){
+                if(data.code== 1){
+                    $("#loading").hide();
+                    ShowDiv('mydiv','fade');
+                    return false;
+                }else{
+                    $("#loading").hide();
+                    alert(data.message);
+                    return false;
+                }
+            }   ,
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                $("#loading").hide();
+                alert('出错了,请重新尝试提交!');
+            }
+        });
+
+    }
+    function isNull(str) {
+        if (str == "") return true;
+        var regu = "^[ ]+$";
+        var re = new RegExp(regu);
+        return re.test(str);
+    }
+
+    function isPhone(phone) {
+        var myreg = /^((1)+\d{10})$/;
+        return myreg.test(phone);
+    }
+
+    //弹出隐藏层
+    function ShowDiv(show_div,bg_div){
+        document.getElementById(show_div).style.display='block';
+        document.getElementById(bg_div).style.display='block' ;
+        var bgdiv = document.getElementById(bg_div);
+        bgdiv.style.width = document.body.scrollWidth;
+        $("#"+bg_div).height($(document).height());
+    }
+    //关闭弹出层
+    function CloseDiv(show_div,bg_div)
+    {
+        document.getElementById(show_div).style.display='none';
+        document.getElementById(bg_div).style.display='none';
+        setTimeout(function(){
+            window.webkit.messageHandlers.HtmlDict.postMessage({'jsFinishView':true});
+        },100);
+        setTimeout(function(){
+            window.android.jsFinishView();
+        },100);
+    }
+</script>
+</html>

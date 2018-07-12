@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$race_res.title}</title>
+    <link rel="stylesheet" type="text/css" href="/race/css/share.css?v=1.3">
+    <link rel="stylesheet" href="/race/css/swiper.min.css">
+    <script type="text/javascript" src="/race/js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/race/js/Adaptive.js"></script>
+    <script type="text/javascript" src="/race/js/share.js"></script>
+    <script>
+    </script>
+</head>
+
+<body>
+<header>
+    <div class="logo">
+        <img src="/share/images/logo.jpg">
+    </div>
+    <div class="button">
+        <a href="http://apk.guaishoubobo.com/downloads/">
+            <img src="/share/images/button.gif">
+        </a>
+    </div>
+</header>
+
+<div class="all">
+    <div class='title'>{$race_res.title}</div>
+    <div class='banner'><img src='{$race_res.banner}' /></div>
+    <!-- 详情介绍 -->
+    <div class="div_intr">
+        <div class="div_intr_fir">
+            <img class="div_intr_fir_hPic" src="{$userpic}"/>
+            <!--封装成button-->
+            <div class="div_intr_fir_bt">
+                <a class="div_intr_fir_detBt" id="div_intr_fir_detBt2" href="/race/index/detail/type/race/ds_id/{$race_res.id}">大赛简介 ></a>
+            </div>
+        </div>
+        <div class="div_intr_sec">
+            <div class="div_intr_sec_intrT">{$race_res.summary}</div>
+        </div>
+    </div>
+
+    <!-- 大赛分区,倒计时,邀请&参加 -->
+    <div class="div_part">
+        <!--封装成button-->
+        <div class="div_part_cutdT">
+            <p class="div_part_cutdT_left">报名时间:{$race_res.register_start_time|date='Y-m-d H:i:s',###}-{$race_res.register_end_time|date='Y-m-d H:i:s',###}</p>
+            <p class="div_part_cutdT_left">参赛时间:{$race_res.start_time|date='Y-m-d H:i:s',###}-{$race_res.end_time|date='Y-m-d H:i:s',###}</p>
+        </div>
+        <div class="div_part_invOrIn">
+            {eq name="state" value="1"}<button class="div_part_invOrIn_taInBt" id="takeInId3">未开始</button>{/eq}
+            {eq name="state" value="2"}<button class="div_part_invOrIn_taInBt" id="takeInId" onclick="takeInBtClicked({$qd_id})">我要参加</button>{/eq}
+            {eq name="state" value="3"}<button class="div_part_invOrIn_taInBt" id="takeInId2">已结束</button>{/eq}
+        </div>
+    </div>
+</div>
+
+<div class="category">{eq name="state" value="1"}大赛热门视频{else/}大赛演示视频{/eq}</div>
+<!-- 纵向的video展示 -->
+<div class="items" id="items2">
+    <script>
+        creatVideos("{$race_res.id}" , "{$state}");
+    </script>
+</div>
+<div class="more">
+    <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom3.gif"></a>
+</div>
+</body>
+<script type="text/javascript" src="/race/js/Adaptive.js"></script>
+</html>

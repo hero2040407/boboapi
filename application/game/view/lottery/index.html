@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>幸运大转盘</title>
+    <link rel="stylesheet" type="text/css" href="/lottery/css/style.css">
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+    <script type="text/javascript" src="/lottery/js/jQueryRotate.2.2.js"></script>
+    <script type="text/javascript" src="/lottery/js/jQuery.textSlider.js"></script>
+</head>
+<body>
+<div class="main">
+    <div class="lottery">
+        <div id="disk"></div>
+        {volist name="roulette_list" id="vo"}
+        <div class="roulette_div" id="roulette_{$vo.id}"><div class="roulette_pic"><img src="{$vo.pic}" class="roulette_img"></div><div class="roulette_title">{$vo.title}</div></div>
+        {/volist}
+        <div id="start"><img id="startbtn" src="/lottery/images/start.png" style="cursor: pointer; transform: rotate(0deg);"></div>
+    </div>
+    <div class="my_bo"></div>
+    <div class="lottery_btn">
+        <div class="can_lottery">
+        {eq name="can_lottery" value="1"}
+            <img id="lottery_btn" src="/lottery/images/bnt_choujiang@2x.png" onclick="lottery({$uid},'{$userlogin_token}');" />
+        {else /}
+            <img src="/lottery/images/bnt_weikaiqi@2x.png"/>
+        {/eq}
+        </div>
+    </div>
+
+    <div class="give_list_title"><span class="div_title">幸运大转盘中奖名单</span></div>
+
+    <div class="scrollDiv" id="scrollDiv">
+        <div class="scrollText">
+            <ul>
+                {volist name="all_prize" key="k" id="vo"  mod="2" }
+                <li {eq name="mod" value="1"}class="list_white" {else /}class="list_red"{/eq}> 恭喜 <span class="prize_nickname">{$vo.nickname}</span> 获得 <span class="prize_nickname">{$vo['bonus_name']}</span></li>
+                {/volist}
+            </ul>
+        </div>
+        <div class="scrollText2">&nbsp;&nbsp;累计<span id="all_count">{$all_prize_count}</span>位BO友中奖!</div>
+    </div>
+
+    <div class="give_list_title">
+        <img src="/lottery/images/bobo.png"/>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span class="div_title">活动说明</span>
+    </div>
+
+    <div class="div_readme">
+        <p>1.每连续签到7次可以获得一次转动幸运大转盘次数;</p>
+        <p>2.幸运大转盘获得BO币奖励，可以在财富中心查看;</p>
+        <p>3.幸运大转盘获得实物奖励，请到我的-礼品中心兑换。</p>
+        <p>4、本活动与苹果公司无关。</p>
+    </div>
+
+    <div class="div_bottom">
+        本活动最终解释权由杭州怪兽岛网络科技有限公司所有
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+
+    $(document).ready(function(){
+        $("#scrollDiv").textSlider({line:1,speed:100,timer:1500});
+    });
+</script>
+<script type="text/javascript" src="/lottery/js/common.js"></script>
+</html>

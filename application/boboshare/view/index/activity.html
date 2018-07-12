@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$activity.title}-怪兽BoBo活动分享</title>
+    <link rel="stylesheet" type="text/css" href="/share/css/activity.css">
+</head>
+<body>
+
+<header>
+    <div><img src="/share/images/logo2.jpg" /></div>
+    <div class="button">
+        <a href="http://apk.guaishoubobo.com/downloads/"><img src="/share/images/button2.gif" /></a>
+    </div>
+    <div>
+        <div class="wrap" id='wrap'>
+            <ul id="pic">
+                {volist name="bigpic_list" id="vo" key="k"}
+                <li><img src="{$vo.picpath}" alt="" /></li>
+                {/volist}
+            </ul>
+            <ol id="list">
+                {volist name="bigpic_list" id="vo" key="k"}
+                <li {eq name="type" value="1"}class="on"{/eq}>{$k}</li>
+                {/volist}
+            </ol>
+        </div>
+    </div>
+    <div class="ac_titles">
+        <div class="ac_title1">
+            <div id="ac_title">{$activity.title}</div>
+            <div id="ac_people"><img src="/share/images/xin.jpg" alt="" />评论:{$activity.count}条</div>
+        </div>
+    </div>
+</header>
+
+<div class="contain">
+    <p style="height:10px;"></p>
+    <div id="ac_info">
+        {$activity.info}
+    </div>
+
+    <div class="favorable">
+        {volist name="push" id="vo" key="k"}
+        <div class="fb">
+            <div class="fb-lt">
+                <div class="user">
+                    <img class="icon" src="{$videodata.pic|default='/share/images/default_icon.png'}" />
+                    <div class="userinfo">
+                        <div>
+                            <span id="nickname">{$vo.nickname}</span>
+                            {eq name="$vo.sex" value="0"}<img class="sex" src="/share/images/nv.png" />{/eq}
+                            {eq name="$vo.sex" value="1"}<img class="sex" src="/share/images/nan.png" />{/eq}
+                            <span id="age">{$vo.age}岁</span>
+                            <span id="like"><img class="shou1" src="/share/images/yan.jpg" /> {$vo.people}人在围观</span>
+                        </div>
+                        <div>
+                            <div id="sqlz">
+                                 <img src="{$vo.label}" />
+                             </div>
+                            <div id="address"><img class="address" src="/share/images/address.jpg" />{$vo.address}</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="{$vo.sharelink}" ><img class="bigpic" src="{$vo.bigpic|default='/share/images/default.jpg'}"></a>
+                <div id="pushtitle">{$vo.title}</div>
+            </div>
+        </div>
+        {/volist}
+    </div>
+
+    <div class="more">
+        <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom.gif"></a>
+    </div>
+
+</div>
+<script type="text/javascript">
+    var content = document.getElementById("ac_info").innerHTML;
+    content = content.replace(/\n/g, '_@').replace(/\r/g, '_#');
+    content = content.replace(/_#_@/g, '<br/>');//IE7-8
+    content = content.replace(/_@/g, '<br/>');//IE9、FF、chrome
+    content = content.replace(/\s/g, '&nbsp;');//空格处理
+    content = content.replace(/【/g,"<p style='color:#F9A336'>【");
+    content = content.replace(/】/g,"】</p>");
+    document.getElementById("ac_info").innerHTML = content;
+</script>
+<script type="text/javascript">
+    window.onload=function(){
+        var wrap=document.getElementById('wrap'),
+                pic=document.getElementById('pic').getElementsByTagName("li"),
+                list=document.getElementById('list').getElementsByTagName('li'),
+                index=0,
+                timer=null;
+
+        // 定义并调用自动播放函数
+        timer = setInterval(autoPlay, 2000);
+
+//        // 鼠标划过整个容器时停止自动播放
+//        wrap.onmouseover = function () {
+//            clearInterval(timer);
+//        }
+
+//        // 鼠标离开整个容器时继续播放至下一张
+//        wrap.onmouseout = function () {
+//            timer = setInterval(autoPlay, 2000);
+//        }
+        // 遍历所有数字导航实现划过切换至对应的图片
+        for (var i = 0; i < list.length; i++) {
+            list[i].onmouseover = function () {
+                clearInterval(timer);
+                index = this.innerText - 1;
+                changePic(index);
+            };
+        };
+
+        function autoPlay () {
+            if (++index >= pic.length) index = 0;
+            changePic(index);
+        }
+
+        // 定义图片切换函数
+        function changePic (curIndex) {
+            for (var i = 0; i < pic.length; ++i) {
+                pic[i].style.display = "none";
+                list[i].className = "";
+            }
+            pic[curIndex].style.display = "block";
+            list[curIndex].className = "on";
+        }
+
+    };
+
+</script>
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

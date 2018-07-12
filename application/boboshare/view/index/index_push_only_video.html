@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$data.nickname|default='怪兽bobo'}的直播分享</title>
+    <link rel="stylesheet" type="text/css" href="/share/css/style.css?v=1.2">
+    <script type="text/javascript" src="/share/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/share/sewise.player.min.js"></script>
+</head>
+
+<body>
+
+    <div class="banner">
+        {if condition="$data.event == 'publish_done'"}
+        <div class="push_done"><img src="/share/images/push_off_logo.png" ><p>{$data.nickname|default='怪兽bobo'}的直播视频已经结束,下载怪兽BoBo可以观看TA的所有视频@^^@</p></div>
+        {else /}
+        <div id="player" class ="movie_frame">
+            <object name="sewise_player" width="100%" height="100%" id="player{$k}" data="/share/flash/SewisePlayer.swf" type="application/x-shockwave-flash">
+                <param name="allowfullscreen" value="true">
+                <param name="wmode" value="transparent">
+                <param name="allowscriptaccess" value="always">
+                <param name="flashvars" value="autoStart=false&programId=&lang=zh_CN&logo=&buffer=1&type=flv&serverPath=&serverApi=ServerApi.execute&skin=/share/flash/skins/vodFoream.swf&title=&draggable=true&published=0&videoUrl={$data.url}&startTime=0&poster={$data.bigpic}&flagDatas=&videosJsonUrl=&adsJsonData=&statistics=&customDatas=&playerName=怪兽BoBo&copyright=(C) All right reserved the SEWISE inc 2011-2014&playerVersion=Version: 1.0.0&buildDate=Build: 2016.7.28 11:00&clarityButton=disable&timeDisplay=enable&controlBarDisplay=enable&topBarDisplay=disable&customStrings=&volume=0.6&key=">
+            </object>
+        </div>
+
+        {/if}
+    </div>
+
+<div style="width: 100%;height: 20rem;"></div>
+</body>
+<script type="text/javascript">
+
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+
+
+</script>
+</html>
