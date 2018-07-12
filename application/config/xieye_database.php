@@ -17,7 +17,7 @@ return (file_get_contents( dirname(__FILE__) . '/xieye_id.php') == '88' ) ?
     // 数据库类型
     'type' => 'mysql',
     // 服务器地址
-    'hostname' => '10.0.0.88',
+    'hostname' => '192.168.31.241',
     // 'hostname' => '10.0.0.200',
     // 数据库名
     'database' => 'bobo',
@@ -25,7 +25,7 @@ return (file_get_contents( dirname(__FILE__) . '/xieye_id.php') == '88' ) ?
     'username' => 'root',
     // 密码
     // 'password' => 'ChenyueAbc.123',
-    'password' => 'xf1980',
+    'password' => 'ChenyueAbc.123',
     
     // 端口
     'hostport' => '3306',
@@ -62,7 +62,7 @@ return (file_get_contents( dirname(__FILE__) . '/xieye_id.php') == '88' ) ?
     'type' => 'mysql',
     // 服务器地址
     // 'hostname' => '10.0.0.88',
-    'hostname' => '192.168.1.241',
+    'hostname' => '192.168.31.241',
     // 数据库名
     'database' => 'bobo',
     // 用户名

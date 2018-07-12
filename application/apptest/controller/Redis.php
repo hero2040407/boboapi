@@ -1,9 +1,9 @@
 <?php
 namespace app\apptest\controller;
 use think\Config;
-
+use BBExtend\Sys;
 // require(  realpath(APP_PATH).  '/../extend/simpletest/autorun.php');
-
+use BBExtend\DbSelect;
 
 /**
  * 
@@ -12,8 +12,19 @@ use think\Config;
  */
 class Redis {
     
+    
+    public function mysqltest(){
+        //$db = Sys::get_container_dbreadonly();
+        $db = Sys::get_container_db_eloquent();
+        
+        
+        $sql="select count(*) from bb_users";
+        echo DbSelect::fetchOne($db, $sql);
+        
+    }
+    
     public function flushall() {
-      
+      echo 11;
 //         $redis = $this->getredis();
 //         $redis->flushAll();
         

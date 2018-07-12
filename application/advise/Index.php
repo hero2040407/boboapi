@@ -22,7 +22,11 @@ class Index
     }
     
     
-    
+    public function type_list(){
+        $db = Sys::get_container_dbreadonly();
+        $sql="";
+        
+    }
    
     
     

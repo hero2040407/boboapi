@@ -22,27 +22,28 @@ class Dict {
                 ) {
             exit;
         }
+       
         $db = Sys::get_container_db_eloquent( ); // 这是数据库连接
         
-        if (Sys::get_machine_name()=='200'){
+//         if (Sys::get_machine_name()=='200'){
             
-            $db = new Manager ();
-            $db->addConnection ( [
-                    'driver' => 'mysql',
-                    'host' => '192.168.1.240',
-                    'database' => 'bobo',
-                    'username' => 'root',
-                    'password' => 'xf1980',
-                    'charset' => 'utf8mb4',
-                    'collation' => 'utf8mb4_unicode_ci',
-                    'prefix' => ''
-            ] );
-            $db->setAsGlobal ();
-            $db->bootEloquent ();
+//             $db = new Manager ();
+//             $db->addConnection ( [
+//                     'driver' => 'mysql',
+//                     'host' => '127.0.0.1',
+//                     'database' => 'bobo',
+//                     'username' => 'root',
+//                     'password' => '',
+//                     'charset' => 'utf8mb4',
+//                     'collation' => 'utf8mb4_unicode_ci',
+//                     'prefix' => ''
+//             ] );
+//             $db->setAsGlobal ();
+//             $db->bootEloquent ();
             
-        }
+//         }
         
-        
+      
         
         $db_name = "bobo"; // 这是数据库名
         
@@ -55,7 +56,7 @@ order by table_name asc
         $table_arr = DbSelect::fetchAll( $db, $sql );
         
         $new =[];
-        
+    //    echo 12;exit;
         
         // 谢烨，这里 的type=race表示专用的大赛列表 html数据字典。
         $type_race_describe='';

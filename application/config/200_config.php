@@ -221,7 +221,7 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
-    'REDIS_HOST'=>'192.168.1.241',
+    'REDIS_HOST'=>'127.0.0.1',
     'REDIS_PORT'=>6379,
     'REDIS_AUTH'=>'ChenyueAbc.123',
 ];
