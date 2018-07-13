@@ -85,9 +85,10 @@ class Index
         }
         
         if ($title) {
-            $title = \BBExtend\common\Str::explode($string);
-            
-            
+            $title = \BBExtend\common\Str::like($title);
+            if ($title) {
+                $paginator =  $paginator->where( "title like '%{$title}%'"  );
+            }
         }
         
         
