@@ -55,8 +55,6 @@ class Advise extends Model
             
         }
         
-        $sql="select * from  bb_advise_type where id=?";
-        $type_name = $db->fetchOne($sql,[ $this->type ]);
         
         return [
            'address' =>$this->address,

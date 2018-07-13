@@ -310,6 +310,8 @@ limit {$startid},{$length}
     public function upload_record()
     {
         
+        $time_length_second = input('?post.time_length_second')?(int)input('post.time_length_second'):0;
+        
         $uid = input('?post.uid')?(int)input('post.uid'):0;
         $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。
         $video_path = input('?post.video_path')?(string)input('post.video_path'):'';
@@ -403,6 +405,8 @@ limit {$startid},{$length}
         $recordDB['audit'] = 0;//未审核
         $recordDB['longitude'] = (float)$longitude; //经度
         $recordDB['latitude'] = (float)$latitude; //纬度
+        
+        $recordDB['time_length_second'] =$time_length_second;// xieye 201807
         
         $recordDB['theme_title'] = $theme_title;
         $theme_id =  \BBExtend\model\Theme::get_and_create_id($theme_title);
