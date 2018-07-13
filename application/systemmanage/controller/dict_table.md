@@ -11,4 +11,5 @@
 | ds_user_log |  用户参赛动态日志表 |  
 | bb_advise |  通告表 |  
 | bb_advise_type |  通告类型表 |  
+| bb_users_updates_media |  用户动态内容表 |  
 
