@@ -37,8 +37,8 @@ class Advise extends Model
                 'reward' => '报酬面议',
                 'title' =>$this->title,
                 'id'=>$this->id,
-                'pic' =>$this->pic,
-                
+                'pic'  => $this->pic,
+                'pic2' => $this->pic2,
                 
         ];
     }

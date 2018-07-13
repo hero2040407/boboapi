@@ -107,6 +107,7 @@ class Dochtml
       self::get_href('试镜卡列表').
       self::get_href('签约童星查询').
       self::get_href('通告类型列表').
+      self::get_href('通告列表').
       
       
       '
