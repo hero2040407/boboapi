@@ -13,7 +13,6 @@ use BBExtend\DbSelect;
  */
 class Updates
 {
-            
     
     
     

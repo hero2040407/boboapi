@@ -43,7 +43,10 @@
 | bb_toppic | linktype | sort_id<20时，0 跳转网址, 1是学啥 , 2是邀约, 3 是玩啥， 4 大赛，11导师申请页，12vip6个成就页面，13机构申请页  |
 | bb_users |email  |  谢烨201805，含义修改，原先未用，现改成最后登录ip |  
 | bb_users |permissions  |  权限 1:正常用户2:管理员3:特邀用户,4 , 10 ,  11 ,  99:机器人 |  
-| bb_users_card | status |  1费用未支付，2正在做，3全部完成,4模卡支付费用退回且撤单 |  
+| bb_users_card | status |  1费用未支付，2正在做，3全部完成,4模卡支付费用退回且撤单 |
+| bb_users_card | pic |  最终完成的模卡图片 |
+| bb_users_card | pic_width |  最终完成的模卡图片宽度，单位px |
+| bb_users_card | pic_height |  最终完成的模卡图片高度，单位px |
 | bb_users_starmaker | detail_img | 单独详情页，顶部图片，逗号分隔  |  
 | bb_vip_application_log | status |  0未审核，1认证费50元已成功缴纳，2已经填写申请资料，3已经完善了个人资料，4导师面试通过，5导师面试不合格，6最终管理员审核通过，7、非常特殊，用户点击完善资料后生成，可能是面试通过，也可能是当时用户已满足6个条件。<br> |  
 | bb_vip_application_log | admin_name | status=4or5时是导师名称,或stats=6时是管理员名称  |  
