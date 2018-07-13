@@ -718,6 +718,20 @@ and exists (
         return $success;
     }
     
+    
+    /**
+     * 是否签约
+     */
+    public function is_sign()
+    {
+        $user = $this->get_tool_info();
+        if ($user && $user->has_sign==1 )
+            return true;
+        else {
+            return 0;
+        }
+    }
+    
     /**
      * 是否绑定手机号
      * @return bool
