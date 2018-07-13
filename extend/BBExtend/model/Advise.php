@@ -42,11 +42,17 @@ class Advise extends Model
        // audition_card_type
        
         $audition_card_name='';
+        $audition_card_type=0;
+        
         
         if ($this->audition_card_type) {
-            $sql="select name from  bb_audition_card_type where id=?";
-            $card_name = $db->fetchOne($sql,[ $this->audition_card_type ]);
-            $card_name=strval($card_name);
+            $sql="select name,bigtype from  bb_audition_card_type where id=?";
+            $row = $db->fetchRow($sql,[ $this->audition_card_type ]);
+            
+            //$card_name = $db->fetchOne($sql,[ $this->audition_card_type ]);
+            $card_name=strval($row['name']  );
+            $audition_card_type=intval( $row['bigtype'] );
+            
         }
         
         $sql="select * from  bb_advise_type where id=?";
@@ -65,7 +71,7 @@ class Advise extends Model
                 'join_count' =>$join_count,
                 'auth' =>$this->auth,
                 'card_name' =>$card_name,
-                'card_id'   => $this->audition_card_type,
+                'card_type'   => $audition_card_type,
         ];
     }
     
