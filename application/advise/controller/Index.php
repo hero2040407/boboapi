@@ -14,7 +14,7 @@ class Index
 {
     public function index($startid=0,$length=10,$uid=10000,$auth=-1,$address='',
             $min_age=-1,$max_age=-1,
-            $sex=-1,$card_type=-1,$type=-1
+            $sex=-1,$card_type=-1,$type=-1,$title=''
             
             )
     {
@@ -83,6 +83,13 @@ class Index
             $type =intval($type);
             $paginator =  $paginator->where( "type", $type );
         }
+        
+        if ($title) {
+            $title = \BBExtend\common\Str::explode($string);
+            
+            
+        }
+        
         
         
         $paginator = $paginator
