@@ -85,7 +85,9 @@ class Index
         }
         
         
-        $paginator = $paginator->orderBy('id', 'desc')->paginate($length, ['*'],'page',$page);
+        $paginator = $paginator
+        ->orderBy( "is_recommend","desc" )
+        ->orderBy('id', 'desc')->paginate($length, ['*'],'page',$page);
      //   dump($paginator);
         
         $new=[];
