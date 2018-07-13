@@ -40,12 +40,23 @@ class AuditionCardType extends Model
             $time_info = "剩余{$time_info}天截止报名";
         }
         
+        $advise_id=0;
+        if ($this->bigtype>2) {
+            $db = Sys::get_container_dbreadonly();
+            $sql="select id from bb_advise where audition_card_type =? limit 1";
+            $advise_id = $db->fetchOne($sql,[$this->id]);
+            
+            
+        }
+        
         return [
            'title' =>$this->name,
                 'summary'=> $this->summary,
                 'id'=>$this->id,
                 'time_info' =>$time_info,
                 'address' =>$address,
+                'bigtype' =>$this->bigtype,
+                'advise_id'=>$advise_id,
         ];
     }
     

@@ -27,7 +27,7 @@ class AuditionCard
        $length = intval($length);
        
        $sql="select id from bb_audition_card_type 
-where exists(
+where bigtype<3 or  exists(
   select 1 from bb_advise 
    where bb_advise.audition_card_type = bb_audition_card_type.id
 )

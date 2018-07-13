@@ -10,7 +10,8 @@
 | backstage_admin | phone | 手机号，但渠道是不需要这个字段的。为空 |
 | backstage_auth | roles | 只能是admin,proxy,channel中的一个，不能是多个。 |
 | bb_advise | pic | banner,图片大，横着放。 |
-| bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定账号；6、已使用；11、已注销 |  
+| bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定账号；6、已使用；11、已注销 | 
+| bb_audition_card_type | bigtype |   1影视，2娱乐，3专用试镜卡 | 
 | bb_bottom_bar_pic | color_2x_url | 图片网址，彩色2x。注意：同一规则id下文件名绝对不可以重名，无论什么目录，而不同规则id下的文件名可以重名。下同。   |  
 | bb_bottom_bar_rule | version | 后台需保证本表所有的version字段值保持一致，每修改一次任意规则的zip文件，所有行的version都加1。另外，添加删除修改规则表，也需要最后把所有行的version加1   |  
 | bb_brandshop | rongyu | 荣誉，纯文字，可能有换行符  |  
