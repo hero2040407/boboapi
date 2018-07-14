@@ -60,7 +60,10 @@ class Updates
             }
             
             $return = [
-                   'uid'  => $record->uid, 
+                   'user' =>[
+                           
+                   ],
+                   //'uid'  => $record->uid, 
                    'style'=>$style,
                    'video'=>[
                            

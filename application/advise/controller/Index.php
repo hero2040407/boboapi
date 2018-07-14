@@ -80,8 +80,16 @@ class Index
         }
         
         if ($type!=-1) {
-            $type =intval($type);
-            $paginator =  $paginator->where( "type", $type );
+//             $type =intval($type);
+            
+            $temp  = array();
+            $temp2 = explode(',', $type);
+            foreach ($temp2 as $v) {
+                $temp [] = intval($v);
+            }
+            $temp = implode(',',$temp);
+            
+            $paginator =  $paginator->where( "type in ( {$temp} )" );
         }
         
         if ($title) {
