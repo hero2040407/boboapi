@@ -31,9 +31,9 @@ class Updates
         }
         
         if ( $style == 3 || $style==5 ) {
-            Sys::debugxieye($pic_json );
+          //  Sys::debugxieye($pic_json );
             $pic_arr = json_decode($pic_json,1  );
-            Sys::debugxieye($pic_arr );
+         //   Sys::debugxieye($pic_arr );
             
             UserUpdates::insert_pic($uid, $word, $pic_arr);
         }
@@ -42,7 +42,12 @@ class Updates
     }
     
     
-    
+    public function detail($updates_id)
+    {
+        $updates = UserUpdates::find( $updates_id );
+        $temp = $updates->list_info();
+        return ['code'=>1, 'data' => $temp ];
+    }
     
     //动态,1发现，2星动态。
     public function index($uid=10000,$startid=0, $length=10,$type=1)

@@ -28,6 +28,10 @@ class UserUpdates extends Model
         $result['comment_count']= $this->comment_count;
         $result['click_count']= $this->click_count;
         $result['like_count']= $this->like_count;
+        $result['style']= $this->style;
+        $result['id']= $this->id;
+        
+        
         
         
         $db = Sys::get_container_dbreadonly();
@@ -52,15 +56,19 @@ class UserUpdates extends Model
         }
         
         // 模卡
-        $result['cart_part']="";
+        $result['card_part']="";
         if ($this->style==1 ) { 
             $sql="select bb_users_card_id from bb_users_updates_media where bb_users_updates_id=? and type=4";
-            $card_id =  $db->fetchAll($sql, [ $this->id ]);
+            $card_id =  $db->fetchOne($sql, [ $this->id ]);
             if ($card_id){
+//                 Sys::debugxieye("card_id:{$card_id}");
               $sql="select pic as url , pic_width,pic_height from bb_users_card where id = ?";
               $temp1= $db->fetchRow($sql,[ $card_id ]) ;
+              
+//               Sys::debugxieye($temp1);
+              
               $result['pic_part'][]= $temp1;
-              $result['cart_part']=$temp1['url'];
+              $result['card_part']=$temp1['url'];
             }
             
         }
@@ -88,6 +96,10 @@ class UserUpdates extends Model
                 
             }
         }
+        
+        $user = \BBExtend\model\UserDetail::find( $this->uid );
+        $result['user'] = $user->get_info_201807_extend();
+        
         return $result;
     }
     
