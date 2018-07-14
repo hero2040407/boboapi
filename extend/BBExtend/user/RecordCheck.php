@@ -109,6 +109,9 @@ class RecordCheck
     }
     
     
+    
+    
+    
     public function check()
     {
         $result = $this->check_all();
@@ -128,11 +131,11 @@ class RecordCheck
                 $title='视频';
             }
             
-            
-            // 星推官处理
-            if ($this->audit==2 ) {
-                $this->starmaker();
-            }
+            // xieye 20-1807注释。
+//             // 星推官处理
+//             if ($this->audit==2 ) {
+//                 $this->starmaker();
+//             }
             
             
             
@@ -162,6 +165,11 @@ class RecordCheck
             
             // 发消息
             if ($this->audit==1) {
+                
+                
+                // 谢烨，201807 ，添加到动态表中去。
+                \BBExtend\model\UserUpdates::insert_record( $recordDB );
+                
                 
                 // 2 邀约活动，3，个人认证,4大赛，1才艺秀。
                 if ($this->type==1) {

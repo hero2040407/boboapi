@@ -19,6 +19,13 @@ class UserUpdates extends Model
     public static $err='';
     
     
+    public function info()
+    {
+        
+        
+    }
+    
+    
     public function add_like($uid)
     {
         //$this->
@@ -146,19 +153,19 @@ class UserUpdates extends Model
         $updates->is_remove = 0;
         $updates->status = 1; // 因为审核过，再调用此接口，所以固定为完成状态。
         
-        if ($updates->title) {
+        if ($record_arr['title']) {
             $updates->style = 6;
         }else {
             $updates->style = 4;
         }
         $updates->save();
         
-        if ( $updates->title ) {
+        if ( $record_arr['title'] ) {
         
           $media = new UserUpdatesMedia();
           $media->bb_users_updates_id = $updates->id;
           $media->type = 1;
-          $media->word = $updates->title ;
+          $media->word = $record_arr['title'] ;
           $media->save();
           
         }
@@ -166,7 +173,7 @@ class UserUpdates extends Model
         $media = new UserUpdatesMedia();
         $media->bb_users_updates_id = $updates->id;
         $media->type = 3;
-        $media->url = $record_arr['vedio_path'];
+        $media->url = $record_arr['video_path'];
         $media->bb_record_id = $record_arr['id'];
         $media->time_length =  \BBExtend\common\Date::time_length_display( 
                 $record_arr['time_length_second'] );

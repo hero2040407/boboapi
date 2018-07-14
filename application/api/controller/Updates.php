@@ -47,55 +47,28 @@ class Updates
         $startid=intval($startid);
         $length=intval($length);
         
-        $page = $startid/$length;
-        $page = intval($page)+1;
+
+        $db = Sys::get_container_dbreadonly();
+        $sql="select * from bb_users_updates order by create_time desc limit ?,?";
+        
+        if ($type==2) {
+            $sql="select * from bb_users_updates 
+              where agent_uid >0
+              order by create_time desc limit ?,?";
+            
+        }
+        
+        $result = $db->fetchAll($sql,[ $startid, $length ]);
+        $new=[];
+        foreach ($result as $v) {
+            $id = $v['id'];
+            $updates = UserUpdates::find( $id );
+            $new[]= $updates;
+        }
         
         //  $db = Sys::get_container_dbreadonly();
         
-        $db = Sys::get_container_db_eloquent();
-        
-        $paginator = $db::table('bb_record')->select(['id',]);
-        //$paginator =  $paginator->where( "has_sign", 1 );
-        $paginator =  $paginator->where( "audit", 1 );
-        $paginator =  $paginator->where( "is_remove", 0);
-        $paginator =  $paginator->where( "type", 1);
-        
-        
-        
-        
-        
-        $paginator = $paginator
-         ->orderBy( "id","desc" )
-         ->paginate($length, ['*'],'page',$page);
-        
-        $new=[];
-        foreach ($paginator as $v) {
-            $id = $v->id;
-            $record = Record::find($id);
-            
-            $style=4;
-            if ( $record->title ) {
-                $style = 6;
-            }
-            
-            $return = [
-                   'user' =>[
-                           
-                   ],
-                   //'uid'  => $record->uid, 
-                   'style'=>$style,
-                   'video'=>[
-                           
-                   ],
-                   'pic'=>null,
-                   'card'=>null,
-                    
-            ];
-            
-         //   $temp = $advise->get_index_info();
-            $new[]= $return;
-        }
-        
+      
         
         return [
                 'code'=>1,

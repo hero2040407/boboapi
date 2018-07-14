@@ -32,8 +32,13 @@ class Temp
     
     public function index($time=0)
     {
-        echo \BBExtend\common\Date::time_length_display($time);
-        
+        Sys::display_all_error();
+        //echo \BBExtend\common\Date::time_length_display($time);
+        $db = Sys::get_container_db();
+        $sql="select * from bb_record where id=3";
+        $record_arr = $db->fetchRow($sql);
+        \BBExtend\model\UserUpdates::insert_record($record_arr);
+        echo 11;
         
     }
     
