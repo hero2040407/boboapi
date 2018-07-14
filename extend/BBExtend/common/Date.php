@@ -11,6 +11,24 @@ namespace BBExtend\common;
  */
 class Date
 {
+    // 把秒的整型转换为字符串。
+    public static function time_length_display($time_length_second)
+    {
+        $length = intval( $time_length_second );
+        if (!$length) {
+            return '';
+        }
+        $time=0 - 8 * 3600+ $length;
+        $display =  date("H:i:s", $time);
+        
+        if (preg_match( '#^00#', $display )) {
+            $display = substr( $display, 3 );
+        }
+        return $display;
+        
+        
+    }
+    
     
     /**
      * $datetime1 = date_create('2009-10-11');

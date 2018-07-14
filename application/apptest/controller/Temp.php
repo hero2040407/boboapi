@@ -30,32 +30,10 @@ class Temp
     
     
     
-    public function index()
-    {echo 222;
-        $arr=[['a'=>2,'b'=>23]];
-        $arr[]=['a'=>21,'b'=>213];
-        $arr[]=['a'=>221,'b'=>213];
-        $arr[]=['a'=>231,'b'=>213];
-        $arr[]=['a'=>241,'b'=>213];
+    public function index($time=0)
+    {
+        echo \BBExtend\common\Date::time_length_display($time);
         
-        $temp=['cccccc'=>34];
-      //  dump($arr);
-        
-         array_splice($arr, mt_rand(1, count($arr)-1 ),0, [$temp] );
-        dump($arr);
-        
-        
-        
-       // throw new \Exception('11');
-//         $redis = Sys::get_container_redis();
-//         $redis->zAdd('key', 1, 'val1');
-//         $redis->zAdd('key', 0, 'val0');
-//         $redis->zAdd('key', 5, 'val5');
-//         $redis->zAdd('key', 6, 'val6');
-//         $redis->zAdd('key', 7, 'val7');
-//         $redis->zAdd('key', 8, 'val8');
-//         $result=   $redis->zRange('key', 2, 3); // array(val0, val1, val5)
-//         dump($result);
         
     }
     

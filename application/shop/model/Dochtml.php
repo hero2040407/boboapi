@@ -110,6 +110,7 @@ class Dochtml
       self::get_href('通告列表').
       self::get_href('发现和星动态列表').
       self::get_href('动态评论和点赞').
+      self::get_href('动态添加').
       
       
       '

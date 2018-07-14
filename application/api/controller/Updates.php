@@ -5,7 +5,7 @@ namespace app\api\controller;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
 
-use BBExtend\model\Record;
+use BBExtend\model\UserUpdates;
 
 /**
  * 童星排行
@@ -23,12 +23,23 @@ class Updates
     
     
     
-    public function add($id,$word='',$pic_json='', $video_json='',$style=0)
+    public function add($word='',$pic_json='', $style=0, $uid, $token='')
     {
         $db = Sys::get_container_db();
+        if ($style==2 ) {
+            UserUpdates::insert_word($uid, $word);
+        }
         
+        if ( $style == 3 || $style==5 ) {
+            $pic_arr = json_decode($pic_json,1  );
+            UserUpdates::insert_word($uid, $word, $pic_arr);
+        }
         
+        return ['code'=>1];
     }
+    
+    
+    
     
     //动态,1发现，2星动态。
     public function index($uid=10000,$startid=0, $length=10,$type=1)
