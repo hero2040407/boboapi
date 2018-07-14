@@ -234,7 +234,7 @@ class UpdatesComment
               ->count();
             
               $db2 = Sys::get_container_db();
-              $sql="update bb_users_updates_comment set comment_count = {$comment_count} where id=?";
+              $sql="update bb_users_updates_comment set reply_count = {$comment_count} where id=?";
               $db2->query($sql, $id);
               
            // $article = $comment->comment;

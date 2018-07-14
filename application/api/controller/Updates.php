@@ -34,8 +34,12 @@ class Updates
           //  Sys::debugxieye($pic_json );
             $pic_arr = json_decode($pic_json,1  );
          //   Sys::debugxieye($pic_arr );
-            
-            UserUpdates::insert_pic($uid, $word, $pic_arr);
+            if (isset ( $pic_arr[0]['pic_width']) && isset ( $pic_arr[0]['pic_height']) 
+                    && isset ( $pic_arr[0]['url'])    ) {
+               UserUpdates::insert_pic($uid, $word, $pic_arr);
+            } else {
+                return ['code'=>0,'message' =>'参数错误' ];
+            }
         }
         
         return ['code'=>1];

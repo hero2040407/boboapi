@@ -24,7 +24,7 @@ class Auth
         if ($result ) {
             
             // 如果是经纪人，则直播。
-            if (\BBExtend\model\UserCheck::is_agent($uid)) {
+            if (\BBExtend\model\UserCheck::is_agent_check($uid)) {
                 
                 return ['code'=>1,'data' =>['status' =>1 ] ];
             }
