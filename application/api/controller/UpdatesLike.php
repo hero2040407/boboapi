@@ -14,9 +14,11 @@ use BBExtend\DbSelect;
  */
 class UpdatesLike
 {
-    public function add($uid=10000,)
+    public function add($uid=10000,$id, $like=1, $type=1 )
     {
-        
+        if ($type==1) {
+            
+        }
         
         
     }
