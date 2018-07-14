@@ -35,14 +35,19 @@ class UpdatesLike
     {
         if ($type==1) {
             $obj = UserUpdates::find( $id );
-            $obj->add_like( $uid );
+          $result=   $obj->add_like( $uid );
         }else {
             
             $obj = UserUpdatesComment::find( $id );
-            $obj->add_like( $uid );
+           $result =  $obj->add_like( $uid );
         }
         
-        return ["code"=>1];
+        if ($result) {
+        
+            return ["code"=>1];
+        }else {
+            return ["code"=>0,'message' =>'您已经点过赞了。' ];
+        }
     }
     
 

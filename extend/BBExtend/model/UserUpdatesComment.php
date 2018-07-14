@@ -21,6 +21,12 @@ class UserUpdatesComment extends Model
     public function add_like($uid)
     {
         //$this->
+        $dbread = Sys::get_container_dbreadonly();
+        $sql="select * from bb_users_updates_like_log where uid=? and updates_id=? and type=2";
+        $row = $dbread->fetchRow($sql, [ $uid, $this->id ] );
+        if ($row) {
+            return false;
+        }
         
         
         $db = Sys::get_container_db();
@@ -35,7 +41,7 @@ class UserUpdatesComment extends Model
         $sql="update bb_users_updates_comment set like_count = like_count+ 1
                where id = ". $this->id;
         $db->query($sql);
-        
+        return true;
     }
 
    

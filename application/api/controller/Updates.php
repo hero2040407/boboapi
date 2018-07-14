@@ -77,7 +77,7 @@ class Updates
         foreach ($result as $v) {
             $id = $v['id'];
             $updates = UserUpdates::find( $id );
-            $temp = $updates->list_info();
+            $temp = $updates->list_info($uid);
             $new[]= $temp;
         }
         

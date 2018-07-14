@@ -29,11 +29,14 @@ class UpdatesComment
      */
     private function is_like($uid,$id)
     {
+      //  return false;
+        $db = Sys::get_container_dbreadonly();
+        $sql="select * from bb_users_updates_like_log where type=2 and uid=? and updates_id=? limit 1";
+        $row = $db->fetchRow($sql,[ $uid, $id ]);
+        if ($row) {
+            return true;
+        }
         return false;
-//         $db = Sys::get_container_db_eloquent();
-//         $count = $db::table('web_article_like')->where('comment_id', $id)->where('uid',$uid)->count();
-        
-//         return (bool)$count;
     }
     
     

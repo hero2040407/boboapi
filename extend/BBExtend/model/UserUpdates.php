@@ -18,10 +18,23 @@ class UserUpdates extends Model
     public $timestamps = false;
     public static $err='';
     
+    
+    public function is_like($uid){
+        $db = Sys::get_container_dbreadonly();
+        $sql="select * from bb_users_updates_like_log where type=1 and uid=? and updates_id=? limit 1";
+        $row = $db->fetchRow($sql,[ $uid, $this->id ]);
+        if ($row) {
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * 这里列表详情。
+     * 
+     * uid 这里是手机当前用户
      */
-    public function list_info()
+    public function list_info($uid)
     {
         $result=[];
         $result['create_time']= $this->create_time;
@@ -30,6 +43,8 @@ class UserUpdates extends Model
         $result['like_count']= $this->like_count;
         $result['style']= $this->style;
         $result['id']= $this->id;
+        $result['is_like']= $this->is_like($uid);
+        
         
         
         
@@ -109,7 +124,7 @@ class UserUpdates extends Model
         //$this->
         
         $dbread = Sys::get_container_dbreadonly();
-        $sql="select * from bb_users_updates_like_log where uid=? and updates_id=?";
+        $sql="select * from bb_users_updates_like_log where uid=? and updates_id=? and type=1";
         $row = $dbread->fetchRow($sql, [ $uid, $this->id ] );
         if ($row) {
             return false;
