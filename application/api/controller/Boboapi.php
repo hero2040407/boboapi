@@ -156,6 +156,8 @@ class Boboapi
                         'header_pic_upload_dir'=> 'uploads/headpic_date/'.date("Ymd"),
                         'apply_pic_upload_dir'=> 'uploads/apply_date/'.date("Ymd"),
                         'race_backstage_pic_upload_dir'=> 'uploads/race_backstage_date/'.date("Ymd"),
+                        'user_updates_pic_upload_dir'=> 'uploads/user_updates_date/'.date("Ymd"),
+                        
                 ],
                 
         ];

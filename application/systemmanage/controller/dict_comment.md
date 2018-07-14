@@ -36,7 +36,7 @@
 | bb_toppic | picpath | 图片网址  |
 | bb_toppic | title | 暂未使用  |
 | bb_toppic | linkurl | 跳转地址，sort_id<20时，普通的url地址，sort_id >= 20时，孙函予的新规则  |
-| bb_toppic | sort_id | 1代表,2代表,3代表品牌馆，11 导师栏目，12vip栏目，13机构栏目，14导师vip机构的公共轮播图,20 新版首页  |
+| bb_toppic | sort_id | 1代表,2代表,3代表品牌馆，11 导师栏目，12vip栏目，13机构栏目，14导师vip机构的公共轮播图,20 新版首页，21 星动态栏目首页顶部  |
 | bb_toppic | other_browser | sort_id<20时，0内置浏览器，1跳转到其他浏览器  |
 | bb_toppic | broadcast_uid | sort_id<20时，一个直播的uid  |
 | bb_toppic | activity_id | sort_id<20时，具体的活动id，如果sort_id为6则此代表品牌馆uid |

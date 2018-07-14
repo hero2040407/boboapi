@@ -224,7 +224,7 @@ order by id desc limit {$startid},{$length}
         $new=[];
         foreach ($result as $uid2) {
             $user = \BBExtend\model\UserDetail::find($uid2);
-            $new[]= $user->get_info_201807();
+            $new[]= $user->get_info_201807_extend();
         }
         
         $is_bottom = ( count($new)==$length )? 0:1;
