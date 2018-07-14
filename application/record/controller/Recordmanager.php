@@ -422,6 +422,11 @@ limit {$startid},{$length}
         //房间ID-》使用用户id + 数据库索引号组成
         $record_arr= self::update_record($recordDB);
         $recordDB['id'] = $record_arr['id']; // 谢烨20171021，加id，星推官用。
+        
+        // xieye 201807 短视频视为动态。
+        
+        
+        
 //         $recordDB['star_maker_v2'] = [
 //             'message' =>
 //             "名师在线 专业鉴定\n".
