@@ -15,6 +15,14 @@ use BBExtend\model\Record;
  */
 class Updates
 {
+    public function comment_list()
+    {
+        
+    }
+     
+    
+    
+    
     public function add($id,$word='',$pic_json='', $video_json='',$style=0)
     {
         $db = Sys::get_container_db();
