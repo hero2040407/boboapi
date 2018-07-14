@@ -49,6 +49,7 @@
 | bb_users_card | pic_height |  最终完成的模卡图片高度，单位px |
 | bb_users_starmaker | detail_img | 单独详情页，顶部图片，逗号分隔  |
 | bb_users_updates | style | 1模卡， 2纯文字，3纯图片，4纯视频，5文字加图片，6文字加视频。  |
+| bb_users_updates_like_log | type | 1动态，2动态的评论或者回复  |
 | bb_vip_application_log | status |  0未审核，1认证费50元已成功缴纳，2已经填写申请资料，3已经完善了个人资料，4导师面试通过，5导师面试不合格，6最终管理员审核通过，7、非常特殊，用户点击完善资料后生成，可能是面试通过，也可能是当时用户已满足6个条件。<br> |  
 | bb_vip_application_log | admin_name | status=4or5时是导师名称,或stats=6时是管理员名称  |  
 | bb_vip_application_log | admin_time |  status=4or5时是导师审核时间,或stats=6时是管理员审核时间 |  

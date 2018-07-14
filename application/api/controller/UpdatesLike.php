@@ -42,7 +42,7 @@ class UpdatesLike
             $obj->add_like( $uid );
         }
         
-        
+        return ["code"=>1];
     }
     
 

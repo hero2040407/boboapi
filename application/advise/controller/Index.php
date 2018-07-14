@@ -79,7 +79,7 @@ class Index
             }
         }
         
-        if ($type!=-1) {
+        if ($type!=-1 && $type) {
 //             $type =intval($type);
             
             $temp  = array();
@@ -87,9 +87,9 @@ class Index
             foreach ($temp2 as $v) {
                 $temp [] = intval($v);
             }
-            $temp = implode(',',$temp);
+        //    $temp = implode(',',$temp);
             
-            $paginator =  $paginator->where( "type in ( {$temp} )" );
+            $paginator =  $paginator->whereIn( "type", $temp );
         }
         
         if ($title) {
