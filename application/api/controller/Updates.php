@@ -31,8 +31,11 @@ class Updates
         }
         
         if ( $style == 3 || $style==5 ) {
+            Sys::debugxieye($pic_json );
             $pic_arr = json_decode($pic_json,1  );
-            UserUpdates::insert_word($uid, $word, $pic_arr);
+            Sys::debugxieye($pic_arr );
+            
+            UserUpdates::insert_pic($uid, $word, $pic_arr);
         }
         
         return ['code'=>1];
@@ -49,7 +52,9 @@ class Updates
         
 
         $db = Sys::get_container_dbreadonly();
-        $sql="select * from bb_users_updates order by create_time desc limit ?,?";
+        $sql="select * from bb_users_updates 
+   
+   order by create_time desc limit ?,?";
         
         if ($type==2) {
             $sql="select * from bb_users_updates 
@@ -63,10 +68,9 @@ class Updates
         foreach ($result as $v) {
             $id = $v['id'];
             $updates = UserUpdates::find( $id );
-            $new[]= $updates;
+            $temp = $updates->list_info();
+            $new[]= $temp;
         }
-        
-        //  $db = Sys::get_container_dbreadonly();
         
       
         

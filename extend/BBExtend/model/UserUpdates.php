@@ -29,32 +29,9 @@ class UserUpdates extends Model
         $result['click_count']= $this->click_count;
         $result['like_count']= $this->like_count;
         
-        $result['pic_part']= [];
+        
         $db = Sys::get_container_dbreadonly();
         
-        // 纯图片，图片加文字。
-        if ($this->style==3 || $this->style==5 ) { 
-            $sql="select url,pic_width,pic_height from bb_users_updates_media where bb_users_updates_id=? and type=2
-  order by id asc
-";
-            $result['pic_part'] = $db->fetchAll($sql, [ $this->id ]);
-            
-            
-        }
-        $result['cart_part']="";
-        // 模卡
-        if ($this->style==1 ) { 
-            $sql="select bb_users_card_id from bb_users_updates_media where bb_users_updates_id=? and type=4";
-            $card_id =  $db->fetchAll($sql, [ $this->id ]);
-            if ($card_id){
-              $sql="select pic as url , pic_width,pic_height from bb_users_card where id = ?";
-              
-              $temp1 = 
-              $result['pic_part'][]= $db->fetchRow($sql,[ $card_id ]) ;
-              $result['cart_part']="";
-            }
-            
-        }
         
         // 文字处理。
         $result['word_part'] ='';
@@ -65,19 +42,53 @@ class UserUpdates extends Model
             $result['word_part'] = $db->fetchOne($sql, [ $this->id ]);
         }
         
-        
-        $result['word_part'] ='';
-        // 视频。
-        if ( in_array($this->style,[4,6]  )   ) {
-            $sql="select bb_record_id from bb_users_updates_media where bb_users_updates_id=? and type=3";
-            $row = $db->fetchRow($sql);
-            $record_id =  $db->fetchOne($sql, [ $this->id ]);
-            if ($record_id) {
-                $sql="select * from bb_record where id = ?";
-                $result['pic_part'][]= $db->fetchRow($sql,[ $record_id ]) ;
-            }
+        // 图片，必须放在模卡前面，初始化数组。
+        $result['pic_part']= [];
+        if ($this->style==3 || $this->style==5 ) { 
+            $sql="select url,pic_width,pic_height from bb_users_updates_media where bb_users_updates_id=? and type=2
+  order by id asc
+";
+            $result['pic_part'] = $db->fetchAll($sql, [ $this->id ]);
         }
         
+        // 模卡
+        $result['cart_part']="";
+        if ($this->style==1 ) { 
+            $sql="select bb_users_card_id from bb_users_updates_media where bb_users_updates_id=? and type=4";
+            $card_id =  $db->fetchAll($sql, [ $this->id ]);
+            if ($card_id){
+              $sql="select pic as url , pic_width,pic_height from bb_users_card where id = ?";
+              $temp1= $db->fetchRow($sql,[ $card_id ]) ;
+              $result['pic_part'][]= $temp1;
+              $result['cart_part']=$temp1['url'];
+            }
+            
+        }
+
+    //    Sys::debugxieye("视频id3434343");
+        // 视频。
+        $result['video_part'] =null;
+        if ( in_array($this->style,[4,6]  )   ) {
+       //     Sys::debugxieye("视频id");
+            
+            $sql="select bb_record_id from bb_users_updates_media where bb_users_updates_id=? and type=3";
+         //   $row = $db->fetchRow($sql);
+            $record_id =  $db->fetchOne($sql, [ $this->id ]);
+            
+        //    Sys::debugxieye("视频id：{$record_id}");
+            
+            if ($record_id) {
+                $sql="select * from bb_record where id = ?";
+                $result2 = $db->fetchRow($sql,[ $record_id ]) ;
+                $result['video_part']=[];
+                $result['video_part']['video_path']  = $result2['video_path'];
+                $result['video_part']['big_pic']     = $result2['big_pic'];
+                $result['video_part']['time_length'] =  \BBExtend\common\Date::time_length_display( 
+                          $result2['time_length_second'] );
+                
+            }
+        }
+        return $result;
     }
     
     
@@ -128,7 +139,7 @@ class UserUpdates extends Model
             $media = new UserUpdatesMedia();
             $media->bb_users_updates_id = $updates->id;
             $media->type = 2;
-            $media->url = $pic['arr'];
+            $media->url = $pic['url'];
             $media->pic_width = $pic['pic_width'];
             $media->pic_height = $pic['pic_height'];
             
