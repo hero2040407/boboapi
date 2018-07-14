@@ -31,7 +31,7 @@ class UpdatesLike
      * @param number $like
      * @param number $type
      */
-    public function add($uid=10000,$id, $like=1, $type=1 )
+    public function add($uid=10000,$id, $like=1, $type=1 ,$token='')
     {
         if ($type==1) {
             $obj = UserUpdates::find( $id );
