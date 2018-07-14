@@ -206,7 +206,8 @@ class UpdatesComment
             $comment->is_reply = 0;
             $comment->save();
             
-            $comment_count = $db::table('bb_users_updates_comment')->where('updates_id', $id)->count();
+            $comment_count = $db::table('bb_users_updates_comment')->where('status',1)
+              ->where('updates_id', $id)->count();
             $db2 = Sys::get_container_db();
             $sql="update bb_users_updates set comment_count = {$comment_count} where id=?";
             $db2->query($sql, $id);
@@ -233,7 +234,7 @@ class UpdatesComment
             $comment->save();
             
             $comment_count = $db::table('bb_users_updates_comment')->where('updates_id', $id)
-              ->where('is_reply',1)
+              ->where('is_reply',1)->where('status',1)
               ->count();
             
               $db2 = Sys::get_container_db();
