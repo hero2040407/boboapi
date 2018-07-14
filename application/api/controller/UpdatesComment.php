@@ -63,7 +63,7 @@ class UpdatesComment
         $temp['reply_count'] = $v['reply_count'];
         $temp['reply_time'] = $v['reply_time'] ? strval( $v['reply_time'] ) : null  ;
         
-        $temp['permissions'] = $comment_user->permissions;
+   //     $temp['permissions'] = $comment_user->permissions;
         
         $temp['time'] = strval( $v['create_time'] );
         $temp['content'] = $v['content'];
@@ -107,7 +107,7 @@ class UpdatesComment
         } else {
             $parent = $this->get_parent($id,$uid);
             // 查回复
-            $news = $db::table('web_article_comment')->where('id', $id)
+            $news = $db::table('bb_users_updates_comment')->where('id', $id)
             ->where('is_reply',0)
             ->first();
             if (!$news) {
