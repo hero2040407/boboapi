@@ -18,10 +18,65 @@ class UserUpdates extends Model
     public $timestamps = false;
     public static $err='';
     
-    
-    public function info()
+    /**
+     * 这里列表详情。
+     */
+    public function list_info()
     {
+        $result=[];
+        $result['create_time']= $this->create_time;
+        $result['comment_count']= $this->comment_count;
+        $result['click_count']= $this->click_count;
+        $result['like_count']= $this->like_count;
         
+        $result['pic_part']= [];
+        $db = Sys::get_container_dbreadonly();
+        
+        // 纯图片，图片加文字。
+        if ($this->style==3 || $this->style==5 ) { 
+            $sql="select url,pic_width,pic_height from bb_users_updates_media where bb_users_updates_id=? and type=2
+  order by id asc
+";
+            $result['pic_part'] = $db->fetchAll($sql, [ $this->id ]);
+            
+            
+        }
+        $result['cart_part']="";
+        // 模卡
+        if ($this->style==1 ) { 
+            $sql="select bb_users_card_id from bb_users_updates_media where bb_users_updates_id=? and type=4";
+            $card_id =  $db->fetchAll($sql, [ $this->id ]);
+            if ($card_id){
+              $sql="select pic as url , pic_width,pic_height from bb_users_card where id = ?";
+              
+              $temp1 = 
+              $result['pic_part'][]= $db->fetchRow($sql,[ $card_id ]) ;
+              $result['cart_part']="";
+            }
+            
+        }
+        
+        // 文字处理。
+        $result['word_part'] ='';
+        if ( in_array($this->style,[2,5,6]  )   ) {
+            $sql="select word from bb_users_updates_media where bb_users_updates_id=? and type=1
+  order by id asc
+";
+            $result['word_part'] = $db->fetchOne($sql, [ $this->id ]);
+        }
+        
+        
+        $result['word_part'] ='';
+        // 视频。
+        if ( in_array($this->style,[4,6]  )   ) {
+            $sql="select bb_record_id from bb_users_updates_media where bb_users_updates_id=? and type=3";
+            $row = $db->fetchRow($sql);
+            $record_id =  $db->fetchOne($sql, [ $this->id ]);
+            if ($record_id) {
+                $sql="select * from bb_record where id = ?";
+                $result['pic_part'][]= $db->fetchRow($sql,[ $record_id ]) ;
+            }
+        }
         
     }
     
