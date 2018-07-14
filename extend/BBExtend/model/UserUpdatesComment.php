@@ -18,7 +18,16 @@ class UserUpdatesComment extends Model
     public $timestamps = false;
     public static $err='';
     
-  
+    public function add_like($uid)
+    {
+        //$this->
+        
+        $db = Sys::get_container_db();
+        $sql="update bb_users_updates_comment set like_count = like_count+ 1
+               where id = ". $this->id;
+        $db->query($sql);
+        
+    }
 
    
 

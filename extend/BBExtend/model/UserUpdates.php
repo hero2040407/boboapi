@@ -18,6 +18,18 @@ class UserUpdates extends Model
     public $timestamps = false;
     public static $err='';
     
+    
+    public function add_like($uid)
+    {
+        //$this->
+        
+        $db = Sys::get_container_db();
+        $sql="update bb_users_updates set like_count = like_count+ 1 
+               where id = ". $this->id;
+        $db->query($sql);
+        
+    }
+    
     public static function insert_record($record_arr)
     {
         $db = Sys::get_container_db_eloquent();
