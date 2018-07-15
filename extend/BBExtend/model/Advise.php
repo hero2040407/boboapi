@@ -16,6 +16,20 @@ class Advise extends Model
     
     public $timestamps = false;
     
+    
+    public function has_join($uid)
+    {
+        $db = Sys::get_container_dbreadonly();
+        $sql="select * from bb_advise_join where uid=? and advise_id=?";
+        $row = $db->fetchRow($sql,[ $uid, $this->id ]);
+        if ($row) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+    
+    
     /**
      * 得到通告详情。
      * 

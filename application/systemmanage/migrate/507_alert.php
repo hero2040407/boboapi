@@ -43,6 +43,20 @@ html;
 Db::query($sql);
 
 
+$sql=<<<html
+alter table bb_baoming_order_prepare
+add price_fen int not null default 0 comment '价格，单位分'
+
+html;
+Db::query($sql);
+
+
+$sql=<<<html
+alter table bb_baoming_order
+add price_fen int not null default 0 comment '价格，单位分'
+
+html;
+Db::query($sql);
 
 
 
