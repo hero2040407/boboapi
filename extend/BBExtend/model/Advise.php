@@ -78,28 +78,29 @@ class Advise extends Model
         
       //  用乐观锁死循环，确保用户得到一张卡片。
         while (true) {
-        $sql="select * from bb_audition_card 
+            $sql="select * from bb_audition_card 
 where status=4 and uid=0 
 and type_id =?
 
 ";
-        $card_row = $db->fetchRow($sql, $advise->audition_card_type );
+            $card_row = $db->fetchRow($sql, $advise->audition_card_type );
+            
+            if(!$card_row){
+                exit;
+            }
+            
+            $version_old = $card_row['lock_version'];
+            $version_new = $version_old+1;
+            
+            $where = "id = ". $card_row['id'] . "  and lock_version={$version_old}";
         
-        if(!$card_row){
-            exit;
-        }
-        
-        $version_old = $card_row['lock_version'];
-        $version_new = $version_old+1;
-        
-        $where = "id = ". $card_row['id'] . "  and lock_version={$version_old}";
-        
-          $rows_affected = $db->update('bb_audition_card', ['uid' =>$uid,
+            $rows_affected = $db->update('bb_audition_card', [
+                'uid' =>$uid,
                 'lock_version' => $version_new,
                 'status' =>5,
                 'bind_time'=>time(),
                 
-                 ], $where);
+            ], $where);
             if ($rows_affected) {
               break;
             }
@@ -126,7 +127,7 @@ and type_id =?
         ]);
         
         
-        $content="您已成功报名". $advise->title;
+        $content="您已成功报名". $advise->title."，您的试镜卡序列号： ".$card_row['serial']."，请妥善保管。";
 
         
         Message::get_instance()

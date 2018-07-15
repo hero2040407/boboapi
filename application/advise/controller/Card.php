@@ -50,8 +50,8 @@ class Card
             return ['code'=>0, 'message'=>'不可重复操作'];
         }
         if ($card_row['status'] == 4 ) {
-            $sql ="update bb_audition_card set status=5,bind_time=? where id=?";
-            $db->query($sql,[ time(), $card_row['id'] ]);
+            $sql ="update bb_audition_card set status=5,bind_time=? ,uid=? where id=?";
+            $db->query($sql,[ time(), $uid, $card_row['id'] ]);
             
             return ['code'=>1, 'message'=>'绑定成功'];
         }
