@@ -32,13 +32,16 @@ class Temp
     
     public function index($time=0)
     {
-        Sys::display_all_error();
-        //echo \BBExtend\common\Date::time_length_display($time);
-        $db = Sys::get_container_db();
-        $sql="select * from bb_record where id=3";
-        $record_arr = $db->fetchRow($sql);
-        \BBExtend\model\UserUpdates::insert_record($record_arr);
-        echo 11;
+//        $db = Sys::get_container_db();
+//        foreach (range(1,300) as $v) {
+//            $db->insert("bb_audition_card", [
+//                    "serial" =>"x" . $v,
+//                    "online_type" =>2,
+//                    "status" =>4,
+//                    "type_id"=>8
+                   
+//            ]);
+//        }
         
     }
     

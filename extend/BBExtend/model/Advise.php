@@ -71,6 +71,19 @@ class Advise extends Model
         $advise_id = $prepare->ds_id;
         $advise = \BBExtend\model\Advise::find($advise_id);
         
+        
+        // xieye，现在要绑定一张试镜卡。
+        $db = Sys::get_container_db();
+      //  $db->beginTransaction();
+        $sql="select * from bb_audition_card 
+where status=4 and uid=0 
+and type_id =?
+
+";
+        $card_row = $db->fetchRow($sql, $advise_id);
+        $version_old = $card_row[''];
+        
+        
         // 现在，插入到报名表当中。
         $db = Sys::get_container_db();
         $json = $prepare->json_parameter;
@@ -100,6 +113,18 @@ class Advise extends Model
         
           return self::success_by_third($paytype);
         
+    }
+    
+    
+    public function check_card_count(){
+        if ($this->audition_card_type==0) {
+            return 100000;
+        }
+        
+        $db = Sys::get_container_dbreadonly();
+        $sql="select count(*) from bb_audition_card where status=4 and type_id=?";
+        $count = $db->fetchOne($sql, $this->audition_card_type);
+        return $count;
     }
     
     
@@ -201,7 +226,10 @@ class Advise extends Model
             $role = AdviseRole::find( $role_id );
             $info['character_list'][] = $role->index_info();
         }
-                    
+             
+        // 谢烨，添加是否可以上传视频。
+        
+        
          return $info;        
     }
     

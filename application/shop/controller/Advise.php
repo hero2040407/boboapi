@@ -26,7 +26,7 @@ class Advise
      * paytype ali或者wx
      * mobile 只有两个值，android或者ios
      */
-    public function buy($advise_id=0, $role_id=0, $uid=0,  $paytype='', $mobile='' )
+    public function buy($advise_id=0, $role_id=0, $uid=0,  $paytype='', $mobile='',$token )
     {
         $goods_id = $ds_id =$advise_id=  intval($advise_id);
         $uid = intval($uid);
@@ -36,6 +36,9 @@ class Advise
         $user =  \BBExtend\model\User::find($uid);
         if (!$user) {
             return ['message'=>'uid err','code'=>0];
+        }
+        if (!$user->check_token($token)) {
+            return ['message'=>'token err','code'=>0];
         }
         
         $db = Sys::get_container_db();
@@ -47,6 +50,10 @@ class Advise
         
         if ( $advise->money_fen ==0 ) {
             return ['message'=>'无需支付金额','code'=>0];
+        }
+        
+        if ( $advise->check_card_count() <3 ) {
+            return ['message'=>'卡片数量不足，暂时不能购买','code'=>0];
         }
         
         
