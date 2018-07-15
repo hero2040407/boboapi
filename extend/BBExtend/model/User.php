@@ -98,6 +98,16 @@ class User extends Model
         }
     }
     
+    public function get_agent_phone()
+    {
+        $db = Sys::get_container_dbreadonly();
+        $sql="select phone from bb_users_agent where uid=?";
+        return $db->fetchOne($sql,[$this->uid]);
+        
+//         $user = $this->get_tool_user();
+//         return $user->get_user_level();
+    }
+    
     
     public function get_user_level()
     {

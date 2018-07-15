@@ -189,6 +189,7 @@ class Advise extends Model
                 'uid' => $user->id,
                 'pic' =>$user->get_userpic(),
                 'nickname' => $user->get_nickname(),
+                'phone'  =>$user->get_agent_phone(),
         ];
         
         
