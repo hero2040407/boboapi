@@ -73,6 +73,23 @@ class Advise extends Model
         ];
     }
     
+    /**
+     * 通告详情。
+     */
+    public function detail_info()
+    {
+        $info = $this->get_index_info();
+        // 查经纪人。
+        
+        $db = Sys::get_container_dbreadonly();
+        $sql="select * from ";
+        
+        
+    }
+    
+    
+    
+    
     
     
 }

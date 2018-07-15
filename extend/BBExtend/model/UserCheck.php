@@ -26,6 +26,9 @@ class UserCheck extends User
     // 是否经纪人。
     public static function is_agent_check($uid){
         $user = \BBExtend\model\User::find($uid);
+        
+        
+        
         if ($user && $user->is_agent() ) {
             return $user;
         }else {

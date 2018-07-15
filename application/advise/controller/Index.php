@@ -136,7 +136,14 @@ class Index
         
     }
    
-    
+    /**
+     * 通告详情。
+     */
+    public function detail($id)
+    {
+        
+        
+    }
     
 }
 
