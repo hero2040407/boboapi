@@ -95,7 +95,7 @@ class Index
         if ($title) {
             $title = \BBExtend\common\Str::like($title);
             if ($title) {
-                $paginator =  $paginator->where( "title like '%{$title}%'"  );
+                $paginator =  $paginator->whereRaw( "title like '%{$title}%'"  );
             }
         }
         
@@ -141,8 +141,10 @@ class Index
      */
     public function detail($id)
     {
-        
-        
+    
+        $advise = Advise::find($id);
+        //$temp = $advise->get_index_info();
+        return ['code'=>1, 'data' =>$advise->detail_info()   ];
     }
     
 }

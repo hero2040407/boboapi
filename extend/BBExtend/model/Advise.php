@@ -144,7 +144,7 @@ class Advise extends Model
         $audition_card_name='';
         $audition_card_type=0;
         
-        
+        $card_name='';
         if ($this->audition_card_type) {
             $sql="select name,bigtype from  bb_audition_card_type where id=?";
             $row = $db->fetchRow($sql,[ $this->audition_card_type ]);
@@ -180,7 +180,7 @@ class Advise extends Model
     {
         $info = $this->get_index_info();
         // 查经纪人。
-        
+      //  
         $db = Sys::get_container_dbreadonly();
         $agent_uid = $this->agent_uid;
         $user = \BBExtend\model\User::find( $agent_uid );
@@ -192,6 +192,16 @@ class Advise extends Model
         ];
         
         
+        $info['h5_info'] = $this->h5_info;
+        $info['character_list'] =[];
+        $sql="select id from bb_advise_role where advise_id = ?";
+        $result= $db->fetchCol($sql,[ $this->id ]);
+        foreach ($result as $role_id){
+            $role = AdviseRole::find( $role_id );
+            $info['character_list'][] = $role->index_info();
+        }
+                    
+         return $info;        
     }
     
     
