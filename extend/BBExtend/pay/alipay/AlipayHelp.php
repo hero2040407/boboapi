@@ -183,7 +183,15 @@ class AlipayHelp
                     if (preg_match('#^XX1#', $out_trade_no)) {
                         return $this->pay_vip($out_trade_no,'ali', $trade_no,$_POST['total_fee']);
                     }
-                            
+                    
+                    if (preg_match('#^TG#', $out_trade_no)) {
+//                         return $this->ds_register($out_trade_no, 'ali', $trade_no,$_POST['total_fee']
+//                                 );
+                        
+                        return \BBExtend\model\Advise::pay_process(
+                                $out_trade_no, 'ali',$trade_no,$_POST['total_fee'] * 100);
+                        
+                    }
                             
                     //pa代表安卓充值。        
                     if (preg_match('#^PA#', $out_trade_no)) {

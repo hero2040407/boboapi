@@ -31,6 +31,8 @@ class Advise
         $goods_id = $ds_id =$advise_id=  intval($advise_id);
         $uid = intval($uid);
         
+        $role_id = intval( $role_id );
+        
         $user =  \BBExtend\model\User::find($uid);
         if (!$user) {
             return ['message'=>'uid err','code'=>0];
@@ -66,9 +68,9 @@ class Advise
         switch ($paytype)
         {
             case 'ali':
-                return $this->pay_money_ali($user, $advise,   $mobile );
+                return $this->pay_money_ali($user, $advise,   $mobile ,$role_id);
             case 'wx':    
-                return $this->pay_money_wx($user, $advise,   $mobile );
+                return $this->pay_money_wx($user, $advise,   $mobile ,$role_id);
           
         }
     }
@@ -79,20 +81,17 @@ class Advise
      * @param number $goods_id
      * @param number $uid
      */
-    private function pay_money_wx($user, $advise,   $mobile )
+    private function pay_money_wx($user, $advise,   $mobile,$role_id )
     {
-        //现金购买无需判断商品等级和 波币数量。
-        //查商品价格
-        //查波币数量
         $money_fen = $advise->money_fen;
        $uid = $user->id;
        
         if ( in_array($uid, get_test_userid_arr() )  ) {
-            $money = 0.01;
+            $money_fen=1;
         }
         $price_fen = strval( $money_fen); //转成分。
         $title = $advise->title;
-        $title_goods = strval( title )."报名";
+        $title_goods = strval( title );
         
         //既然条件都对，生成订单号，最后插入临时订单表。
         $user_agent = \think\Request::instance()->header('User-Agent');
@@ -101,15 +100,18 @@ class Advise
         $serial = $this->get_order_serial($mobile);//订单号
         
         
-        $prepare = new 
-        $prepare->data('uid',$uid  );
-        $prepare->data('phone',''  );
-        $prepare->data('order_no',$serial  );
-        $prepare->data('ds_id',$goods_id  );
-        $prepare->data('create_time',time()  );
-        $prepare->data('has_success',0  );
+        $prepare = new \BBExtend\model\BaomingOrderPrepare();
+        $prepare->uid=$uid  ;
+        $prepare->ds_id=$advise->id  ;
+        $prepare->serial = $serial ;
+        $prepare->price_fen = $money_fen ;
+        $prepare->newtype = 3;
+        $prepare->third_name = 'wx';
+        $prepare->create_time = time();
+        $prepare->is_success = 0;
+
+        $prepare->json_parameter = \BBExtend\common\Json::encode(['role_id' => $role_id  ]  );
         
-        $prepare->data('openid',''  );
         $prepare->save();
         
     //现在开始发送统一订单接口
@@ -128,19 +130,18 @@ class Advise
      * @param number $type
      * @param number $address_id
      */
-    private function pay_money_ali($user,$ds, $goods_id, $uid=0,   $mobile)
+    private function pay_money_ali($user, $advise,   $mobile,$role_id)
     {
-         $money = $ds['money'];
-       
-        if ( in_array($uid, get_test_userid_arr() )  ) {
-            $money = 0.01;
-        }
-      //  $price_fen = strval( intval( $price * 100 )); //转成分。
+        $money_fen = $advise->money_fen;
+        $money = $money_fen/100;
+        $uid = $user->id;
         
-        $title_goods = $ds['title'];
-        if (!$title_goods) {
-            $title_goods ='报名费用';
+        if ( in_array($uid, get_test_userid_arr() )  ) {
+            $money_fen=1;
         }
+        $price_fen = strval( $money_fen); //转成分。
+        $title = $advise->title;
+        $title_goods = strval( title );
         
         //既然条件都对，生成订单号，最后插入临时订单表。
         $user_agent = \think\Request::instance()->header('User-Agent');
@@ -149,16 +150,20 @@ class Advise
         $serial = $this->get_order_serial($mobile);//订单号
         
         
-        $prepare = new DsMoneyPrepare();
-        $prepare->data('uid',$uid  );
-        $prepare->data('phone',''  );
-        $prepare->data('order_no',$serial  );
-        $prepare->data('ds_id',$goods_id  );
-        $prepare->data('create_time',time()  );
-        $prepare->data('has_success',0  );
+        $prepare = new \BBExtend\model\BaomingOrderPrepare();
+        $prepare->uid=$uid  ;
+        $prepare->ds_id=$advise->id  ;
+        $prepare->serial = $serial ;
+        $prepare->price_fen = $money_fen ;
+        $prepare->newtype = 3;
+        $prepare->third_name = 'ali';
+        $prepare->create_time = time();
+        $prepare->is_success = 0;
         
-        $prepare->data('openid',''  );
+        $prepare->json_parameter = \BBExtend\common\Json::encode(['role_id' => $role_id  ]  );
+        
         $prepare->save();
+        
         
         $help = new \BBExtend\pay\alipay\AlipayHelp();
         $sign_urlencode = $help->sign( [
@@ -183,89 +188,7 @@ class Advise
         
     }
     
-    /**
-     * 用bo币购买商品
-     * 
-     * 注意，这里只是波币的逻辑，现金的逻辑在app\pay\model\Users.php里面。
-     *
-     * 条件，波币数量必须对，用户等级必须大于等于商品等级。
-     * 如果成功，则扣减波币，然后记录到波币扣减日志，然后，发送消息。
-     * 然后，生成成功订单到order表中。
-     * 就完成了！
-     *
-     * /shop/api/buy/type/2/uid/10046/goods_id/1/address_id/1/count/2
-     *   /standard/%E4%B8%AD%E5%B0%BA%E5%AF%B8/style/%E9%BB%91%E8%89%B2
-     *
-     * @param \app\shop\model\Users $user
-     * @param number $goods_id
-     * @param number $uid
-     * @param number $address_id
-     * @param number $count 商品数量
-     * @param number $stardand 规格
-     * @param number $style    样式
-     * 
-     */
-    private function pay_coin($user,$address,$goods,
-            $goods_id=0, $uid=0,  $address_id=0, $count=1,$standard='',$style='',
-            $mobile) 
-    {
-        $userinfo = $user->get_buy_info();
-        //查商品等级
-        if ($userinfo['level'] < $goods->getData("exchange_level")  ){
-            $message = "真遗憾，这件礼物需要宝贝达到Lv." . $goods->getData("exchange_level").
-                "才能兑换哦～\n".
-                "快快去秀场完成今天的任务赚取更多经验值吧～";
-            return ["message"=>$message,'code'=>0 ];
-        }
-        //查波币数量
-        $pay_bobi = $goods->right_currency();
-        
-        if ($pay_bobi < 0) {
-            return ["message"=>"该商品不能用BO币购买",'code'=>0 ]; 
-        }
-        $pay_bobi = $pay_bobi * $count;    
-        $gold = $userinfo['gold'];
-        if ($gold < $pay_bobi) {
-            $message = "真遗憾，宝贝您的BO币还不足够兑换这件礼物哦～\n".
-            "快快去秀场完成今天的任务换取更多的BO币或者直接充值兑换吧～";
-            return ["message"=>$message,'code'=>\BBExtend\fix\Err::code_yuebuzu ];
-        }
-        
-        
-        //既然条件都对，生成订单号，最后插入订单表。
-        $serial = $this->get_order_serial($mobile);
-        $user_agent = \think\Request::instance()->header('User-Agent');
-        $order = new \app\shop\model\Order();
-        $order->data('uid', $uid);
-        $order->data('address_id', $address_id);
-        $order->data('price', $pay_bobi);
-        $order->data('type', 2);//2 波币购买
-        $order->data('goods_id', $goods_id);
-        $order->data('serial', $serial);
-        $order->data('is_success', 1);
-        $order->data('terminal', strval($user_agent));
-//         $order->data('create_time', time());
-//         $order->data('update_time', 0);
-        $order->data('count', $count);
-        $order->data('model', $standard);
-        $order->data('style', $style);
-        $order->data("terminal_type", ($mobile=="ios"?1:2) );
-        $order->save();
-        
-        //扣减用户波币，并记录日志
-        $user->buy_success_coin($pay_bobi,$serial, $count);
-        //返回给客户端
-        $data = [
-            "out_trade_no" => $serial, //服务器生成的订单号
-            "total_fee"    => $order->price,         //订单总价
-            "subject"      => $goods->title,   //商品的名称
-        ];
-        return ["data"=>$data, "code"=>1 ];
-    
-    }
-    
-    
-     
+   
     //产生订单号
     // 
     private  function get_order_serial($mobile)
@@ -280,202 +203,6 @@ class Advise
     
     
     
-    
-    
-    
-
-    //================================================
-    //地址管理模块
-    //================================================
-    //增加用户地址
-    public function add_address()
-    {
-        $uid = input('?param.uid')?(int)input('param.uid'):0;
-        $name = input('?param.name')?(string)input('param.name'):'';
-        $phone = input('?param.phone')?(string)input('param.phone'):'';//手机号码
-        $countries = input('?param.countries')?(string)input('param.countries'):'中国';//国家
-        $province = input('?param.province')?(string)input('param.province'):'';//省
-        $city = input('?param.city')?(string)input('param.city'):'';//市
-        $area = input('?param.area')?(string)input('param.area'):'';//区
-        $street = input('?param.street')?(string)input('param.street'):'';//街道地址
-        $tel = input('?param.tel')?(string)input('param.tel'):'';//电话
-        $is_default = input('?param.is_default')?(int)input('param.is_default'):0;//是否默认地址
-        $zip_code = input('?param.zip_code')?(string)input('param.zip_code'):''; //邮编
-        if (\app\user\model\Exists::userhExists($uid)!=1)
-        {
-            return ['message'=>'没有此用户','code'=>0];
-        }
-        if (!$name)
-        {
-            return ['message'=>'用户名称不能为空','code'=>0];
-        }
-        $AddressDB = array();
-        if ($phone)
-        {
-            $AddressDB['phone'] = $phone;
-        }
-        if ($countries)
-        {
-    
-            $AddressDB['countries'] = $countries;
-        }
-        if ($province)
-        {
-            $AddressDB['province'] = $province;
-        }
-        if ($city)
-        {
-            $AddressDB['city'] = $city;
-        }
-        if ($area)
-        {
-            $AddressDB['area'] = $area;
-        }
-        if ($street)
-        {
-            $AddressDB['street'] = $street;
-        }
-        if ($tel)
-        {
-            $AddressDB['tel'] = $tel;
-        }
-        if ($zip_code)
-        {
-            $AddressDB['zip_code'] = $zip_code;
-        }
-        $AddressDB['is_default'] =0;
-        if ($is_default)
-        {
-            $AddressDB['is_default'] = $is_default;
-            Db::table('bb_address')->where(['uid'=>$uid,'is_default'=>1])
-                ->update(['is_default'=>0]);
-        }
-        $AddressDB['uid'] = $uid;
-        $AddressDB['name'] = $name;
-        $AddressDB['time'] = time();
-        Db::table('bb_address')->insert($AddressDB);
-        $AddressDB['id'] = Db::table('bb_address')->getLastInsID();
-        return ['data'=>$this->conversion_address($AddressDB),'code'=>1];
-    }
-    
-    //删除用户地址
-    public function del_address()
-    {
-        $id = input('?param.id')?(int)input('param.id'):0;
-        $uid = input('?param.uid')?(int)input('param.uid'):0;
-        $AddressDB = Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->find();
-        if ($AddressDB)
-        {
-            Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->update(["is_del"=>1 ]);
-            return ['message'=>'删除成功','code'=>1];
-        }
-        return ['message'=>'没有当前的这个ID地址请检查','code'=>0];
-    }
-    
-    //修改用户地址
-    public function editor_address()
-    {
-        $id = input('?param.id')?(int)input('param.id'):0;
-        $uid = input('?param.uid')?(int)input('param.uid'):0;
-        $phone = input('?param.phone')?(string)input('param.phone'):'';//手机号码
-        $countries = input('?param.countries')?(string)input('param.countries'):'';//国家
-        $province = input('?param.province')?(string)input('param.province'):'';//省
-        $city = input('?param.city')?(string)input('param.city'):'';//市
-        $area = input('?param.area')?(string)input('param.area'):'';//区
-        $street = input('?param.street')?(string)input('param.street'):'';//街道地址
-        $tel = input('?param.tel')?(string)input('param.tel'):'';//电话
-        $is_default = input('?param.is_default')?(int)input('param.is_default'):0;//是否默认地址
-        $zip_code = input('?param.zip_code')?(string)input('param.zip_code'):''; //邮编
-        $AddressDB = Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->find();
-        if ($AddressDB)
-        {
-            if ($phone)
-            {
-                $AddressDB['phone'] = $phone;
-            }
-            if ($countries)
-            {
-                $AddressDB['countries'] = $countries;
-            }
-            if ($province)
-            {
-                $AddressDB['province'] = $province;
-            }
-            if ($city)
-            {
-                $AddressDB['city'] = $city;
-            }
-            if ($area)
-            {
-                $AddressDB['area'] = $area;
-            }
-            if ($street)
-            {
-                $AddressDB['street'] = $street;
-            }
-            if ($tel)
-            {
-                $AddressDB['tel'] = $tel;
-            }
-            if ($zip_code)
-            {
-                $AddressDB['zip_code'] = $zip_code;
-            }
-            $AddressDB['is_default'] =0;
-            if ($is_default)
-            {
-                $AddressDB['is_default'] = $is_default;
-                Db::table('bb_address')->where(['uid'=>$uid,'is_default'=>1])
-                    ->update(['is_default'=>0]);
-            }
-            Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->update($AddressDB);
-            return ['message'=>'修改成功','code'=>1];
-        }
-        return ['message'=>'没有此用户请检查UID以及地址id','code'=>0];
-    }
-    
-    //得到用户所有地址
-    public function get_address_list()
-    {
-        $uid     =  input('?param.uid')?(int)input('param.uid'):0;
-        if(\app\user\model\Exists::userhExists($uid)==1)
-        {
-            $AddressDB_list = Db::table('bb_address')->where(['uid'=>$uid, "is_del"=>0])->select();
-            $DB_List = array();
-            foreach ($AddressDB_list as $AddressDB)
-            {
-                array_push($DB_List,$this->conversion_address($AddressDB));
-            }
-            return ['data'=>$DB_List,'code'=>1];
-        }
-        return ['message'=>'没有此用户请检查UID','code'=>0];
-    }
-    
-    //得到默认地址
-    public function get_default_address()
-    {
-        $uid =  input('?param.uid')?(int)input('param.uid'):0;
-        $AddressDB = Db::table('bb_address')->where(['uid'=>$uid,'is_default'=>1, "is_del"=>0])
-            ->find();
-        if (!$AddressDB)
-        {
-            $AddressDB = Db::table('bb_address')->where(['uid'=>$uid, "is_del"=>0])
-                ->order('time','desc')->find();
-        }
-        if (!$AddressDB)
-        {
-            return ['message'=>'该用户没有设置任何地址','code'=>0];
-        }
-        return ['data'=>$this->conversion_address($AddressDB),'code'=>1];
-    }
-    
-    //强转类型
-    private function conversion_address($AddressDB)
-    {
-        $AddressDB['id'] = (int)$AddressDB['id'];
-        $AddressDB['uid'] = (int)$AddressDB['uid'];
-        return $AddressDB;
-    }
     
     
 }

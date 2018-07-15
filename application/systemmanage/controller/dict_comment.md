@@ -12,7 +12,14 @@
 | bb_advise | pic | banner,图片大，横着放。 |
 | bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定账号；6、已使用；11、已注销 | 
 | bb_audition_card_type | bigtype |   1影视，2娱乐，3专用试镜卡 | 
-| bb_baoming_order | newtype |   1大赛报名，2vip申请，3通告报名 | 
+| bb_baoming_order | newtype |   1大赛报名，2vip申请，3通告报名 |
+| bb_baoming_order_prepare | newtype |   1大赛报名，2vip申请，3通告报名 |
+| bb_baoming_order | price |   价格，单位元，与字段 price_fen互斥，只有一个非零的字段是有效的 |
+| bb_baoming_order | price_fen |  价格，单位分，与字段  price 互斥，只有一个非零的字段是有效的 |
+| bb_baoming_order_prepare | price |   价格，单位元，与字段 price_fen互斥，只有一个非零的字段是有效的 |
+| bb_baoming_order_prepare | price_fen |  价格，单位分，与字段  price 互斥，只有一个非零的字段是有效的 |
+| bb_baoming_order | ds_id |  根据newtype字段区分,可能是大赛id，通告id |
+| bb_baoming_order_prepare | ds_id |  根据newtype字段区分,可能是大赛id，通告id |
 | bb_bottom_bar_pic | color_2x_url | 图片网址，彩色2x。注意：同一规则id下文件名绝对不可以重名，无论什么目录，而不同规则id下的文件名可以重名。下同。   |  
 | bb_bottom_bar_rule | version | 后台需保证本表所有的version字段值保持一致，每修改一次任意规则的zip文件，所有行的version都加1。另外，添加删除修改规则表，也需要最后把所有行的version加1   |  
 | bb_brandshop | rongyu | 荣誉，纯文字，可能有换行符  |  

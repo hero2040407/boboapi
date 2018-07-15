@@ -76,6 +76,8 @@ use BBExtend\fix\MessageType;
  * 178 天降红包奖励信息
  * 180 比赛信息
  * 
+ * 190 通告报名成功
+ * 
  * @author Administrator
  *
  */
@@ -322,7 +324,7 @@ class Message
        ])) { 
            return new PushMessage();
        }
-       if (in_array($type, [129,130,154,1001,180])) {
+       if (in_array($type, [129,130,154,1001,180,190])) {
            return new PushMustMessage();
        }
        if (in_array($type, [160])) {

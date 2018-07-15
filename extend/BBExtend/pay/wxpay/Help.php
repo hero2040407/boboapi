@@ -114,6 +114,15 @@ class Help
                         $result['total_fee']
                         );
             }
+            
+            if (preg_match('#^TG#', $result['out_trade_no']) ) {
+                return \BBExtend\model\Advise::pay_process(
+                    $result['out_trade_no'], 'wx',$result['transaction_id'],$result['total_fee'] );
+//                 $this->ds_register($result['out_trade_no'], 'wx',$result['transaction_id'],
+//                         $result['total_fee']
+//                         );
+            }
+            
             //判断该笔订单是否在商户网站中已经做过处理
             //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
             //如果有做过处理，不执行商户的业务程序

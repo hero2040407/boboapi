@@ -42,6 +42,8 @@ class Join
                         'info_arr'=>$info_arr,
                         'record' => $record_arr,
                         'money_fen' => $advise->money_fen,
+                        'advise_id' =>$advise_id,
+                        'role_id'   =>$role_id,
                 ],
                 
                 
@@ -49,6 +51,8 @@ class Join
         
     }
     
+    
+  
 }
 
 

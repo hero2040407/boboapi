@@ -54,6 +54,7 @@ class MessageType
 //     const dasai_jinji              = 181 ; // 大赛晋级成功
 //     const dasai_shoudong           = 182 ; // 大赛手动公告。
     
+    const tonggao_baoming_success  = 190 ; // 通告报名成功
     
     
     const houtai_fasong        = 1000; // 后台发送

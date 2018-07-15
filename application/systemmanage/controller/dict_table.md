@@ -12,4 +12,6 @@
 | bb_advise |  通告表 |  
 | bb_advise_type |  通告类型表 |  
 | bb_users_updates_media |  用户动态内容表 |  
+| bb_baoming_order |  大赛通告报名订单表 |  
+| bb_baoming_order_prepare |  大赛通告报名预生成订单表 |  
 
