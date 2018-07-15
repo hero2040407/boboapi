@@ -227,6 +227,21 @@ and type_id =?
         ];
     }
     
+    
+    public function get_agent_info(){
+        $db = Sys::get_container_dbreadonly();
+        $agent_uid = $this->agent_uid;
+        $user = \BBExtend\model\User::find( $agent_uid );
+        
+        $agent =[
+                'uid' => $user->id,
+                'pic' =>$user->get_userpic(),
+                'nickname' => $user->get_nickname(),
+                'phone'  =>$user->get_agent_phone(),
+        ];
+        return $agent;
+    }
+    
     /**
      * 通告详情。
      */
@@ -236,15 +251,10 @@ and type_id =?
         // 查经纪人。
       //  
         $db = Sys::get_container_dbreadonly();
-        $agent_uid = $this->agent_uid;
-        $user = \BBExtend\model\User::find( $agent_uid );
+//         $agent_uid = $this->agent_uid;
+//         $user = \BBExtend\model\User::find( $agent_uid );
         
-        $info['agent'] =[
-                'uid' => $user->id,
-                'pic' =>$user->get_userpic(),
-                'nickname' => $user->get_nickname(),
-                'phone'  =>$user->get_agent_phone(),
-        ];
+        $info['agent'] =$this->get_agent_info();
         
         
         $info['h5_info'] = $this->h5_info;
