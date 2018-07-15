@@ -10,7 +10,8 @@
 | backstage_admin | phone | 手机号，但渠道是不需要这个字段的。为空 |
 | backstage_auth | roles | 只能是admin,proxy,channel中的一个，不能是多个。 |
 | bb_advise | pic | banner,图片大，横着放。 |
-| bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定账号；6、已使用；11、已注销 | 
+| bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定账号；6、已使用；11、已注销 |
+| bb_audition_card | active_time |  应该是销售时间，销售即激活 |
 | bb_audition_card_type | bigtype |   1影视，2娱乐，3专用试镜卡 | 
 | bb_baoming_order | newtype |   1大赛报名，2vip申请，3通告报名 |
 | bb_baoming_order_prepare | newtype |   1大赛报名，2vip申请，3通告报名 |

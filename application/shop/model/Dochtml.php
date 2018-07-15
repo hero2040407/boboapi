@@ -105,7 +105,10 @@ class Dochtml
       self::get_href('二级页面童星排行').
       self::get_href('主打童星列表').
       self::get_href('试镜卡列表').
+      self::get_href('试镜卡绑定').
       self::get_href('签约童星查询').
+      self::get_href('签约童星招募公告').
+      
       self::get_href('通告类型列表').
       self::get_href('通告列表').
       self::get_href('通告参加流程').

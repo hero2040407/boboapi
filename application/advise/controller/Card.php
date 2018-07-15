@@ -37,21 +37,21 @@ class Card
         }
         
         $db = Sys::get_container_db();
-        $sql="select * from bb_audition_card where serial =?";
+        $sql="select * from bb_audition_card where serial =? and online_type=2";
         $card_row = $db->fetchRow($sql,[ $serial ]);
         if (!$card_row) {
             $redis->incr($key);
             $redis->setTimeout($key, 3* 24 * 3600);
         }
-        if ($card_row->status<4 ) {
+        if ($card_row['status']<4 ) {
             return ['code'=>0, 'message'=>'该卡片不能绑定'];
         }
-        if ($card_row->status >4 ) {
+        if ($card_row['status'] >4 ) {
             return ['code'=>0, 'message'=>'不可重复操作'];
         }
-        if ($card_row->status == 4 ) {
-            $sql ="update bb_audition_card set status=5 where id=?";
-            
+        if ($card_row['status'] == 4 ) {
+            $sql ="update bb_audition_card set status=5,bind_time=? where id=?";
+            $db->query($sql,[ time(), $card_row['id'] ]);
             
             return ['code'=>1, 'message'=>'绑定成功'];
         }

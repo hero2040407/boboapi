@@ -246,7 +246,25 @@ order by id desc limit {$startid},{$length}
         
     }
     
-    
+    public function help(){
+        $detail=<<<html
+招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情招募详情
+html;
+        $standard=<<<html
+招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准招募标准
+html;
+        
+        return [
+                "detail"=>$detail,
+                "standard"=>$standard,
+                "user" =>[
+                   "pic" => "https://bobo.yimwing.com/public/toppic/topdefault.png",     
+                        "nickname"=>"怪兽客服",
+                        "phone" => "400-880-2610",
+                ],
+        ];
+        
+    }
     
 
 }
