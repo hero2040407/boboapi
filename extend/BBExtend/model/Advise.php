@@ -68,24 +68,52 @@ class Advise extends Model
         $order->json_parameter = $prepare->json_parameter;
         $order->save();
         
+        $uid = $prepare->uid;
         $advise_id = $prepare->ds_id;
         $advise = \BBExtend\model\Advise::find($advise_id);
         
         
         // xieye，现在要绑定一张试镜卡。
         $db = Sys::get_container_db();
-      //  $db->beginTransaction();
+        
+      //  用乐观锁死循环，确保用户得到一张卡片。
+        while (true) {
         $sql="select * from bb_audition_card 
 where status=4 and uid=0 
 and type_id =?
 
 ";
-        $card_row = $db->fetchRow($sql, $advise_id);
-        $version_old = $card_row[''];
+        $card_row = $db->fetchRow($sql, $advise->audition_card_type );
+        
+        if(!$card_row){
+            exit;
+        }
+        
+        $version_old = $card_row['lock_version'];
+        $version_new = $version_old+1;
+        
+        $where = "id = ". $card_row['id'] . "  and lock_version={$version_old}";
+        
+          $rows_affected = $db->update('bb_audition_card', ['uid' =>$uid,
+                'lock_version' => $version_new,
+                'status' =>5,
+                'bind_time'=>time(),
+                
+                 ], $where);
+            if ($rows_affected) {
+              break;
+            }
+        }
+        
+        $db->insert("bb_audition_card_bind_log", [
+                'uid' =>$uid,
+                'card_id' => $card_row['id'],
+                'serial' => $card_row['serial'],
+                'create_time' =>time(),
+        ]);
         
         
         // 现在，插入到报名表当中。
-        $db = Sys::get_container_db();
         $json = $prepare->json_parameter;
         $json_arr = json_decode($json,1);
         $db->insert("bb_advise_join", [
@@ -94,7 +122,7 @@ and type_id =?
                 'status' => 1,
                 'role_id' => $json_arr['role_id'],
                 'create_time' => time(),
-                'audition_card_id' =>0,
+                'audition_card_id' =>$card_row['id'],
         ]);
         
         
