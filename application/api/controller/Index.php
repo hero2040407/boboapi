@@ -23,7 +23,7 @@ class Index
     public function index($uid=10000)
     {
         $db = Sys::get_container_dbreadonly();
-        $sql="select id,picpath,linkurl from bb_toppic where sort_id=20 
+        $sql="select id,picpath,linkurl from bb_toppic where module_name='index_top' 
 order by id asc";
         $pic_list = $db->fetchAll($sql);
         

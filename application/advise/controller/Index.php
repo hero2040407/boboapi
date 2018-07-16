@@ -71,11 +71,11 @@ class Index
         
         // 0免费，1影视，2娱乐，3特殊试镜卡
         if ($card_type!=-1) {
-            $cart_type =intval($cart_type);
-            if ($cart_type==3) {
+            $card_type =intval($card_type);
+            if ($card_type==3) {
                 $paginator =  $paginator->where( "audition_card_type>2" );
             }else {
-                $paginator =  $paginator->where( "audition_card_type", $cart_type );
+                $paginator =  $paginator->where( "audition_card_type", $card_type );
             }
         }
         
