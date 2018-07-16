@@ -49,7 +49,9 @@ class Updates
     public function detail($updates_id)
     {
         $updates = UserUpdates::find( $updates_id );
+        $updates->incr_click_count();
         $temp = $updates->list_info();
+        
         return ['code'=>1, 'data' => $temp ];
     }
     

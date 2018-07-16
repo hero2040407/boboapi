@@ -29,6 +29,15 @@ class UserUpdates extends Model
         return false;
     }
     
+    
+    public function incr_click_count()
+    {
+        $db = Sys::get_container_db();
+        $sql="update bb_users_updates set click_count = click_count+1 where id=?";
+        $db->query($sql, [ $this->id ]);
+        
+    }
+    
     /**
      * 这里列表详情。
      * 
