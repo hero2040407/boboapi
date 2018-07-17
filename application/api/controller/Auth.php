@@ -20,9 +20,9 @@ class Auth
      */
     public function check($type=1,$uid )
     {
-//         if ($uid==10023) {
-//             return ['code'=>1,'data' =>['status' =>2 ] ];
-//         }
+        if ($uid==1001199) {
+            return ['code'=>1,'data' =>['status' =>3 ] ];
+        }
         
         
         $user = \BBExtend\model\UserCheck::is_phone_renzheng($uid);

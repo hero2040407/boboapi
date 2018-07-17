@@ -313,7 +313,7 @@ limit {$startid},{$length}
         $time_length_second = input('?post.time_length_second')?(int)input('post.time_length_second'):0;
         
         $uid = input('?post.uid')?(int)input('post.uid'):0;
-        $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。
+        $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。5广告，6通告上传
         $video_path = input('?post.video_path')?(string)input('post.video_path'):'';
         $thumbnailpath = input('?post.thumbnailpath')?(string)input('post.thumbnailpath'):'';
         $activity = input('?post.activity_id')?(int)input('post.activity_id'):0;//活动id
@@ -321,7 +321,7 @@ limit {$startid},{$length}
         
         
         
-        if (!in_array($type, [1,2,3,4,])){
+        if (!in_array($type, [1,2,3,4,5,6,])){
             return ['code'=>0,'message'=>'type error2'];
         }
         

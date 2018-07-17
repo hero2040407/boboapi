@@ -139,12 +139,12 @@ class Index
     /**
      * 通告详情。
      */
-    public function detail($id)
+    public function detail($id,$uid)
     {
     
         $advise = Advise::find($id);
         //$temp = $advise->get_index_info();
-        return ['code'=>1, 'data' =>$advise->detail_info()   ];
+        return ['code'=>1, 'data' =>$advise->detail_info($uid)   ];
     }
     
 }

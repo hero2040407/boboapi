@@ -245,7 +245,7 @@ and type_id =?
     /**
      * 通告详情。
      */
-    public function detail_info()
+    public function detail_info($uid=0)
     {
         $info = $this->get_index_info();
         // 查经纪人。
@@ -265,8 +265,20 @@ and type_id =?
             $role = AdviseRole::find( $role_id );
             $info['character_list'][] = $role->index_info();
         }
-             
+        
+        $info['can_upload_video'] = 0;
         // 谢烨，添加是否可以上传视频。
+        if ($this->money_fen==0) {
+            $info['can_upload_video'] = 1;
+            $db = Sys::get_container_dbreadonly();
+            $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
+            $count = $db->fetchOne($sql,[$uid, $this->id  ]);
+            if ($count) {
+                $info['can_upload_video'] = 0;
+            }
+            
+        }
+        
         
         
          return $info;        
