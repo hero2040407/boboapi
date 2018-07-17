@@ -64,6 +64,28 @@ class User extends Model
     
     
     /**
+     * 能否直播
+     */
+    public function can_push()
+    {
+        if ($this->uid== 8064543) {
+            return true;
+        }
+        
+        if ($this->vip == 1) {
+            return true;
+        }
+        
+        if (self::is_test($this->uid)) {
+            return true;
+        }
+        
+        return false;
+        
+        
+    }
+    
+    /**
      * 编辑布局
      */
     public function edit_layout()

@@ -53,6 +53,7 @@
 | bb_toppic | module_name | 英文表示的模块名：例如，index_top：表示首页顶部，star_top:星动态首页 |
 | bb_users |email  |  谢烨201805，含义修改，原先未用，现改成最后登录ip |  
 | bb_users |permissions  |  权限 1:正常用户2:管理员3:特邀用户,4 , 10 ,  11 ,  99:机器人 |  
+| bb_users |vip  |  201807,此字段的新定义:1表示可以直播。0不可以。 |  
 | bb_users_card | status |  1费用未支付，2正在做，3全部完成,4模卡支付费用退回且撤单 |
 | bb_users_card | pic |  最终完成的模卡图片 |
 | bb_users_card | pic_width |  最终完成的模卡图片宽度，单位px |

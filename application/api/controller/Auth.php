@@ -25,22 +25,22 @@ class Auth
 //         }
         
         
-        $result = \BBExtend\model\UserCheck::is_phone_renzheng($uid);
-        if ($result ) {
+        $user = \BBExtend\model\UserCheck::is_phone_renzheng($uid);
+        if ($user ) {
             
-            // 如果是经纪人，则直播。
-            if (\BBExtend\model\UserCheck::is_agent_check($uid)  ) {
-                
+            $push = $user->can_push();
+            $card = \BBExtend\model\UserCheck::is_vip_or_high($uid);
+           
+            if ($push && $card) {
+                return ['code'=>1,'data' =>['status' =>4 ] ];
+            }
+            if ($push) {
                 return ['code'=>1,'data' =>['status' =>1 ] ];
             }
-            if (\BBExtend\model\UserCheck::is_vip_or_high($uid)) {
-                
+            if ($card) {
                 return ['code'=>1,'data' =>['status' =>2 ] ];
             }
-            
             return ['code'=>1,'data' =>['status' =>3 ] ];
-            
-            
             
         }else {
             return ['code'=>0,'message' =>'请绑定手机' ];
