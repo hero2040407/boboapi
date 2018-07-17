@@ -603,72 +603,72 @@ class BBUser extends Level
         $result_lottery=null;
         
         // 20171016, 如果被邀请了，则送礼物给邀请方，和被邀请方。
-        if ($user->login_type == 3) {
+//         if ($user->login_type == 3) {
             
-            // 商户抽奖
-            $sql = "select * from bb_users_shanghu_invite_register where phone=? and is_complete=0";
-            $invite_row = $db->fetchRow($sql, [$user->phone  ] );
-            if ($invite_row) {
-                //防止反复领取！！
-                $sql="update bb_users_shanghu_invite_register set is_complete=1,target_uid={$uid}
-                where id={$invite_row['id']}";
-                $db->query($sql);
-                // 商户表加注册人数
-                $sql="update bb_shanghu set register_count = register_count+1
-                where id={$invite_row['shanghu_id']}";
-                $db->query($sql);
+//             // 商户抽奖
+//             $sql = "select * from bb_users_shanghu_invite_register where phone=? and is_complete=0";
+//             $invite_row = $db->fetchRow($sql, [$user->phone  ] );
+//             if ($invite_row) {
+//                 //防止反复领取！！
+//                 $sql="update bb_users_shanghu_invite_register set is_complete=1,target_uid={$uid}
+//                 where id={$invite_row['id']}";
+//                 $db->query($sql);
+//                 // 商户表加注册人数
+//                 $sql="update bb_shanghu set register_count = register_count+1
+//                 where id={$invite_row['shanghu_id']}";
+//                 $db->query($sql);
             
-                $result_lottery = ['open_lottery' =>1,
-                    'url'=>\BBExtend\common\BBConfig::get_server_url_https().
-                    "/game/lottery/store_index/uid/{$uid}/userlogin_token/".$user->userlogin_token,
+//                 $result_lottery = ['open_lottery' =>1,
+//                     'url'=>\BBExtend\common\BBConfig::get_server_url_https().
+//                     "/game/lottery/store_index/uid/{$uid}/userlogin_token/".$user->userlogin_token,
             
-                    ];
-            }
-            // 这里做了判断，商户邀请优先。
-            $sql = "select * from bb_users_invite_register where phone=? and is_complete=0";
-            $invite_row = $db->fetchRow($sql, [$user->phone  ] );
-            if ($invite_row && (!$result_lottery) ) {
-                // 邀请人获得50积分,type=171
-                Currency::add_score($invite_row['uid'], 50, '邀请奖励',171);
-                //被邀请人获得500波币。type=172
-                Currency::add_currency($uid,1, 500, '被邀请注册奖励',172);
-                //防止反复领取！！
-                $sql="update bb_users_invite_register set is_complete=1,target_uid={$uid} 
-                    where id={$invite_row['id']}";
-                $db->query($sql);
+//                     ];
+//             }
+//             // 这里做了判断，商户邀请优先。
+//             $sql = "select * from bb_users_invite_register where phone=? and is_complete=0";
+//             $invite_row = $db->fetchRow($sql, [$user->phone  ] );
+//             if ($invite_row && (!$result_lottery) ) {
+//                 // 邀请人获得50积分,type=171
+//                 Currency::add_score($invite_row['uid'], 50, '邀请奖励',171);
+//                 //被邀请人获得500波币。type=172
+//                 Currency::add_currency($uid,1, 500, '被邀请注册奖励',172);
+//                 //防止反复领取！！
+//                 $sql="update bb_users_invite_register set is_complete=1,target_uid={$uid} 
+//                     where id={$invite_row['id']}";
+//                 $db->query($sql);
                 
-                $client = new \BBExtend\service\pheanstalk\Client();
-                $client->add(
-                    new Data($invite_row['uid'],171,['bonus' => ' 50 积分',], time()  )
-                );
-                $client->add(
-                    new Data($uid,172,['bonus' => ' 500 BO币',], time()  )
-                );
-                $invite_user = \app\user\model\UserModel::getinstance($invite_row['uid']);
+//                 $client = new \BBExtend\service\pheanstalk\Client();
+//                 $client->add(
+//                     new Data($invite_row['uid'],171,['bonus' => ' 50 积分',], time()  )
+//                 );
+//                 $client->add(
+//                     new Data($uid,172,['bonus' => ' 500 BO币',], time()  )
+//                 );
+//                 $invite_user = \app\user\model\UserModel::getinstance($invite_row['uid']);
                 
-                $invite_user_detail = \BBExtend\model\User::find( $invite_row['uid'] );
+//                 $invite_user_detail = \BBExtend\model\User::find( $invite_row['uid'] );
                 
                 
-                $result_bonus=[
-                    'version' =>1,
-                    'invite_user' =>['uid'=>$invite_row['uid'], 'head' =>$invite_user->get_userpic(),
-                        'nickname' => $invite_user->get_nickname(),
-                            'role'=>$invite_user_detail->role,
-                            'frame'=>$invite_user_detail->get_frame(),
-                            'badge'=>$invite_user_detail->get_badge(),
+//                 $result_bonus=[
+//                     'version' =>1,
+//                     'invite_user' =>['uid'=>$invite_row['uid'], 'head' =>$invite_user->get_userpic(),
+//                         'nickname' => $invite_user->get_nickname(),
+//                             'role'=>$invite_user_detail->role,
+//                             'frame'=>$invite_user_detail->get_frame(),
+//                             'badge'=>$invite_user_detail->get_badge(),
                             
-                    ],
-                    'list' =>[
-                        ['word' =>' 500 BO币',
-                         'pic' => \BBExtend\common\PicPrefixUrl::add_pic_prefix_https(
-                              '/public/pic/present/img_bobi@2x.png'),],
-                    ],
-                ];
+//                     ],
+//                     'list' =>[
+//                         ['word' =>' 500 BO币',
+//                          'pic' => \BBExtend\common\PicPrefixUrl::add_pic_prefix_https(
+//                               '/public/pic/present/img_bobi@2x.png'),],
+//                     ],
+//                 ];
                 
-            }
+//             }
             
             
-        }
+//         }
         // 2017 新功能，没注册一个用户，他必须关注10个随机的
         $sql ="select permissions from bb_users where uid=".intval($uid);
         $per = $db->fetchOne($sql);
