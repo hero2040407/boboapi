@@ -279,7 +279,7 @@ and type_id =?
             
         }
         
-        
+        $info['money_fen'] = $this->money_fen;
         
          return $info;        
     }

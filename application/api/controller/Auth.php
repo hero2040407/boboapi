@@ -24,11 +24,7 @@ class Auth
             return ['code'=>1,'data' =>['status' =>3 ] ];
         }
         
-        if ($uid==10023) {
-            return ['code'=>1,'data' =>['status' =>4 ] ];
-        }
-        
-        
+      
         
         $user = \BBExtend\model\UserCheck::is_phone_renzheng($uid);
         if ($user ) {

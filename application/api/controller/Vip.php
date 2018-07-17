@@ -215,7 +215,8 @@ order by id desc limit {$startid},{$length}
         $length=intval($length);
         
 //         $start = 0;
-//         $le = 3;
+//         $length = 3;
+//         $end    = 2;
         $end = $startid+ $length -1;
         
         
