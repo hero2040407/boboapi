@@ -120,7 +120,9 @@ class Dochtml
       self::get_href('动态评论和点赞').
       self::get_href('动态添加').
       self::get_href('用户权限检查').
-      self::get_href('轮播图新版').
+      self::get_href('轮播图新版','轮播图新版',1).
+      self::get_href('轮播图新通用接口').
+      
       
       
       '

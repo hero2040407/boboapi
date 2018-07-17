@@ -23,6 +23,15 @@ order by id asc";
     }
     
     
+    public function newindex($module_name='star_top'   )
+    {
+        $db = Sys::get_container_dbreadonly();
+        $sql="select id,picpath,linkurl from bb_toppic where module_name=?
+order by id asc limit 20";
+        $pic_list = $db->fetchAll($sql,[ $module_name ]);
+        return ['code'=>1, 'data' =>['list' => $pic_list ] ];
+    }
+    
     
 
 }
