@@ -279,12 +279,12 @@ class BBUser extends Level
         $UserDB = self::get_user($uid);
         if ($UserDB['vip'])
         {
-            if ($UserDB['vip_time'] < time())
-            {
-                $UserDB['vip'] = 0;
-                self::update($UserDB);
-                return $UserDB;
-            }
+//             if ($UserDB['vip_time'] < time())
+//             {
+//                 $UserDB['vip'] = 0;
+//                 self::update($UserDB);
+//                 return $UserDB;
+//             }
         }
         return $UserDB;
     }

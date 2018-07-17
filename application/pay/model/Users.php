@@ -28,12 +28,13 @@ class Users extends Model
     
     public function is_vip()
     {
-        $boo = false;
-        $expire = intval( $this->getData('vip_time') );
-        if ($this->getData('vip') && $expire > time()   ) {
-            $boo = true;
-        }
-        return $boo;
+        return false;
+//         $boo = false;
+//         $expire = intval( $this->getData('vip_time') );
+//         if ($this->getData('vip') && $expire > time()   ) {
+//             $boo = true;
+//         }
+//         return $boo;
     }
     
     /**

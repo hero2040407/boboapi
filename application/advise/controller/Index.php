@@ -73,7 +73,7 @@ class Index
         if ($card_type!=-1) {
             $card_type =intval($card_type);
             if ($card_type==3) {
-                $paginator =  $paginator->where( "audition_card_type>2" );
+                $paginator =  $paginator->whereRaw( "audition_card_type>2" );
             }else {
                 $paginator =  $paginator->where( "audition_card_type", $card_type );
             }

@@ -51,7 +51,7 @@ $post='';
 if (  $request->method() =="POST") {
     $temp = (array)$_POST;
     
-    $post= json_encode($temp, JSON_UNESCAPED_UNICODE   ) ;
+   // $post= json_encode($temp, JSON_UNESCAPED_UNICODE   ) ;
 }
 
 $dbe::table("bb_request")->insert( [
