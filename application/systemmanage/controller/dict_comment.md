@@ -50,7 +50,7 @@
 | bb_toppic | broadcast_uid | sort_id<20时，一个直播的uid  |
 | bb_toppic | activity_id | sort_id<20时，具体的活动id，如果sort_id为6则此代表品牌馆uid |
 | bb_toppic | linktype | sort_id<20时，0 跳转网址, 1是学啥 , 2是邀约, 3 是玩啥， 4 大赛，11导师申请页，12vip6个成就页面，13机构申请页  |
-| bb_toppic | module_name | 英文表示的模块名：例如，index_top：表示首页顶部，star_top:星动态首页 |
+| bb_toppic | module_name | 英文表示的模块名：例如，index_top：表示首页顶部，star_top:星动态首页，brandshop:品牌馆栏目共通，audition_card:试镜卡栏目共通 |
 | bb_users |email  |  谢烨201805，含义修改，原先未用，现改成最后登录ip |  
 | bb_users |permissions  |  权限 1:正常用户2:管理员3:特邀用户,4 , 10 ,  11 ,  99:机器人 |  
 | bb_users |vip  |  201807,此字段的新定义:1表示可以直播。0不可以。 |  
