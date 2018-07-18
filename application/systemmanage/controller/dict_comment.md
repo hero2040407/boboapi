@@ -10,8 +10,12 @@
 | backstage_admin | phone | 手机号，但渠道是不需要这个字段的。为空 |
 | backstage_auth | roles | 只能是admin,proxy,channel中的一个，不能是多个。 |
 | bb_advise | pic | banner,图片大，横着放。 |
-| bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定账号；6、已使用；11、已注销 |
+| bb_audition_card | status |   1、初始化(生成编号)；2、实体卡制作完成；3、实体卡已分发给代理；4、已销售；5、已激活,绑定uid和通告id；6、已使用；11、已注销 |
 | bb_audition_card | active_time |  应该是销售时间，销售即激活 |
+| bb_audition_card | serial |  卡号，只有大写字母和数字 |
+| bb_audition_card | online_type |  1线上，2线下，注意(1)只会绑定线下的卡号，(2)无论线上线下，都需要预先在表中生成记录。 |
+| bb_audition_card | type |  分类，是serail的前两个字符。 |
+| bb_audition_card | has_pay | 1已支付，0未支付。  这个字段仅用于线上卡片，线下卡片都是0 |
 | bb_audition_card_type | bigtype |   1影视，2娱乐，3专用试镜卡 | 
 | bb_baoming_order | newtype |   1大赛报名，2vip申请，3通告报名 |
 | bb_baoming_order_prepare | newtype |   1大赛报名，2vip申请，3通告报名 |

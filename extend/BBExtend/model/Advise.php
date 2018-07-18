@@ -106,42 +106,99 @@ and type_id =?
             }
         }
         
-        $db->insert("bb_audition_card_bind_log", [
-                'uid' =>$uid,
-                'card_id' => $card_row['id'],
-                'serial' => $card_row['serial'],
-                'create_time' =>time(),
-        ]);
-        
+      
         
         // 现在，插入到报名表当中。
         $json = $prepare->json_parameter;
         $json_arr = json_decode($json,1);
+        
+        $role_id = $json_arr['role_id'];
+        $card_id = $card_row['id'];
+        
+        // 对试镜卡表做状态修改。
+        $sql ="update bb_audition_card set has_pay=1 where id=?";
+        $db->query($sql,[ $card_id ]);
+        
+        // 调用通用的接口。
+        self::public_advise_join($advise_id, $role_id, $uid, $card_id);
+        // 返回阿里和微信支付 各自的回复。
+        return self::success_by_third($paytype);
+        
+    }
+    
+    
+    
+    
+    
+    /**
+     * 所有参加通告，最后的公共接口，注意，本函数 不检查参数
+     * @param unknown $advise_id
+     * @param unknown $role_id
+     * @param unknown $uid
+     * @param unknown $card_id
+     */
+    public static function public_advise_join($advise_id, $role_id, $uid, $card_id)
+    {
+        $db = Sys::get_container_db();
+        $time = time();
+        $card = AuditionCard::find ( $card_id );
+        
+        // 额外做了一张表，
+        $db->insert("bb_audition_card_bind_log", [
+                'uid' =>$uid,
+                'card_id' => $card_id,
+                'serial' => $card->serial,
+                'create_time' =>$time,
+        ]);
+        // 对试镜卡表做状态修改。
+        $sql ="update bb_audition_card set status=5,bind_time=? ,uid=? where id=?";
+        $db->query($sql,[ $time, $uid, $card_id ]);
+        
+        
+        // 添加到参加表里。
         $db->insert("bb_advise_join", [
                 'advise_id' => $advise_id,
-                'uid' => $prepare->uid,
+                'uid' => $uid,
                 'status' => 1,
-                'role_id' => $json_arr['role_id'],
-                'create_time' => time(),
-                'audition_card_id' =>$card_row['id'],
+                'role_id' => $role_id,
+                'create_time' => $time,
+                'audition_card_id' =>$card_id,
         ]);
+        $advise  = Advise::find ( $advise_id );
         
         
-        $content="您已成功报名". $advise->title."，您的试镜卡序列号： ".$card_row['serial']."，请妥善保管。";
-
+        $content="您已成功报名". $advise->title."，您的试镜卡序列号： ".$card->serial."，请妥善保管。";
+        
         
         Message::get_instance()
-          ->set_title('系统消息')
-          ->set_time(time() )
-          ->add_content(Message::simple()->content( $content ))
-          ->set_type(190)
-          ->set_newtype(1)
-          ->set_uid($prepare->uid)
-          ->send();
-      
+        ->set_title('系统消息')
+        ->set_time($time )
+        ->add_content(Message::simple()->content( $content ))
+        ->set_type(190)
+        ->set_newtype(1)
+        ->set_uid($uid)
+        ->send();
         
-          return self::success_by_third($paytype);
+    }
+    
+    /**
+     * 检查一张卡片和 一个通告的对应关系。
+     * @return bool  为真表示对应，
+     */
+    public function check_relation_of_card($card_id)
+    {
+        // 我查出通告的audition_card_type ，这其实是大类。
+        // 再查出 试镜卡的type_id， 
+        // 如果一致的话。为真。
+        $card = AuditionCard::find( $card_id );
+        if (!$card ) {
+            return false;
+        }
         
+        if ( $card->type_id == $this->audition_card_type ) {
+            return true;
+        }
+        return false;
     }
     
     

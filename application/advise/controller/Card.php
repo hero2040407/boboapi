@@ -12,8 +12,13 @@ use BBExtend\model\Advise;
  */
 class Card
 {
-    public function bind($uid,$token, $serial )
+    public function bind($uid,$token, $serial, $advise_id, $role_id )
     {
+        
+        $uid= intval($uid);
+        $advise_id= intval($advise_id);
+        $role_id= intval($role_id);
+        
         
         $redis = Sys::get_container_redis();
         $key = "check_card:uid:".$uid.":date:".date("Ymd");
@@ -36,6 +41,19 @@ class Card
             return ['code'=>0, 'message'=>'serial err'];
         }
         
+        // 重要的一句话。
+        $serial = strtoupper($serial);
+        
+        $advise = \BBExtend\model\Advise::find( $advise_id );
+        if ( !$advise ) {
+            return ['code'=>0, 'message'=>'advise_id err'];
+        }
+        
+        if ( $advise->has_join($uid) ) {
+            return ['code'=>0, 'message'=>'您已参加此通告，不可以重复参加。'];
+        }
+        
+        
         $db = Sys::get_container_db();
         $sql="select * from bb_audition_card where serial =? and online_type=2";
         $card_row = $db->fetchRow($sql,[ $serial ]);
@@ -50,8 +68,12 @@ class Card
             return ['code'=>0, 'message'=>'不可重复操作'];
         }
         if ($card_row['status'] == 4 ) {
-            $sql ="update bb_audition_card set status=5,bind_time=? ,uid=? where id=?";
-            $db->query($sql,[ time(), $uid, $card_row['id'] ]);
+            
+            if (!$advise->check_relation_of_card( $card_row['id'] ) ) {
+                return ['code'=>0, 'message'=>'您输入的试镜卡编号和当前您选择的通告不对应，请选择正确的通告绑定。'];
+            }
+            
+            \BBExtend\model\Advise::public_advise_join($advise_id, $role_id, $uid, $card_id);
             
             return ['code'=>1, 'message'=>'绑定成功'];
         }
