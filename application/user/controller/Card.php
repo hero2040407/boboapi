@@ -141,7 +141,7 @@ class Card
     }
     
     // 必须post
-    public function order($uid, $token, $template_id, $pic_arr){
+    public function order($uid, $token, $template_id, $pic_arr,$baidu_citycode=''){
         Sys::display_all_error();
         
         $user = User::find($uid);
@@ -187,6 +187,7 @@ class Card
                 'create_time' => APP_TIME,
                 'money' =>$money,
                 'template_id'=>$template_id,
+                'baidu_citycode' => $baidu_citycode,
                 ]);
         
         foreach ($pic_arr as $v) {

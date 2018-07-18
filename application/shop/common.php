@@ -34,7 +34,7 @@ function get_test_userid_arr()
 {
     
     // 这是一个保险的设置
-    $time = strtotime("2018-06-01 00:00:00");
+    $time = strtotime("2018-07-01 00:00:00");
     $time+= 30  *24*3600;
     if (time() > $time ) {
         return [];

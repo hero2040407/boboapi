@@ -147,6 +147,32 @@ class Index
         return ['code'=>1, 'data' =>$advise->detail_info($uid)   ];
     }
     
+    /**
+     * 短视频  列表。
+     * @param number $uid
+     * @param number $startid
+     * @param number $length
+     */
+    public function record_list($uid=10000, $advise_id, $startid=0, $length=10 )
+    {
+        $db = Sys::get_container_db();
+        $sql="select * from bb_record where audit=1 and is_remove=0 and type=6 and activity_id=?
+ order by id desc limit ?,?
+";
+        $result = $db->fetchAll($sql,[ $advise_id, $startid, $length ]);
+        $new=[];
+        foreach ($result as $v) {
+            $record_id = $v['id'];
+            $record = \BBExtend\model\RecordDetail::find($record_id);
+            $record->self_uid = $uid;
+            $new[] =$record->get_simple(); 
+        }
+        
+        $is_bottom = ( count($new)==$length )?0:1;
+        return ['code'=>1, 'data' =>['list' => $new, 'is_bottom'=>$is_bottom ] ];
+        
+    }
+    
 }
 
 

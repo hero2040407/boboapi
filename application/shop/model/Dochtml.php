@@ -113,6 +113,7 @@ class Dochtml
       self::get_href('通告列表').
       self::get_href('通告参加流程').
       self::get_href('通告详情').
+      self::get_href('通告内短视频列表').
       
       
       self::get_href('发现和星动态列表').

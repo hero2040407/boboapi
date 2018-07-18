@@ -311,6 +311,7 @@ limit {$startid},{$length}
     {
         
         $time_length_second = input('?post.time_length_second')?(int)input('post.time_length_second'):0;
+        $baidu_citycode = input('?post.baidu_citycode')?input('post.baidu_citycode'):'';
         
         $uid = input('?post.uid')?(int)input('post.uid'):0;
         $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。5广告，6通告上传
@@ -393,6 +394,8 @@ limit {$startid},{$length}
             \BBExtend\user\Tongji::getinstance($uid)->renzheng_yonghu();
         }
         $recordDB['video_path'] = $video_path;//视频路径地址
+        $recordDB['baidu_citycode'] = $baidu_citycode;//百度城市地址 201807
+        
         $recordDB['big_pic'] = $big_pic;//视频封面 默认为头像
         $recordDB['thumbnailpath'] = $thumbnailpath; //视频缩影图片地址
         $recordDB['usersort'] = $sort;//秀场类型 在数据库中bb_usersort中的id号对应
