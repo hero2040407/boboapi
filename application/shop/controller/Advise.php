@@ -98,7 +98,7 @@ class Advise
         }
         $price_fen = strval( $money_fen); //转成分。
         $title = $advise->title;
-        $title_goods = strval( title );
+        $title_goods = strval( $title );
         
         //既然条件都对，生成订单号，最后插入临时订单表。
         $user_agent = \think\Request::instance()->header('User-Agent');
@@ -141,6 +141,13 @@ class Advise
     {
         $money_fen = $advise->money_fen;
         $money = $money_fen/100;
+        
+        
+        $money = \BBExtend\common\Numeric::decimal($money);
+        if ($money< 0.01) {
+            $money=0.01;
+        }
+        
         $uid = $user->uid;
         
         if ( in_array($uid, get_test_userid_arr() )  ) {
@@ -148,7 +155,7 @@ class Advise
         }
         $price_fen = strval( $money_fen); //转成分。
         $title = $advise->title;
-        $title_goods = strval( title );
+        $title_goods = strval( $title );
         
         //既然条件都对，生成订单号，最后插入临时订单表。
         $user_agent = \think\Request::instance()->header('User-Agent');
