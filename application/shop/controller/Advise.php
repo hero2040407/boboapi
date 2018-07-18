@@ -91,7 +91,7 @@ class Advise
     private function pay_money_wx($user, $advise,   $mobile,$role_id )
     {
         $money_fen = $advise->money_fen;
-       $uid = $user->id;
+       $uid = $user->uid;
        
         if ( in_array($uid, get_test_userid_arr() )  ) {
             $money_fen=1;
@@ -141,7 +141,7 @@ class Advise
     {
         $money_fen = $advise->money_fen;
         $money = $money_fen/100;
-        $uid = $user->id;
+        $uid = $user->uid;
         
         if ( in_array($uid, get_test_userid_arr() )  ) {
             $money_fen=1;

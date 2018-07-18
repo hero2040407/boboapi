@@ -24,7 +24,7 @@ class Robotnews
     {
         $db = Sys::get_container_db_eloquent();
         $dbzend = Sys::get_container_dbreadonly();
-        Sys::debugxieye("record_count:{$record_count},people_count:{$people_count}");
+     //   Sys::debugxieye("record_count:{$record_count},people_count:{$people_count}");
         $redis = Sys::getredis11();
         $key = "index:recommend:list:news";
         
