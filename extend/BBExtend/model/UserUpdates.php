@@ -164,7 +164,7 @@ class UserUpdates extends Model
      * 图片，这时，未审核。
      * @param unknown $card_id
      */
-    public static function insert_pic($uid,$word,$pic_arr)
+    public static function insert_pic($uid,$word,$pic_arr,$baidu_citycode)
     {
         $db = Sys::get_container_db_eloquent();
         
@@ -178,6 +178,7 @@ class UserUpdates extends Model
         }  else {
             $updates->style = 3;
         }
+        $updates->baidu_citycode = $baidu_citycode ;
         $updates->save();
         
         if ( $word ) {
@@ -207,7 +208,7 @@ class UserUpdates extends Model
      * 文字，这时，未审核。
      * @param unknown $card_id
      */
-    public static function insert_word($uid,$word)
+    public static function insert_word($uid,$word,$baidu_citycode)
     {
         $db = Sys::get_container_db_eloquent();
         
@@ -216,6 +217,8 @@ class UserUpdates extends Model
         $updates->create_time = time();
         $updates->is_remove = 0;
         $updates->status = 0; // 未审核
+        $updates->baidu_citycode = $baidu_citycode ; // 未审核
+        
         
         $updates->style = 2;
         $updates->save();
@@ -227,7 +230,7 @@ class UserUpdates extends Model
         $media->word = $content;
         $media->save();
     }
-    
+     
     
     
     /**
@@ -273,6 +276,8 @@ class UserUpdates extends Model
         $updates->create_time = $record_arr['time'];
         $updates->is_remove = 0;
         $updates->status = 1; // 因为审核过，再调用此接口，所以固定为完成状态。
+        $updates->baidu_citycode = $record_arr['baidu_citycode'];; // 因为审核过，再调用此接口，所以固定为完成状态。
+        
         
         if ($record_arr['title']) {
             $updates->style = 6;

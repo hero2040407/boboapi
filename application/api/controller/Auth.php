@@ -20,8 +20,8 @@ class Auth
      */
     public function check($type=1,$uid )
     {
-        if ($uid==1001199) {
-            return ['code'=>1,'data' =>['status' =>3 ] ];
+        if ($uid==10023) {
+            return ['code'=>1,'data' =>['status' =>1 ] ];
         }
         
       

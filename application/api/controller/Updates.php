@@ -23,11 +23,11 @@ class Updates
     
     
     
-    public function add($word='',$pic_json='', $style=0, $uid, $token='')
+    public function add($word='',$pic_json='', $style=0, $uid, $token='',$baidu_citycode='')
     {
         $db = Sys::get_container_db();
         if ($style==2 ) {
-            UserUpdates::insert_word($uid, $word);
+            UserUpdates::insert_word($uid, $word,$baidu_citycode);
         }
         
         if ( $style == 3 || $style==5 ) {
@@ -36,7 +36,7 @@ class Updates
          //   Sys::debugxieye($pic_arr );
             if (isset ( $pic_arr[0]['pic_width']) && isset ( $pic_arr[0]['pic_height']) 
                     && isset ( $pic_arr[0]['url'])    ) {
-               UserUpdates::insert_pic($uid, $word, $pic_arr);
+                        UserUpdates::insert_pic($uid, $word, $pic_arr,$baidu_citycode);
             } else {
                 return ['code'=>0,'message' =>'参数错误' ];
             }
@@ -55,26 +55,54 @@ class Updates
         return ['code'=>1, 'data' => $temp ];
     }
     
-    //动态,1发现，2星动态。
-    public function index($uid=10000,$startid=0, $length=10,$type=1)
+    //动态,1发现，2星动态。3发现关注，4发现同城
+    public function index($uid=10000,$startid=0, $length=10,$type=1,$baidu_citycode='')
     {
         $startid=intval($startid);
         $length=intval($length);
+        $uid = intval($uid);
         
 
         $db = Sys::get_container_dbreadonly();
-        $sql="select * from bb_users_updates 
-   
-   order by create_time desc limit ?,?";
         
+        if ($type==1) {
+        $sql="select * from bb_users_updates 
+   where status=1
+   order by create_time desc limit ?,?";
+        $result = $db->fetchAll($sql,[ $startid, $length ]);
+        
+        }
         if ($type==2) {
             $sql="select * from bb_users_updates 
-              where agent_uid >0
+              where agent_uid >0 and  status=1
               order by create_time desc limit ?,?";
-            
+            $result = $db->fetchAll($sql,[ $startid, $length ]);
         }
         
-        $result = $db->fetchAll($sql,[ $startid, $length ]);
+        if ($type==3) {
+            $sql="select * from bb_users_updates
+              where exists (
+                select 1 from bb_focus 
+                 where bb_focus.uid = ?
+                   and bb_focus.focus_uid = bb_users_updates.uid
+
+              )
+              and  status=1
+              order by create_time desc limit ?,?";
+            $result = $db->fetchAll($sql,[$uid, $startid, $length ]);
+        }
+        if ($type==4  ) {
+            
+            
+            $sql="select * from bb_users_updates
+              where baidu_citycode=?
+              and  status=1
+              order by create_time desc limit ?,?";
+            $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);
+        }
+        
+        
+        
         $new=[];
         foreach ($result as $v) {
             $id = $v['id'];
