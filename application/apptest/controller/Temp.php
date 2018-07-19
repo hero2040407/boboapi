@@ -32,6 +32,22 @@ class Temp
     
     public function index($time=0)
     {
+        $con=mysqli_connect("127.0.0.1","root","123456","bobo",'3307');
+        if (mysqli_connect_errno($con))
+        {
+            echo "连接 MySQL 失败: " . mysqli_connect_error();
+        }
+        
+        $sql="show tables";
+        $result=mysqli_query($con,$sql);
+        
+        // 关联数组
+        $row=mysqli_fetch_all($result);
+        dump($row);
+        //printf ("%s : %s)",$row["name"],$row["url"]);
+        
+        
+        
 //        $db = Sys::get_container_db();
 //        foreach (range(1,300) as $v) {
 //            $db->insert("bb_audition_card", [

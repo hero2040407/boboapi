@@ -105,13 +105,13 @@ return (file_get_contents( dirname(__FILE__) . '/xieye_id.php') == '88' ) ?
 'type' => 'mysql',
 // 服务器地址
 // 'hostname' => '10.0.0.88',
-'hostname' => '127.0.0.1',
+'hostname' => 'files_mysql-db_1',
 // 数据库名
 'database' => 'bobo',
 // 用户名
 'username' => 'root',
 // 密码
-'password' => '',
+'password' => '123456',
 // 'password' => 'xf1980',
 
 // 端口

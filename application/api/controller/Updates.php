@@ -56,7 +56,7 @@ class Updates
     }
     
     //动态,1发现，2星动态。3发现关注，4发现同城，5 品牌馆动态
-    public function index($uid=10000,$startid=0, $length=10,$type=1,$baidu_citycode='')
+    public function index($uid=10000,$startid=0, $length=10,$type=1,$baidu_citycode='', $keyword='')
     {
         $startid=intval($startid);
         $length=intval($length);
@@ -70,6 +70,24 @@ class Updates
    where status=1
    order by create_time desc limit ?,?";
         $result = $db->fetchAll($sql,[ $startid, $length ]);
+        if ($keyword) {
+           $keyword = \BBExtend\common\Str::like($keyword);
+           if ($keyword) {
+               $sql="select * from bb_users_updates
+   where status=1
+     and  exists(
+    select 1 from bb_users_updates_media
+     where bb_users_updates_media.bb_users_updates_id =bb_users_updates.id 
+       and bb_users_updates_media.type=1
+       and bb_users_updates_media.word like '%{$keyword}%'
+  )
+   order by create_time desc limit ?,?";
+               $result = $db->fetchAll($sql,[ $startid, $length ]);
+               
+           }else {
+               $result=[];
+           }
+        }
         
         }
         if ($type==2) {
@@ -114,7 +132,7 @@ class Updates
               order by create_time desc limit ?,?";
             $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);
         }
-        
+       
         
         
         $new=[];

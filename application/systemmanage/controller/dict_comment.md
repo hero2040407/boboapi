@@ -44,6 +44,7 @@
 | bb_resource | type | 1动图，2音乐，3新版动图  |  
 | bb_resource_group | type |  1动图，2音乐，3新版动图 |  
 | bb_group | bb_type | 1邀约群，2大赛群，3VIP童星群（201803加）  |  
+| bb_shop_order | type | 订单类型，1现金，2波币，3碎片兑换，4积分兑换  |  
 | bb_starmaker_application | status |  0未审核，1审核通过，2审核失败，3用户填写个人资料，4最终导师激活 |  
 | bb_task_activity | type | 活动类别 0:擂台 1:活动 2:代言招募, 3:PK  |  
 | bb_toppic | picpath | 图片网址  |
