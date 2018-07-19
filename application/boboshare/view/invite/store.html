@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <div class="form_line3"><button id="index_submit" onclick="check();return false;">下载bobo赢百万大奖</button></div>
+    <div class="form_line3"><button id="index_submit" >下载bobo赢百万大奖</button></div>
     <div class="index_bom"><img src="/invite/images/img_buchenggong.png" /><div class="index_bominfo">下载后请使用验证成功的手机号登录</div></div>
 </div>
 <div id="fade" class="black_overlay"></div>
@@ -46,6 +46,7 @@
 <script type="text/javascript" src="/invite/js/store_common.js"></script>
 <script type="text/javascript">
     (function (doc, win) {
+        
         var docEl = doc.documentElement,
                 resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
                 recalc = function () {
@@ -57,6 +58,13 @@
         if (!doc.addEventListener) return;
         win.addEventListener(resizeEvt, recalc, false);
         doc.addEventListener('DOMContentLoaded', recalc, false);
+        
     })(document, window);
+    window.onload = function(){ 
+　　  alert("活动已结束！")
+    } 
+    
+    
+    
 </script>
 </html>
