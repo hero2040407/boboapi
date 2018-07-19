@@ -55,7 +55,7 @@ class Updates
         return ['code'=>1, 'data' => $temp ];
     }
     
-    //动态,1发现，2星动态。3发现关注，4发现同城
+    //动态,1发现，2星动态。3发现关注，4发现同城，5 品牌馆动态
     public function index($uid=10000,$startid=0, $length=10,$type=1,$baidu_citycode='')
     {
         $startid=intval($startid);
@@ -96,6 +96,20 @@ class Updates
             
             $sql="select * from bb_users_updates
               where baidu_citycode=?
+              and  status=1
+              order by create_time desc limit ?,?";
+            $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);
+        }
+        if ($type==5  ) {
+            
+            
+            $sql="select * from bb_users_updates
+              where exists (
+                select 1 from bb_users 
+                 where bb_users.uid = bb_users_updates.uid
+                   and bb_users.role = 4
+
+              )
               and  status=1
               order by create_time desc limit ?,?";
             $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);

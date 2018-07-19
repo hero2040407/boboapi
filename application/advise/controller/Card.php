@@ -60,7 +60,12 @@ class Card
         if (!$card_row) {
             $redis->incr($key);
             $redis->setTimeout($key, 3* 24 * 3600);
+            
+            return ['code'=>0, 'message'=>'卡号错误'];
+            
         }
+        $card_id = $card_row['id'];
+        
         if ($card_row['status']<4 ) {
             return ['code'=>0, 'message'=>'该卡片不能绑定'];
         }
