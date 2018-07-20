@@ -268,6 +268,15 @@ html;
         
     }
     
+    public function audition_help()
+    {
+        return [
+                'code'=>1,
+                'data'=>\BBExtend\video\AuditionHelp::index(),
+                
+        ];
+    }
+    
 
 }
 

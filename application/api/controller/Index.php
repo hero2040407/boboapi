@@ -99,6 +99,7 @@ limit 9
         $sql="select id from bb_advise 
 where is_active=1
 and end_time > ?
+order by id desc
 limit {$length}";
         $ids= $db->fetchCol($sql,[ $time ]);
         $new=[];
