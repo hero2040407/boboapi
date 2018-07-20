@@ -114,7 +114,8 @@ class UserUpdates extends Model
                 $result2 = $db->fetchRow($sql,[ $record_id ]) ;
                 $result['video_part']=[];
                 $result['video_part']['video_path']  = $result2['video_path'];
-                $result['video_part']['big_pic']     = $result2['big_pic'];
+                $result['video_part']['big_pic']     = 
+              \BBExtend\common\PicPrefixUrl::add_pic_prefix_for_arr_https(   $result2['big_pic']);
                 $result['video_part']['time_length'] =  \BBExtend\common\Date::time_length_display( 
                           $result2['time_length_second'] );
                 
