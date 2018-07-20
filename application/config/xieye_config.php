@@ -471,7 +471,7 @@ return (file_get_contents( dirname(__FILE__) . '/xieye_id.php') == '88' ) ? [
         'var_page' => 'page',
         'list_rows' => 15 
     ],
-    'REDIS_HOST' => '127.0.0.1',
+    'REDIS_HOST' => 'files_redis-db_1',
     'REDIS_PORT' => 6379,
     'REDIS_AUTH' => null ,
     
