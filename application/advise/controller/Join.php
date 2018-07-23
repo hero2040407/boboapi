@@ -61,8 +61,8 @@ class Join
         $info=[];
         $info['advise'] = [
                 'title' =>$advise->title,
-                'date'  => "请联系客服" ,
-                'address'  => "请联系客服" ,
+                'date'  => $advise->audition_time ,
+                'address'  => $advise->audition_address  ,
                 
         ];
         $info['progress']=[
@@ -89,12 +89,11 @@ class Join
                     'money_fen' => $order_row['price_fen'],
             ];
         }
-        $tips=<<<html
-请提前做好准备，使自己能在试镜时展现自己最好的一面！请提前做好准备，使自己能在试镜时展现自己最好的一面！
-html;
+        $tips=$advise->audition_tips;
+        
         $info['tips']=$tips;
         $info['agent'] = $advise->get_agent_info();
-        return $info;
+        return ['code'=>1,'data' =>$info ];
         
     }
     

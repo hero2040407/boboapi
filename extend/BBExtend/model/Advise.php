@@ -357,6 +357,9 @@ and type_id =?
     
     /**
      * 通告详情。
+     * 
+     * 谢烨新加，这里呢，要加是否已参加某个角色的信息。
+     * 
      */
     public function detail_info($uid=0)
     {
@@ -393,6 +396,11 @@ and type_id =?
         }
         
         $info['money_fen'] = $this->money_fen;
+        
+        $sql="select role_id from  bb_advise_join where uid=? and advise_id=?";
+        $role_id = $db->fetchOne($sql,[ $uid, $this->id ]);
+        
+        $info['has_join_role_id'] = intval( $role_id );
         
          return $info;        
     }
