@@ -29,6 +29,9 @@ class Join
                         'info_arr'=>$info_arr,
                         'record' => $record_arr,
                         'money_fen' => $advise->money_fen,
+                        
+                        'money_yuan' => $advise->get_money_yuan(),
+                        
                         'advise_id' =>$advise_id,
                         'role_id'   =>$role_id,
                 ],

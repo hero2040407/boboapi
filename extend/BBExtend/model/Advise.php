@@ -228,6 +228,13 @@ and type_id =?
         }
     }
     
+    
+    public function get_money_yuan(){
+        $a = $this->money_fen;
+        $a = intval($a);
+        return $a /100;
+    }
+    
     // 参加人数
     public function get_join_count()
     {
