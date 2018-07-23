@@ -228,6 +228,34 @@ and type_id =?
         }
     }
     
+    // 参加人数
+    public function get_join_count()
+    {
+        $db = Sys::get_container_dbreadonly();
+        
+        // 查审核通过的短视频
+        if($this->money_fen==0 ) {
+            $sql="select count(*) from  bb_record 
+                   where
+                   bb_record.type = 6
+                   and bb_record.is_remove=0
+                   and bb_record.audit=1
+                   and bb_record.activity_id = ?
+             )
+";
+            $join_count = $db->fetchOne($sql, [ $this->id ]);
+            
+            
+        }else {
+            // 查join表
+            
+            $sql="select count(*) from bb_advise_join
+              where  advise_id=? 
+";
+            $join_count = $db->fetchOne($sql, [ $this->id ]);
+        }
+        return $join_count;
+    }
     
     /**
      * 得到通告详情。
@@ -249,10 +277,7 @@ and type_id =?
         $sql="select name from  bb_advise_type where id=?";
         $type_name = $db->fetchOne($sql,[ $this->type ]);
         
-        $sql="select count(*) from bb_advise_join 
-              where  advise_id=? ";
-        $join_count = $db->fetchOne($sql, [ $this->id ]);
-       // audition_card_type
+        $join_count = $this->get_join_count() ;
        
         $audition_card_name='';
         $audition_card_type=0;
