@@ -241,7 +241,7 @@ and type_id =?
                    and bb_record.is_remove=0
                    and bb_record.audit=1
                    and bb_record.activity_id = ?
-             )
+             
 ";
             $join_count = $db->fetchOne($sql, [ $this->id ]);
             
