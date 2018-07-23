@@ -260,7 +260,7 @@ html;
                 "detail"=>$detail,
                 "standard"=>$standard,
                 "user" =>[
-                   "pic" => "https://bobo.yimwing.com/public/toppic/topdefault.png",     
+                   "pic" => "http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/help/logo.png",     
                         "nickname"=>"怪兽客服",
                         "phone" => "400-880-2610",
                 ],
