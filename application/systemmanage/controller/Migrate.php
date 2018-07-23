@@ -93,12 +93,12 @@ class Migrate {
         
         echo "<br/>==========================================================================<br />";
         echo "<br/>==========================================================================<br />";
-        echo '<br />当前数据库版本:' . $version;
+        echo '<br />current version:' . $version;
         
         if ($boo)
-            echo '<br/>建表全部结束OK';
+            echo '<br/>create table success!';
         else
-            echo '<br/>数据库表结构没有更新，您现在无需建表';
+            echo '<br/>no change.';
     }
     
     /**

@@ -1,4 +1,22 @@
 
+
+## docker 使用命令
+~~~
+启动php开发套件
+cd /docker_study/zphal/files && ../bin/docker-compose  up -d
+
+
+进入php容器
+docker exec -it files_php-fpm_1 bash
+
+数据迁移
+php ./public/index.php /command/migrate
+
+
+进入mysql容器
+docker exec  -it  files_mysql-db_1  bash
+~~~
+
 ## mysql常用命令
 
 转换表和所有字段的字符集。  
