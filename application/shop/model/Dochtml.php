@@ -585,7 +585,7 @@ class Dochtml
               self::get_href('mysql常用命令').
               
       '
-             <li><a target="_blank" href="http://192.168.1.210:3000/project/45/interface/api">后台api文档</a></li>
+             <li><a target="_blank" href="http://192.168.31.210:3000/project/45/interface/api">后台api文档</a></li>
        </ol>
 
 
