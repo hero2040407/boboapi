@@ -304,11 +304,20 @@ and type_id =?
             
             
         }
+        // 加字段，is_end
+        $is_end=0;
+        if ($this->is_active==0) {
+            $is_end=1;
+        }
+        if ($this->end_time  > time() ) {
+            $is_end=1;
+        }
         
         
         return [
            'address' =>$this->address,
                 'time'=> $time_info,
+                'is_end' =>$is_end,
                 'reward' => $this->reward,
                 'title' =>$this->title,
                 'id'=>$this->id,
