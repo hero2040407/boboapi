@@ -201,6 +201,7 @@ and exists(
                     'message/index',
                     'user/index',
                     'user/detail',
+                    'user/export_list',
                     
                     'race/detail',
                     'field/edit',
@@ -229,6 +230,7 @@ and exists(
                     'message/index',
                     'user/index',
                     'user/detail',
+                    'user/export_list',
                     
                     'field/edit',
                     'field/index',

@@ -87,7 +87,7 @@ class Vip
                 $query->select($db::raw(1))
                 ->from('bb_users')
                 ->whereRaw('bb_users.uid = bb_users_info.uid')
-                ->whereRaw('bb_users.sex', $sex )
+                ->where('bb_users.sex', $sex )
                 ->where('bb_users.role', 3)
                 ;
             });
