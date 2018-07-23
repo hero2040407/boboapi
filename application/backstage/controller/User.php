@@ -6,7 +6,7 @@ use BBExtend\DbSelect;
 
 
 
-class User  
+class User   extends Common
 {
     
     public function export_list($ds_id=null, $field_id=null,$proxy_id=null)
