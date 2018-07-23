@@ -291,13 +291,25 @@ and type_id =?
             $card_name=strval($row['name']  );
             $audition_card_type=intval( $row['bigtype'] );
             
+            $card_name_for_index='';
+            if ($audition_card_type==1) {
+                $card_name_for_index='影视试镜卡';
+            }
+            if ($audition_card_type==2) {
+                $card_name_for_index='综艺试镜卡';
+            }
+            if ($audition_card_type==3) {
+                $card_name_for_index='特殊试镜卡';
+            }
+            
+            
         }
         
         
         return [
            'address' =>$this->address,
                 'time'=> $time_info,
-                'reward' => '报酬面议',
+                'reward' => $this->reward,
                 'title' =>$this->title,
                 'id'=>$this->id,
                 'pic'  => $this->pic,
@@ -308,6 +320,7 @@ and type_id =?
                 'auth' =>$this->auth,
                 'card_name' =>$card_name,
                 'card_type'   => $audition_card_type,
+                'card_name_for_index' =>$card_name_for_index,
         ];
     }
     

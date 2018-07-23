@@ -31,7 +31,7 @@ class Index
         $paginator = $db::table('bb_advise')->select(['id',]);
         //$paginator =  $paginator->where( "has_sign", 1 );
         
-        
+        $paginator =  $paginator->where( "is_active", 1 );
         if ($address) {
             $paginator =  $paginator->where( "address", $address );
         }
