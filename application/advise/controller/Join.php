@@ -46,7 +46,7 @@ class Join
         $db = Sys::get_container_db();
         $advise= \BBExtend\model\Advise::find($advise_id);
         if (!$advise) {
-            return ['code'=>0,'message'=>'id err'];
+            return ['code'=>0,'message'=>'advise_id err'];
         }
         $user = \BBExtend\model\User::find($uid);
         if (!$user) {

@@ -316,7 +316,7 @@ and type_id =?
         if ($this->is_active==0) {
             $is_end=1;
         }
-        if ($this->end_time  > time() ) {
+        if ($this->end_time  < time() ) {
             $is_end=1;
         }
         
