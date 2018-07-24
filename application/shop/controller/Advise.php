@@ -41,6 +41,12 @@ class Advise
             return ['message'=>'token err','code'=>0];
         }
         
+        if ( \BBExtend\model\UserCheck::is_phone_renzheng($uid)===false ) {
+            return ['code'=>0, 'message'=>'您需要先绑定手机号才可以使用此功能。'];
+        }
+        
+        
+        
         $db = Sys::get_container_db();
         
         $advise = \BBExtend\model\Advise::find($advise_id);

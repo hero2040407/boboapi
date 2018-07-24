@@ -37,6 +37,11 @@ class Card
             return ['code'=>0, 'message'=>'id err'];
         }
         
+        if ( \BBExtend\model\UserCheck::is_phone_renzheng($uid)===false ) {
+            return ['code'=>0, 'message'=>'您需要先绑定手机号才可以使用此功能。'];
+        }
+        
+        
         if (empty( $serial )) {
             return ['code'=>0, 'message'=>'serial err'];
         }

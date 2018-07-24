@@ -15,6 +15,14 @@ php ./public/index.php /command/migrate
 
 进入mysql容器
 docker exec  -it  files_mysql-db_1  bash
+
+
+启动 / 停止 / 进入 swoole 容器
+
+docker run -d --name swoole  -p 9502:9502 -p 80:80  --mount type=bind,source=/docker_study/swool_study,target=/data/www xutongle/php:7.1-fpm
+docker  container stop swoole  && docker container rm swoole
+docker exec  -it  swoole  bash
+
 ~~~
 
 ## mysql常用命令
