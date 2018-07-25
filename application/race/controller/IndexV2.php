@@ -289,7 +289,7 @@ order by id desc limit 1";
             }
             
             $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
-            $t['app_qudao_id'] =$db->fetchOne($sql);
+            $t['app_qudao_id'] =$v['id'];
             $t['app_qudao_id'] = intval($t['app_qudao_id']);
             
             //加入大赛群信息
@@ -511,7 +511,7 @@ order by id desc limit 1";
             }
             
             $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
-            $t['app_qudao_id'] =$db->fetchOne($sql);
+            $t['app_qudao_id'] =$v['id'];
             $t['app_qudao_id'] = intval($t['app_qudao_id']);
             
             //加入大赛群信息
@@ -655,7 +655,7 @@ order by id desc limit 1";
         }
         
         $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
-        $t['app_qudao_id'] =$db->fetchOne($sql);
+        $t['app_qudao_id'] =$v['id'];
         $t['app_qudao_id'] = intval($t['app_qudao_id']);
         
         //群
