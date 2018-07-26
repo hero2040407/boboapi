@@ -279,7 +279,7 @@ and type_id =?
         $time_info = ( $this->end_time - time() )/( 24 * 3600 );
         $time_info = ceil( $time_info );
         $time_info = "剩余{$time_info}天截止报名";
-        if ( $time_info==0 ||$time_info<0  ) {
+        if ( $this->end_time < time()  ) {
             $time_info ="已结束";
         }
         

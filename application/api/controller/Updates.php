@@ -68,6 +68,7 @@ class Updates
         if ($type==1) {
         $sql="select * from bb_users_updates 
    where status=1
+     and is_remove=0
    order by create_time desc limit ?,?";
         $result = $db->fetchAll($sql,[ $startid, $length ]);
         if ($keyword) {
@@ -75,6 +76,7 @@ class Updates
            if ($keyword) {
                $sql="select * from bb_users_updates
    where status=1
+      and is_remove=0
      and  exists(
     select 1 from bb_users_updates_media
      where bb_users_updates_media.bb_users_updates_id =bb_users_updates.id 
@@ -93,12 +95,14 @@ class Updates
         if ($type==2) {
             $sql="select * from bb_users_updates 
               where agent_uid >0 and  status=1
+               and is_remove=0
               order by create_time desc limit ?,?";
             $result = $db->fetchAll($sql,[ $startid, $length ]);
         }
         
         if ($type==3) {
             $sql="select * from bb_users_updates
+               
               where exists (
                 select 1 from bb_focus 
                  where bb_focus.uid = ?
@@ -106,6 +110,7 @@ class Updates
 
               )
               and  status=1
+              and is_remove=0
               order by create_time desc limit ?,?";
             $result = $db->fetchAll($sql,[$uid, $startid, $length ]);
         }
@@ -115,6 +120,7 @@ class Updates
             $sql="select * from bb_users_updates
               where baidu_citycode=?
               and  status=1
+              and is_remove=0
               order by create_time desc limit ?,?";
             $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);
         }
@@ -129,6 +135,7 @@ class Updates
 
               )
               and  status=1
+              and is_remove=0
               order by create_time desc limit ?,?";
             $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);
         }
