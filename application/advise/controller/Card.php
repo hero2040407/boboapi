@@ -58,6 +58,15 @@ class Card
             return ['code'=>0, 'message'=>'您已参加此通告，不可以重复参加。'];
         }
         
+        if ( $advise->is_active==0  ) {
+            return ['message'=>'通告未激活','code'=>0];
+        }
+        if ( $advise->end_time < time()  ) {
+            return ['message'=>'通告已过期','code'=>0];
+        }
+        
+        
+        
         
         $db = Sys::get_container_db();
         $sql="select * from bb_audition_card where serial =? and online_type=2";

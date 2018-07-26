@@ -61,6 +61,15 @@ class Advise
         if ( $advise->check_card_count() <3 ) {
             return ['message'=>'卡片数量不足，暂时不能购买','code'=>0];
         }
+        if ( $advise->is_active==0  ) {
+            return ['message'=>'通告未激活','code'=>0];
+        }
+        if ( $advise->end_time < time()  ) {
+            return ['message'=>'通告已过期','code'=>0];
+        }
+        
+        
+        
         
         
         
