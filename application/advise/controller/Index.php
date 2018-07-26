@@ -32,7 +32,8 @@ class Index
         //$paginator =  $paginator->where( "has_sign", 1 );
         
         $paginator =  $paginator->where( "is_active", 1 );
-        $paginator =  $paginator->where( "end_time", ">",time() );
+     // 产品不允许。
+     //   $paginator =  $paginator->where( "end_time", ">",time() );
         
         if ($address) {
             $paginator =  $paginator->where( "address", $address );
