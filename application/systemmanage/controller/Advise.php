@@ -9,7 +9,7 @@ namespace app\systemmanage\controller;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
 use BBExtend\aliyun\Common;
-class Actpaiming 
+class Advise 
 {
       
     const maxid = 146;
