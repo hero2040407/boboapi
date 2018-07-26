@@ -65,7 +65,10 @@ class Card
             return ['message'=>'通告已过期','code'=>0];
         }
         
-        
+        // xieye ,现在查条件。
+        if ( $advise->can_join_by_auth( $uid ) ) {
+            return ['message'=>'此通告需要vip或更高级别，请升级您的用户级别','code'=>0];
+        }
         
         
         $db = Sys::get_container_db();

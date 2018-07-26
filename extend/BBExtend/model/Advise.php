@@ -228,6 +228,33 @@ and type_id =?
         }
     }
     
+    public function can_join_by_auth($uid)
+    {
+        // 分3种情况。
+//         0不限，31 vip, 32 签约童星。
+        if ( $this->auth==0 ) {
+            return true;
+        }
+//         $user = \BBExtend\model\User::find( $uid );
+        if ($this->auth == 31) {
+            if (\BBExtend\model\UserCheck::is_vip_or_high($uid)  ) {
+                return true;
+            }else {
+                return false;
+            }
+            
+        }
+        if ($this->auth == 32) {
+            if (\BBExtend\model\UserCheck::is_sign_check(  $uid)  ) {
+                return true;
+            }else {
+                return false;
+            }
+            
+        }
+        return false;
+    }
+    
     
     public function get_money_yuan(){
         $a = $this->money_fen;
