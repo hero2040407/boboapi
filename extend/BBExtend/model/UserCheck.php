@@ -72,13 +72,28 @@ class UserCheck extends User
     
     // 是否签约
     public static function is_sign_check($uid){
-        $user = self::is_vip_or_high( $uid);
+        
+        $user = \BBExtend\model\User::find($uid);
         if ($user && $user->is_sign() ) {
             return $user;
+        }else {
+            return false;
         }
+        
+        
+//         $user = self::is_vip_or_high( $uid);
+//         if ($user && $user->is_sign() ) {
+//             return $user;
+//         }
         
         return false;
     }
+    
+//     public static function can_join_advise($uid,$advise)
+//     {
+        
+//     }
+    
     
        
 }

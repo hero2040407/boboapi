@@ -1700,9 +1700,9 @@ and exists (select 1 from bb_push where bb_push.event='publish'
         $login_type = input('?param.login_type')?(int)input('param.login_type'):0;
         $userlogin_token = input('?param.userlogin_token')?input('param.userlogin_token'):'';
         
-        if ( $login_type==3 ) {
-            return ['code'=>0, 'message' =>'对不起，手机帐号不可以解除绑定' ];
-        }
+//         if ( $login_type==3 ) {
+//             return ['code'=>0, 'message' =>'对不起，手机帐号不可以解除绑定' ];
+//         }
         
         if (\app\user\model\Exists::userhExists($uid)!=1) {
             return ['message'=>'没有当前的用户ID','code'=>0];

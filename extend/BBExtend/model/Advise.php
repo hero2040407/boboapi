@@ -81,6 +81,7 @@ class Advise extends Model
             $sql="select * from bb_audition_card 
 where status=4 and uid=0 
 and type_id =?
+and online_type=1
 
 ";
             $card_row = $db->fetchRow($sql, $advise->audition_card_type );
@@ -203,14 +204,14 @@ and type_id =?
         return false;
     }
     
-    
+    // xieye ：201807现在只查线上的类型，注意！！
     public function check_card_count(){
         if ($this->audition_card_type==0) {
             return 100000;
         }
         
         $db = Sys::get_container_dbreadonly();
-        $sql="select count(*) from bb_audition_card where status=4 and type_id=?";
+        $sql="select count(*) from bb_audition_card where status=4 and type_id=? and online_type=1 ";
         $count = $db->fetchOne($sql, $this->audition_card_type);
         return $count;
     }
@@ -239,10 +240,11 @@ and type_id =?
         if ($this->auth == 31) {
             if (\BBExtend\model\UserCheck::is_vip_or_high($uid)  ) {
                 return true;
-            }else {
-                return false;
             }
-            
+            if (\BBExtend\model\UserCheck::is_sign_check(  $uid)  ) {
+                return true;
+            }
+            return false;
         }
         if ($this->auth == 32) {
             if (\BBExtend\model\UserCheck::is_sign_check(  $uid)  ) {

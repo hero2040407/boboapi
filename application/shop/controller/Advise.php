@@ -18,7 +18,122 @@ use BBExtend\Sys;
 class Advise 
 {
     
-    
+    /**
+     * 购买或者兑换物品下订单
+     *
+     * paytype ali或者wx
+     * mobile 只有两个值，android或者ios
+     */
+    public function sign_buy($advise_id=0, $role_id=0, $uid=0,$token )
+    {
+        $goods_id = $ds_id =$advise_id=  intval($advise_id);
+        $uid = intval($uid);
+        
+        $role_id = intval( $role_id );
+        
+        $user =  \BBExtend\model\User::find($uid);
+        if (!$user) {
+            return ['message'=>'uid err','code'=>0];
+        }
+        if (!$user->check_token($token)) {
+            return ['message'=>'token err','code'=>0];
+        }
+        
+        if ( \BBExtend\model\UserCheck::is_sign_check($uid)===false ) {
+            return ['code'=>0, 'message'=>'您是签约用户的话才可以享有免费特权'];
+        }
+        
+        
+        
+        $db = Sys::get_container_db();
+        
+        $advise = \BBExtend\model\Advise::find($advise_id);
+        if (!$advise) {
+            return ['message'=>'id err','code'=>0];
+        }
+        
+        if ( $advise->money_fen ==0 ) {
+            return ['message'=>'无需支付金额','code'=>0];
+        }
+        
+        if ( $advise->check_card_count() <3 ) {
+            return ['message'=>'卡片数量不足，暂时不能购买','code'=>0];
+        }
+        if ( $advise->is_active==0  ) {
+            return ['message'=>'通告未激活','code'=>0];
+        }
+        if ( $advise->end_time < time()  ) {
+            return ['message'=>'通告已过期','code'=>0];
+        }
+        
+       
+        // 谢烨，现在判断这个人付钱是否合适
+        if ($advise->has_join( $uid)) {
+            return ['message'=>'您已经参加此通告，不可重复报名','code'=>0];
+            
+        }
+        
+        
+        
+        //否则，应该把订单表中置为成功！
+        $advise = \BBExtend\model\Advise::find($advise_id);
+        
+//         Sys::debugxieye("hui diao :15");
+        // xieye，现在要绑定一张试镜卡。
+        $db = Sys::get_container_db();
+        
+        //  用乐观锁死循环，确保用户得到一张卡片。
+        while (true) {
+            $sql="select * from bb_audition_card
+where status=4 and uid=0
+and type_id =?
+     and online_type=1
+";
+            $card_row = $db->fetchRow($sql, $advise->audition_card_type );
+            
+            if(!$card_row){
+                exit;
+            }
+            
+            $version_old = $card_row['lock_version'];
+            $version_new = $version_old+1;
+            
+            $where = "id = ". $card_row['id'] . "  and lock_version={$version_old}";
+            
+            $rows_affected = $db->update('bb_audition_card', [
+                    'uid' =>$uid,
+                    'lock_version' => $version_new,
+                    'status' =>5,
+                    'bind_time'=>time(),
+                    
+            ], $where);
+        //    Sys::debugxieye("hui diao :xunhuan");
+            if ($rows_affected) {
+                break;
+            }
+        }
+    //    Sys::debugxieye("hui diao :16");
+        
+        
+        // 现在，插入到报名表当中。
+//         $json = $prepare->json_parameter;
+//         $json_arr = json_decode($json,1);
+        
+//         $role_id = $json_arr['role_id'];
+         $card_id = $card_row['id'];
+        
+//         // 对试镜卡表做状态修改。
+//         $sql ="update bb_audition_card set has_pay=1 where id=?";
+//         $db->query($sql,[ $card_id ]);
+        
+        // 调用通用的接口。
+         \BBExtend\model\Advise::public_advise_join($advise_id, $role_id, $uid, $card_id);
+        Sys::debugxieye("hui diao :17");
+        // 返回阿里和微信支付 各自的回复。
+        return ['code'=>1 ];
+        
+        
+    }
    
     /**
      * 购买或者兑换物品下订单

@@ -12,10 +12,20 @@ use BBExtend\model\Advise;
  */
 class Join
 {
-    public function index($advise_id=0,$role_id=0         )
+    public function index($advise_id=0,$role_id=0 ,$uid,$token        )
     {
         $advise_id=intval( $advise_id );
         $role_id = intval( $role_id );
+        $user = \BBExtend\model\User::find($uid);
+        if (!$user) {
+            return ['code'=>0,'message'=>'uid error'];
+        }
+        if (!$user->check_token( $token )) {
+            return ['code'=>0,'message'=>'id error'];
+        }
+        
+        
+        
         
         $advise  = Advise::find($advise_id);
         
@@ -34,6 +44,7 @@ class Join
                         
                         'advise_id' =>$advise_id,
                         'role_id'   =>$role_id,
+                        'is_sign'   => $user->is_sign(),
                 ],
                 
                 
