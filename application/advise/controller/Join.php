@@ -23,12 +23,50 @@ class Join
         if (!$user->check_token( $token )) {
             return ['code'=>0,'message'=>'id error'];
         }
-        
-        
-        
-        
         $advise  = Advise::find($advise_id);
+        if (!$advise) {
+            return ['code'=>0,'message'=>'advise_id error'];
+        }
         
+        
+        // 谢烨，我同时查权限，已参加过，过期了，权限不足，卡片数量不够。
+        // 谢烨，现在判断这个人付钱是否合适
+        $message='';
+        $err=0;
+        if ($advise->has_join( $uid)) {
+            $message='您已经参加此通告，不可重复报名';
+            
+        }
+        
+        if ( $advise->is_active==0  ) {
+            $message='通告未激活';
+        }
+        if ( $advise->end_time < time()  ) {
+            $message='通告已过期';
+        }
+        
+        if (!$advise->can_join_by_auth( $uid )) {
+            $message=$advise->get_msg();
+        }
+        
+        
+        if ( $advise->check_card_count() <3 ) {
+            $message='卡片数量不足，暂时不能购买';
+        }
+        
+        
+        if ($message) {
+            $err=1;
+        }
+       
+        
+        
+        
+        
+        
+//         if ( $advise->check_card_count() <3  ) {
+//             return ['code'=>0,'message' =>'卡片数量不足，目前不可以参加' ];
+//         }
         
         $info_arr= \BBExtend\video\AuditionHelp::index()['info_arr'] ;
        // $record = \BBExtend\model\Record::find(51115);
@@ -45,6 +83,8 @@ class Join
                         'advise_id' =>$advise_id,
                         'role_id'   =>$role_id,
                         'is_sign'   => $user->is_sign(),
+                        'err'  =>$err,
+                        'err_message'=>$message, 
                 ],
                 
                 
