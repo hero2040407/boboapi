@@ -85,6 +85,21 @@ class User extends Model
         
     }
     
+    
+    public function new_role_name()
+    {
+        if ($this->is_sign()) {
+            return "sign";
+        }
+        elseif ($this->role==3 ) {
+            return "vip";
+        }
+        return 'normal';
+    }
+    
+    
+    
+    
     /**
      * 编辑布局
      */
@@ -760,7 +775,7 @@ and exists (
         if ($user && $user->has_sign==1 )
             return true;
         else {
-            return 0;
+            return false;
         }
     }
     

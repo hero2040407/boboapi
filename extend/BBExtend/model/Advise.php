@@ -420,14 +420,18 @@ and online_type=1
             $info['character_list'][] = $role->index_info();
         }
         
+        $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
+        $my_record_count = $db->fetchOne($sql,[$uid, $this->id  ]);
+        
+        
         $info['can_upload_video'] = 0;
         // 谢烨，添加是否可以上传视频。
         if ($this->money_fen==0) {
             $info['can_upload_video'] = 1;
-            $db = Sys::get_container_dbreadonly();
-            $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
-            $count = $db->fetchOne($sql,[$uid, $this->id  ]);
-            if ($count) {
+           // $db = Sys::get_container_dbreadonly();
+           // $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
+            
+            if ($my_record_count) {
                 $info['can_upload_video'] = 0;
             }
             
@@ -439,6 +443,14 @@ and online_type=1
         $role_id = $db->fetchOne($sql,[ $uid, $this->id ]);
         
         $info['has_join_role_id'] = intval( $role_id );
+        $info['my_record_count'] = intval( $my_record_count );
+        
+        // 用户信息，单独提供两个接口。
+        $user = \BBExtend\model\User::find( $uid );
+        
+        $info['user_new_role_name'] =$user->new_role_name();
+        $info['user_is_bind_phone'] =$user->is_bind_phone();
+        
         
          return $info;        
     }
