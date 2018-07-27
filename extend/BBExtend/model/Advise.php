@@ -426,9 +426,11 @@ and online_type=1
         $info['agent'] =$this->get_agent_info();
         
         $info['can_join_by_auth'] = $this->can_join_by_auth($uid);
-        $info['can_join_by_auth_click_info'] = "您需要vip或更高级别才能参加此通告，请升级您的用户级别。";
         
         
+        $info['can_join_by_auth_click_info'] = $this->get_msg();
+        
+         
         
         $info['h5_info'] = $this->h5_info;
         $info['character_list'] =[];

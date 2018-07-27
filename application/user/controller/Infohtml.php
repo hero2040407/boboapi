@@ -24,24 +24,29 @@ class Infohtml extends Controller
         //echo 1;
         $info='';
         $html_info='';
+        $title='';
         $obj = BrandShop::getinfo($uid);
         if ($type==1) {
             $info = $obj->info;
             $html_info = $obj->html_info;
+            $title='品牌馆简介';
         }
         if ($type==2) {
             $info = $obj->rongyu;
             $html_info = $obj->html_rongyu;
+            $title='荣誉资质';
         }
         if ($type==3) {
             $info = '';
             $html_info = $obj->html_kecheng;
+            $title='免费课程';
         }
         //echo 3;
         echo $this->fetch('index',
                 [
                         'info' =>$info,
                         'html_info' => $html_info,
+                        'title' =>$title,
                 ]
         );
       //  echo 2;
