@@ -221,6 +221,23 @@ and online_type=1
     }
     
     
+    
+    public function can_upload($uid)
+    {
+        $db = Sys::get_container_dbreadonly();
+        
+        
+        $sql="select count(*)  from bb_record where uid=? and  type=6 
+           and  activity_id=?     and  audit in(0,2)";
+        $count = $db->fetchOne($sql,[ $uid, $this->id ]);
+        if ($count) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+    
+    
     public function has_join($uid)
     {
         $db = Sys::get_container_dbreadonly();
@@ -441,8 +458,8 @@ and online_type=1
             $info['character_list'][] = $role->index_info();
         }
         
-        $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
-        $my_record_count = $db->fetchOne($sql,[$uid, $this->id  ]);
+//         $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
+//         $my_record_count = $db->fetchOne($sql,[$uid, $this->id  ]);
         
         
         $info['can_upload_video'] = 0;
@@ -452,10 +469,9 @@ and online_type=1
            // $db = Sys::get_container_dbreadonly();
            // $sql="select count(*) from bb_record where uid=? and type=6 and activity_id=?";
             
-            if ($my_record_count) {
+            if ( !$this->can_upload($uid) ) {
                 $info['can_upload_video'] = 0;
             }
-            
         }
         
         $info['money_fen'] = $this->money_fen;
