@@ -124,7 +124,7 @@ class Join
                 
         ];
         $sql="select serial from bb_audition_card where id=?";
-        $card_row = $db->fetchRow($sql,[ $row['audition_cart_id'] ]);
+        $card_row = $db->fetchRow($sql,[ $row['audition_card_id'] ]);
         $serial = $card_row['serial'];
         $info['serial']=$serial;
         

@@ -417,7 +417,7 @@ and online_type=1
         $user = \BBExtend\model\User::find( $agent_uid );
         
         $agent =[
-                'uid' => $user->id,
+                'uid' => $user->uid,
                 'pic' =>$user->get_userpic(),
                 'nickname' => $user->get_nickname(),
                 'phone'  =>$user->get_agent_phone(),
