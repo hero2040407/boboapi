@@ -83,7 +83,7 @@ class Advise extends Model
       //  用乐观锁死循环，确保用户得到一张卡片。
         while (true) {
             $sql="select * from bb_audition_card 
-where status=4 and uid=0 
+where status=2 and uid=0 
 and type_id =?
 and online_type=1
 
@@ -215,7 +215,7 @@ and online_type=1
         }
         
         $db = Sys::get_container_dbreadonly();
-        $sql="select count(*) from bb_audition_card where status=4 and type_id=? and online_type=1 ";
+        $sql="select count(*) from bb_audition_card where status=2 and type_id=? and online_type=1 ";
         $count = $db->fetchOne($sql, $this->audition_card_type);
         return $count;
     }

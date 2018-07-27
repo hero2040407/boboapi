@@ -83,13 +83,13 @@ class Card
         }
         $card_id = $card_row['id'];
         
-        if ($card_row['status']<4 ) {
+        if ($card_row['status']<3 ) {
             return ['code'=>0, 'message'=>'该卡片不能绑定'];
         }
         if ($card_row['status'] >4 ) {
             return ['code'=>0, 'message'=>'不可重复操作'];
         }
-        if ($card_row['status'] == 4 ) {
+        if ($card_row['status'] == 4 || $card_row['status'] == 3) {
             
             if (!$advise->check_relation_of_card( $card_row['id'] ) ) {
                 return ['code'=>0, 'message'=>'您输入的试镜卡编号和当前您选择的通告不对应，请选择正确的通告绑定。'];

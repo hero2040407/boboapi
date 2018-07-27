@@ -85,7 +85,7 @@ class Advise
         //  用乐观锁死循环，确保用户得到一张卡片。
         while (true) {
             $sql="select * from bb_audition_card
-where status=4 and uid=0
+where status=2 and uid=0
 and type_id =?
      and online_type=1
 ";
