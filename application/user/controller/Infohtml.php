@@ -29,7 +29,7 @@ class Infohtml extends Controller
         if ($type==1) {
             $info = $obj->info;
             $html_info = $obj->html_info;
-            $title='品牌馆简介';
+            $title='品牌馆介绍';
         }
         if ($type==2) {
             $info = $obj->rongyu;
