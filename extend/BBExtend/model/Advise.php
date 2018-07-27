@@ -149,7 +149,8 @@ and online_type=1
         $db = Sys::get_container_db();
         $time = time();
         $card = AuditionCard::find ( $card_id );
-        
+     Sys::debug(11);
+     
         // 额外做了一张表，
         $db->insert("bb_audition_card_bind_log", [
                 'uid' =>$uid,
@@ -160,6 +161,7 @@ and online_type=1
         // 对试镜卡表做状态修改。
         $sql ="update bb_audition_card set status=5,bind_time=? ,uid=? where id=?";
         $db->query($sql,[ $time, $uid, $card_id ]);
+        Sys::debug(112);
         
         
         // 添加到参加表里。
@@ -172,6 +174,7 @@ and online_type=1
                 'audition_card_id' =>$card_id,
         ]);
         $advise  = Advise::find ( $advise_id );
+        Sys::debug(113);
         
         
         $content="您已成功报名". $advise->title."，您的试镜卡序列号： ".$card->serial."，请妥善保管。";
@@ -185,6 +188,8 @@ and online_type=1
         ->set_newtype(1)
         ->set_uid($uid)
         ->send();
+        Sys::debug(114);
+        
         
     }
     
