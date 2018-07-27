@@ -18,7 +18,11 @@ class Advise extends Model
     public $timestamps = false;
     
     
+    public $err_msg;
     
+    public function get_msg(){
+        return $this->err_msg;
+    }
     
     private static function success_by_third($paytype){
         if ($paytype=='ali') {
@@ -233,6 +237,26 @@ and online_type=1
     {
         // 分3种情况。
 //         0不限，31 vip, 32 签约童星。
+
+        $user = \BBExtend\model\User::find( $uid );
+        
+        if ($this->auth == 32) {
+            if (\BBExtend\model\UserCheck::is_sign_check(  $uid)  ) {
+                return true;
+            }else {
+                $this->err_msg ='需要签约童星权限才能参加此通告。';
+                return false;
+            }
+            
+        }
+        
+        
+        if (!$user->is_bind_phone()) {
+            $this->err_msg ='需要绑定手机用户或使用手机号登录用户才能参加此通告。';
+            return false;
+        }
+        
+        
         if ( $this->auth==0 ) {
             return true;
         }
@@ -244,16 +268,11 @@ and online_type=1
             if (\BBExtend\model\UserCheck::is_sign_check(  $uid)  ) {
                 return true;
             }
+            $this->err_msg ='需要VIP童星或更高用户权限才能参加此通告。';
             return false;
         }
-        if ($this->auth == 32) {
-            if (\BBExtend\model\UserCheck::is_sign_check(  $uid)  ) {
-                return true;
-            }else {
-                return false;
-            }
-            
-        }
+        
+        $this->err_msg ='需要VIP童星或更高用户权限才能参加此通告。';
         return false;
     }
     
