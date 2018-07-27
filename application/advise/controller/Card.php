@@ -65,6 +65,11 @@ class Card
             return ['message'=>'通告已过期','code'=>0];
         }
         
+        if ( !$advise->check_max_join_count() ) {
+            return ['message'=>'该通告参加人数已满，谢谢您的参与','code'=>0];
+//             $message='该通告参加人数已满，谢谢您的参与';
+        }
+        
         // xieye ,现在查条件。
         if ( !$advise->can_join_by_auth( $uid ) ) {
             return ['message'=>$advise->get_msg() ,'code'=>0];

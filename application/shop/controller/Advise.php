@@ -66,6 +66,10 @@ class Advise
             return ['message'=>'通告已过期','code'=>0];
         }
         
+        if ( !$advise->check_max_join_count() ) {
+            return ['message'=>'该通告参加人数已满，谢谢您的参与','code'=>0];
+            //             $message='该通告参加人数已满，谢谢您的参与';
+        }
        
         // 谢烨，现在判断这个人付钱是否合适
         if ($advise->has_join( $uid)) {
@@ -187,7 +191,10 @@ and type_id =?
         if ( !$advise->can_join_by_auth( $uid ) ) {
             return ['message'=>$advise->get_msg() ,'code'=>0];
         }
-        
+        if ( !$advise->check_max_join_count() ) {
+            return ['message'=>'该通告参加人数已满，谢谢您的参与','code'=>0];
+            //             $message='该通告参加人数已满，谢谢您的参与';
+        }
         
         
         

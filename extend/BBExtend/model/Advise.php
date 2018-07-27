@@ -220,6 +220,27 @@ and online_type=1
         return $count;
     }
     
+    // 返回真假，真表示无所谓，假表示 最大人数满。
+    public function check_max_join_count()
+    {
+        if ($this->max_join_number==0 ) {
+            return true;
+        }
+        
+        $db = Sys::get_container_dbreadonly();
+        $sql="
+select count(*) from bb_advise_join
+ where  advise_id= ?
+ ";
+        $count = $db->fetchOne($sql, [ $this->id ]);
+        if ( $count >= $this->max_join_number ) {
+            return false;
+        }
+        return true;
+        
+    }
+    
+    
     
     
     public function can_upload($uid)
@@ -480,6 +501,12 @@ and online_type=1
         $role_id = $db->fetchOne($sql,[ $uid, $this->id ]);
         
         $info['has_join_role_id'] = intval( $role_id );
+        
+        
+        // $db = Sys::get_container_dbreadonly();
+        $sql="select count(*) from bb_record 
+          where uid=? and type=6 and activity_id=?  and audit in (0,1)";
+        $my_record_count = $db->fetchOne($sql,[ $uid, $this->id ]);
         $info['my_record_count'] = intval( $my_record_count );
         
         // 用户信息，单独提供两个接口。

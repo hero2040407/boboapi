@@ -54,16 +54,14 @@ class Join
             $message='卡片数量不足，暂时不能购买';
         }
         
+        if ( !$advise->check_max_join_count() ) {
+            $message='该通告参加人数已满，谢谢您的参与';
+        }
         
         if ($message) {
             $err=1;
         }
        
-        
-        
-        
-        
-        
 //         if ( $advise->check_card_count() <3  ) {
 //             return ['code'=>0,'message' =>'卡片数量不足，目前不可以参加' ];
 //         }
