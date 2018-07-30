@@ -45,7 +45,7 @@ class Check
         return  ['code'=>1,'data'=>[ 'success' => $success,  
                 'gold' => $gold, // 波币
                 'bean' => $bean, // 波豆。
-                'new_role_name' => $user->is_sign(),
+                'new_role_name' => $user->new_role_name(),
         ]  ];
         
     }

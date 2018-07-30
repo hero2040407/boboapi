@@ -364,7 +364,7 @@ class BBUser extends Level
         //增加新用户数据
         $time = time();
         $user_platform = md5( $platform_id );
-        $uid = self::get_new_uid();
+     //   $uid = self::get_new_uid();
         
         // 谢烨 2018 05
         $obj = new \BBExtend\model\Minganci();
@@ -372,7 +372,7 @@ class BBUser extends Level
         
         
         $infodata = [
-            'uid'      =>$uid,
+         //   'uid'      =>$uid,
             'nickname' => $nickname,
             'live_cover' => '',
             'device'=>$device,
@@ -434,7 +434,14 @@ class BBUser extends Level
             }
         }
         //添加数据
-        Db::table('bb_users')->insert($infodata);
+        
+        $db3 = Sys::get_container_db();
+        $db3->insert('bb_users',$infodata);
+        $uid = $db3->lastInsertId();
+        
+        
+//         Db::table('bb_users')->insert($infodata);
+        
         \BBExtend\user\Common::register_log($uid,$qudao);
         // 添加平台表数据
         Db::table('bb_users_platform')->insert([

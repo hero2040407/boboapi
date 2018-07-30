@@ -31,6 +31,8 @@ docker exec  -it  swoole  bash
 
 ALTER TABLE bb_starmaker_application CONVERT TO CHARACTER SET utf8mb4  
 
+查看全部变量  
+show global variables like '%log%';
 
 
 查看正在执行的sql命令  
