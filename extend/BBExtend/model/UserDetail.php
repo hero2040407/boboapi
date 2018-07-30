@@ -65,7 +65,20 @@ class UserDetail extends User
         $arr['height'] = $this->get_height();
         $arr['weight'] = $this->get_weight();
         
+        
+        
+        $db = Sys::get_container_dbreadonly();
+        
+        $time = time() - 7 * 24 * 3600;
+        $sql="
+             select count(*) from bb_users_info where vip_time > {$time} or sign_time >{$time}
+ and uid=?
+
+";
+        $arr['is_upgrade'] = $db->fetchOne($sql,[ $this->uid ]);
+        
         return $arr;
+        
         
     }
     

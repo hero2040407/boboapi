@@ -57,7 +57,7 @@ limit 9
             $uid = $v['uid'];
             $user = \BBExtend\model\UserDetail::find($uid);
             $temp = $user->get_info_201807_extend();
-            $temp['is_upgrade'] = $v['is_upgrade'] ; 
+         //   $temp['is_upgrade'] = $v['is_upgrade'] ; 
             $new[]= $temp;
         }
         return $new;
