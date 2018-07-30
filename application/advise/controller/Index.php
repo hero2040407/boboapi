@@ -146,6 +146,9 @@ class Index
     {
     
         $advise = Advise::find($id);
+        if (!$advise) {
+            return ['code'=>0,'message' =>'id err' ];
+        }
         //$temp = $advise->get_index_info();
         return ['code'=>1, 'data' =>$advise->detail_info($uid)   ];
     }

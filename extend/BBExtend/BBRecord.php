@@ -1239,7 +1239,7 @@ class BBRecord
             return 20;
         }
         if ($table == 'bb_record') {
-            // return 20;该视频类型 1：秀场 2：邀约 3：个人验证
+            // return 20;该视频类型 1：秀场 2：邀约 3：个人验证 , 
             if ($type == 3) {
                 return 30;
             }
@@ -1247,17 +1247,20 @@ class BBRecord
                 return 31;
             }
             if ($type == 1) {
-                if ($sort == 0 || $sort == 2) {
-                    return 33;
-                }
-                if ($sort == 1) {
-                    return 32;
-                }
-                if ($sort == 3) {
-                    return 34;
-                }
+                return 33; 
+                
+                
+//                 if ($sort == 0 || $sort == 2) {
+//                     return 33;
+//                 }
+//                 if ($sort == 1) {
+//                     return 32;
+//                 }
+//                 if ($sort == 3) {
+//                     return 34;
+//                 }
             }
-            return 0;
+            return 33;
         }
         return 0;
     }
