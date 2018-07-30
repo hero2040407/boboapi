@@ -321,11 +321,11 @@ class Boboapi
         
         $rule_id = \BBExtend\model\BottomBar::get_rule_id();
         $result = \BBExtend\model\BottomBar::get_pics_for_ios($rule_id);
-        if ($result['version'] != $version ) {
+        if ($result['create_time'] != $version ) {
         
         
             return ['code'=>1,'data'=>[ 'zip' =>$result['zip_path'], 'list'=> $result['all_pic'] , 
-                     'version'=>$result['version']  ]];
+                     'version'=>$result['create_time']  ]];
         }else {
             return ['code'=>1,'data'=>[ 'zip' =>'', 'version'=>$version,'list' =>null  ]];
         }
