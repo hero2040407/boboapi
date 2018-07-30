@@ -12,6 +12,50 @@ class UserCheck extends User
 {
     
     /**
+     * 权限上能否发布模卡,真实性还要考证是否审核是否提交过等等。
+     */
+    public static function can_auth_moka($uid)
+    {
+        // 是vip即可。不管手机和直播认证。
+        // 是
+        
+        $user = \BBExtend\model\User::find($uid);
+        if ($user && $user->role==3 ) {
+            return true;
+        }else {
+            return false;
+        }
+        
+    }
+    
+    
+    // 直播
+    public static function can_auth_push(){
+        
+    }
+    
+    // 动态视频
+    public static function can_auth_updates_record(){
+        
+    }
+    
+    // 动态图片
+    public static function can_auth_updates_pic(){
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
      * 能登录。
      */
     public static function is_user_login($uid){

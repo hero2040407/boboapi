@@ -30,7 +30,7 @@ class Auth
         if ($user ) {
             
             $push = $user->can_push();
-            $card = \BBExtend\model\UserCheck::is_vip_or_high($uid);
+            $card = \BBExtend\model\UserCheck::can_auth_moka($uid);
            
             if ($push && $card) {
                 return ['code'=>1,'data' =>['status' =>4 ] ];
