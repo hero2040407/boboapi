@@ -68,6 +68,11 @@ class User extends Model
      */
     public function can_push()
     {
+        if ( !Sys::is_product_server() ) {
+            return true;
+        }
+        
+        
         if ($this->uid== 8064543) {
             return true;
         }

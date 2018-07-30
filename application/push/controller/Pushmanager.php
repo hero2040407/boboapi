@@ -91,14 +91,10 @@ class Pushmanager extends BBPush
         
         $allow_users_arr= $db->fetchCol($sql);
         
+    //    $temp_user = \BBExtend\model\User::find( $uid );
         
-        if ( \BBExtend\model\User::is_test($uid) || in_array($uid, $allow_users_arr)   
-                || $uid ==8064543 || ( !Sys::is_product_server() )
-                ) {
+        if ( !$tempuser->can_push() ) {
             
-            
-        }else {
-        
             $time =date("H:i:s");
             $date = date("Ymd");
             if (  $date >= "20180410" ){
