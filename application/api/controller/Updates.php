@@ -137,7 +137,7 @@ class Updates
               and  status=1
               and is_remove=0
               order by create_time desc limit ?,?";
-            $result = $db->fetchAll($sql,[ $baidu_citycode,  $startid,  $length ]);
+            $result = $db->fetchAll($sql,[  $startid,  $length ]);
         }
        
         

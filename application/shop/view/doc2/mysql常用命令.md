@@ -27,6 +27,14 @@ docker exec  -it  swoole  bash
 
 ## mysql常用命令
 
+查看php慢日志
+tail /var/log/php-fpm/www-slow.log
+
+查看mysql 慢日志
+tail /var/lib/mysql/master-slow.log
+
+
+
 转换表和所有字段的字符集。  
 
 ALTER TABLE bb_starmaker_application CONVERT TO CHARACTER SET utf8mb4  
@@ -34,6 +42,8 @@ ALTER TABLE bb_starmaker_application CONVERT TO CHARACTER SET utf8mb4
 查看全部变量  
 show global variables like '%log%';
 
+设置慢查询时间
+set global long_query_time=2;
 
 查看正在执行的sql命令  
 
