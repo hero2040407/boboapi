@@ -65,6 +65,8 @@ class WorkerJobPush
             return new  \BBExtend\service\pheanstalk\type\Type180($data);
         }
         
+        
+        
         if ($data->type==114) {
             return new  \BBExtend\service\pheanstalk\type\Type114($data);
         }

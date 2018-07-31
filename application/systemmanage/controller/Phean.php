@@ -38,6 +38,14 @@ class Phean {
         $worker->run();
     }
     
+    public function run_weixin(){
+        \BBExtend\Sys::display_all_error();
+        //这里得在服务器命令行执行。
+        $worker = new \BBExtend\service\pheanstalk\Workerweixin();
+        $worker->run();
+    }
+    
+    
     /**
      * 这是用于测试服的。
      */
@@ -175,6 +183,12 @@ class Phean {
                 $id = preg_replace('#^root\s+(\d+)\s+.+$#', '$1', $v);
                 $new[]=  $id;
             }
+            
+            if (preg_match( '#/systemmanage/phean/run_weixin$#', $v )) {
+                $id = preg_replace('#^root\s+(\d+)\s+.+$#', '$1', $v);
+                $new[]=  $id;
+            }
+            
         }
         return $new;
         

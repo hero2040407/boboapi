@@ -78,9 +78,18 @@ class Login extends BBUser
         //   $json = json_decode ( $result, true );
         if ($json && isset( $json['access_token'] ) && isset( $json['unionid'] )   ){
             //return ['code'=>1,'data' =>$json ] ;
+            
+            $nickname= $pic= '';
+//             $temp = \BBExtend\user\Weixin::get_pic_by_scope_userinfo($json['openid'], $json['access_token']);
+//             if ($temp) {
+//                 $nickname = $temp['nickname'];
+//                 $pic = $temp['pic'];
+//             }
+            
             return $this->index(
-                    $json['openid'], '', \BBExtend\fix\TableType::bb_users__login_type_weixin, 
-                    '',  '',  $json['unionid'] ,  ''  );
+                    $json['openid'], $nickname, \BBExtend\fix\TableType::bb_users__login_type_weixin, 
+                    $pic,  '',  $json['unionid'] ,  ''  );
+            
         }
         return ['code'=>0,'message'=>'授权错误'];
         

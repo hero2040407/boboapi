@@ -13,6 +13,7 @@ use BBExtend\service\pheanstalk\Data;
 use BBExtend\service\pheanstalk\DataDasai;
 
 use BBExtend\service\pheanstalk\WorkerJobPush;
+use BBExtend\service\pheanstalk\DataWeixin;
 
 class PheanProcess
 {
@@ -43,6 +44,32 @@ class PheanProcess
         $data = unserialize( urldecode( $data ) );
         $this->dasai_precess( $data );
     }
+    
+    
+    /**
+     * 这是处理。
+     */
+    public function weixin ( )
+    {
+        $data = $_SERVER['argv'][2];
+        $data = unserialize( urldecode( $data ) );
+        $this->weixin_precess( $data );
+    }
+    
+    
+    private function weixin_precess ( DataWeixin $data )
+    {
+        $uid =  $data->uid;
+        $code = $data->code;
+        $token = $data->token;
+        
+        
+        $db = \BBExtend\Sys::get_container_db();
+        $db->insert( 'bb_alitemp',['uid' => 321 ] );
+    }
+    
+    
+    
     
     private function dasai_precess ( DataDasai $data )
     {

@@ -90,7 +90,26 @@ class Client
     }
     
     
-    
+    /**
+     * 这是点
+     * @param 
+     */
+    public function add_weixin(DataWeixin $data)
+    {
+        //   if (\BBExtend\Sys::is_product_server()) {
+        
+        $beanstalkd = new Pheanstalk('127.0.0.1', '11300');
+        //这是消息数据，在本demo中，type不能省略。区分任务类型。
+        //         $delay = (int) strtotime($data['time']) - time();
+        $delay=0;
+        
+        // 把消息放入队列,1024 是优先级
+        //$delay 非常重要，假设设置10，则该消息10秒后才被放入队列！非常好使。
+        $beanstalkd->useTube( Workerweixin::queue_name  )
+        ->put(serialize($data), 1024, $delay);
+        //    }
+        
+    }
     
     
     
