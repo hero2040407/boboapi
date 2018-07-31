@@ -8,6 +8,9 @@ define('APP_TIME', time() );
 define('ALIPAY_SELLER_ID', '201457175@qq.com' );
 // 大赛报名推送
 define('DASAI_PUSH_QUDAO_ID', 156 );
+// 缺省图片
+define('const_default_pic', "https://bobo.yimwing.com/public/toppic/topdefault.png" );
+
 
 
 \think\Debug::remark('begin_bobo' );

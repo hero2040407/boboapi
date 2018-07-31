@@ -72,6 +72,19 @@ class PheanProcess
             $pic = $temp['pic'];
             $db->insert( 'bb_alitemp',['uid' => 321,'content' => json_encode(['pic' =>$pic,]) ] );
             // 这里，进行替换。
+            
+            // pic需要变成本地。
+            $help = new \BBExtend\common\Oss();
+            // $img_url="http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/temp/5abb126903008";
+            $oss_file_path_no_filename = 'uploads/headpic_date/'.date("Ymd") .'/' ;
+            $result= $help->upload_remote_pic($pic, $oss_file_path_no_filename)  ;
+            if ($result) {
+                $pic = $result;
+            }else {
+                $pic=const_default_pic;
+            }
+            
+            
             $db->update('bb_users',['pic' =>$pic ],'uid='.$uid  );
             
         }
