@@ -60,7 +60,7 @@ class Workjob{
         and bb_focus.focus_uid ={$uid}
         )
         order by is_online desc, permissions desc, login_time desc
-        limit 700
+        limit 300
         ";// 这句话在查粉丝。
         $ids = $db->fetchCol($sql);
         $user = \app\user\model\UserModel::getinstance($uid);
