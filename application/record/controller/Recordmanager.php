@@ -280,27 +280,49 @@ limit {$startid},{$length}
             if ($Data['audit']==1  && isset($Data['activity_id']) &&  $Data['activity_id']>0 ) {
                 return ['message'=>'该视频已参加活动且审核通过，不可删除','code'=>0];
             }
-            $obj = RecordInviteStarmaker::where("record_id", $id)->where( 'status',1 )->first();
-            if ($obj) {
-                //退还波币，且删除邀请
-                //if ($obj) 
-                Currency::add_bobi($uid, $obj->gold, '邀请撤销返还' );
-                if ($Data['audit']==1) {
-                    // 未点评，且审核通过，需要发送消息给星推官。
-                    $client = new \BBExtend\service\pheanstalk\Client();
-                    $client->add(
-                            new \BBExtend\service\pheanstalk\Data($obj->starmaker_uid,
-                                    MessageType::yaoqing_dianping_chexiao, ['record_id' => $id ,], time()  )
-                            );
-                    
-                }
-                
-                
-                $obj->delete();
-//                 return ['message'=>'该视频已邀请星推官评论，不可删除','code'=>0];
-            }
             
+            
+            
+            
+            // 谢烨 201807 这里一段逻辑，不要删除。就是下面的注释不删除。是导师的。
+            
+//             $obj = RecordInviteStarmaker::where("record_id", $id)->where( 'status',1 )->first();
+//             if ($obj) {
+//                 //退还波币，且删除邀请
+//                 //if ($obj) 
+//                 Currency::add_bobi($uid, $obj->gold, '邀请撤销返还' );
+//                 if ($Data['audit']==1) {
+//                     // 未点评，且审核通过，需要发送消息给星推官。
+//                     $client = new \BBExtend\service\pheanstalk\Client();
+//                     $client->add(
+//                             new \BBExtend\service\pheanstalk\Data($obj->starmaker_uid,
+//                                     MessageType::yaoqing_dianping_chexiao, ['record_id' => $id ,], time()  )
+//                             );
+                    
+//                 }
+                
+                
+//                 $obj->delete();
+//             }
+            
+
+            // xieye 201807 删除短视频，检查是否同时删除动态。
+            $db2 = Sys::get_container_db();
+            if ( $Data['type']==6  ) {
+                
+                $sql="select bb_users_updates_id from  bb_users_updates_media where bb_record_id=?";
+                $update_id = $db2->fetchOne($sql, $id);
+                if ($update_id) {
+                    $db2->update('bb_users_updates',['is_remove'=>1], 'id='.$update_id );
+                }
+            }
+    
+
             Db::table('bb_record')->where(['uid'=>$uid,'id'=>$id])->update(['is_remove'=>1]);
+            
+            
+            
+            
             return ['message'=>'删除成功','code'=>1];
         } 
         return ['message'=>'删除失败','code'=>0];
