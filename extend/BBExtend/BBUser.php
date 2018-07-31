@@ -370,6 +370,9 @@ class BBUser extends Level
         $obj = new \BBExtend\model\Minganci();
         $nickname =  $obj->filter_by_asterisk($nickname );
         
+        if (!$nickname) {
+            $nickname='小朋友';
+        }
         
         $infodata = [
          //   'uid'      =>$uid,
@@ -455,10 +458,10 @@ class BBUser extends Level
         $infodata['sex'] = 0;
         $infodata['attestation'] = 0;
         // 添加任务
-        $bb_user_task = ['uid'=> $uid,'time'=> time(),'complete_task_group'=>'0',
-            'complete'=>'0,0,0','reward'=>'0,0,0','task_group'=>'1,2,3',
-            'refresh_time'=>strtotime(date('Ymd')) + 104400];
-        Db::table('bb_task_user')->insert($bb_user_task);
+//         $bb_user_task = ['uid'=> $uid,'time'=> time(),'complete_task_group'=>'0',
+//             'complete'=>'0,0,0','reward'=>'0,0,0','task_group'=>'1,2,3',
+//             'refresh_time'=>strtotime(date('Ymd')) + 104400];
+//         Db::table('bb_task_user')->insert($bb_user_task);
         $infodata['rewind_count'] = 0;
         $infodata['movies_count'] = 0;
         return $infodata;

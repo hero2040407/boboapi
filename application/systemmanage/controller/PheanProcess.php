@@ -59,13 +59,23 @@ class PheanProcess
     
     private function weixin_precess ( DataWeixin $data )
     {
-        $uid =  $data->uid;
-        $code = $data->code;
+        $uid   = $data->uid;
+        $openid  = $data->code;
         $token = $data->token;
         
-        
         $db = \BBExtend\Sys::get_container_db();
-        $db->insert( 'bb_alitemp',['uid' => 321 ] );
+        $db->insert( 'bb_alitemp',['uid' => 321,'content' => json_encode(['token' =>$token,'code'=> $openid ]) ] );
+        
+        $temp = \BBExtend\user\Weixin::get_pic_by_scope_userinfo($openid, $token );
+        if ($temp) {
+            $nickname = $temp['nickname'];
+            $pic = $temp['pic'];
+            $db->insert( 'bb_alitemp',['uid' => 321,'content' => json_encode(['pic' =>$pic,]) ] );
+            // 这里，进行替换。
+            $db->update('bb_users',['pic' =>$pic ],'uid='.$uid  );
+            
+        }
+        
     }
     
     

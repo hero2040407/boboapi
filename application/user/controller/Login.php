@@ -37,6 +37,9 @@ class Login extends BBUser
     const secret = '55a4e4aa42e36a3691ee242c967ffd5f';
     
     
+    public $weixin_openid=null;  //这个参数专门用于微信注册的。
+    public $weixin_token=null; //这个参数专门用于微信注册的。
+    
     
     public function qq_index($code)
     {
@@ -80,6 +83,9 @@ class Login extends BBUser
             //return ['code'=>1,'data' =>$json ] ;
             
             $nickname= $pic= '';
+            $this->weixin_openid = $json['openid'];
+            $this->weixin_token  = $json['access_token'];
+            
 //             $temp = \BBExtend\user\Weixin::get_pic_by_scope_userinfo($json['openid'], $json['access_token']);
 //             if ($temp) {
 //                 $nickname = $temp['nickname'];
@@ -240,6 +246,17 @@ limit 1";
         $UserDB = BBUser::registered( $nickname, $device, $login_type, $login_address, $pic,
                 $platform_id, $unionid );
         $uid = $UserDB['uid'];
+        
+        // 谢烨，今天加微信图片。
+        if ( $this->weixin_openid ) {
+            $client = new \BBExtend\service\pheanstalk\Client();
+            $data = new \BBExtend\service\pheanstalk\DataWeixin($uid, $this->weixin_openid, 
+                    $this->weixin_token  );
+            $client->add_weixin($data);
+            
+        }
+        
+        
         $UserDB['currency'] = Currency::get_currency( $uid );
         
         $obj = \app\user\model\UserModel::getinstance( $uid );
