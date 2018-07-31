@@ -373,6 +373,9 @@ class BBUser extends Level
         if (!$nickname) {
             $nickname='小朋友';
         }
+        if (!$pic) {
+            $pic ='https://bobo.yimwing.com/public/toppic/topdefault.png';
+        }
         
         $infodata = [
          //   'uid'      =>$uid,
