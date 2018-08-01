@@ -13,6 +13,8 @@ use BBExtend\Sys;
  * cd  d:\workspace_utf8\guai2
  * php .\public\index.php command/migrate/index
  * 
+ *  docker 下
+ *  php /data/www/index.php /command/migrate/index
  * 
  * @author 谢烨
  *

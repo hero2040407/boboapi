@@ -93,6 +93,7 @@ class Index
         if ($is_login && $is_login == 1 ) {
             $proxy_id = Session::get('thirdparty_account_id');
             
+            $race  = new \BBExtend\model\Race();
             
             $race->proxy_id = $proxy_id;
             $race->register_start_time = intval( $register_start_time );
@@ -118,7 +119,7 @@ class Index
             
             $race->save();
             
-            return ['code' =>1,];
+            return ['code' =>1,'data' =>[ 'race_id' =>$race->id  ] ];
         }else {
             
             return ['code' =>0, 'message' => '请您先登录'  ];

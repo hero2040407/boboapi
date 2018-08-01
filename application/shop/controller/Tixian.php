@@ -57,12 +57,12 @@ class Tixian extends Controller {
                 datestr = '{$datestr}'
             ";
         $count = $db->fetchOne ( $sql );
-        if ($count) {
-            return [ 
-                'code' => 0,
-                'message' => '您今日已申请过提现，如您已经在微信上关注过"怪兽bobo服务号"，敬请耐心等待' 
-            ];
-        }
+//         if ($count) {
+//             return [ 
+//                 'code' => 0,
+//                 'message' => '您今日已申请过提现，如您已经在微信上关注过"怪兽bobo服务号"，敬请耐心等待' 
+//             ];
+//         }
         
         // 查该用户当前波豆是否够提现。
         $currency_arr = Currency::get_currency ( $uid );
