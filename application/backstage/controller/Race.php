@@ -244,13 +244,16 @@ class Race  extends Common
             return ['code'=>400, 'message'=> 'uid错误' ];
         }
         
+        if ($this->get_userinfo_role()=='admin') {
+           $race->is_active = $is_active?1:0;
+        }
         
         $race->proxy_id = $proxy_id;
         $race->register_start_time = intval( $register_start_time );
         $race->register_end_time = intval( $register_end_time );
         $race->start_time = intval( $start_time );
         $race->end_time = intval( $end_time );
-        $race->is_active = $is_active?1:0;
+        
         
         $race->uid = intval( $uid );
         $race->title = strval( $title );

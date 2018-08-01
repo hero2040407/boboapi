@@ -621,6 +621,7 @@ class Dochtml
       self::get_href('大赛参赛热门视频201706').
       self::get_href('大赛演示视频').
       self::get_href('大赛叫号系统').
+      self::get_href('大赛第三方代理').
       
       '
        </ol>

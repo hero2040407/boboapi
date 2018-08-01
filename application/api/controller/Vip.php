@@ -161,7 +161,15 @@ limit {$startid},{$length}
         } else {
             $time = time() - 7 * 24 * 3600;
             $sql="
-             select * from bb_users_info where vip_time > {$time} or sign_time >{$time}
+             select * from bb_users_info where (vip_time > {$time} or sign_time >{$time})
+and exists(
+
+  select 1 from bb_users 
+   where bb_users.role=3
+     and bb_users.uid = bb_users_info.uid
+
+)
+
 order by id desc limit {$startid},{$length}
 
 ";
