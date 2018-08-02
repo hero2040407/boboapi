@@ -33,9 +33,7 @@ class Robotupdates
         
         $people_count = intval( $people_count );
         $record_count = intval( $record_count );
-//         if ($people_count >10) {
-//             $people_count=10;
-//         }
+
         if ($people_count <1) {
             $people_count=1;
         }
@@ -47,12 +45,10 @@ class Robotupdates
         $people_arr=[];
         for ($i=0;$i<$people_count*2;$i++ ) {
            $sql="
-SELECT t1.uid
-FROM bb_users AS t1 inner JOIN 
-(SELECT ROUND(RAND() * 5000000+ 3000000) AS uid) AS t2
-WHERE t1.uid >= t2.uid
-and t1.permissions=10
-ORDER BY t1.uid LIMIT 1
+select uid 
+from bb_users 
+where permissions=99
+ORDER BY rand() LIMIT 1
 ";
              $uid = $dbzend->fetchOne($sql);
              if ($uid) 
@@ -94,19 +90,11 @@ limit {$record_count}
                     break;
                 }
                 
-//                 $db::table('bb_moive_view_log')->insert( [
-//                         'uid' => intval($uid),
-//                         'target_uid' => $record['uid'],
-                        
-//                         'movie_id'   => $record['id'],
-//                         'create_time' => time(),
-//                         'is_robot' =>1,
-//                 ]);
                 $look_random = mt_rand(10,100);
                 $db::table('bb_users_updates')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);
-                echo "uid:{$uid} view news id:{$record['id']},count:{$look_random}\n";
+           //     echo "uid:{$uid} view news id:{$record['id']},count:{$look_random}\n";
                 
                 // 点赞。
                 $rand = mt_rand(1,100);
@@ -116,13 +104,6 @@ limit {$record_count}
                     ]);
                     
                 }
-                
-                
-//                 $record_model = new \BBExtend\model\Record();
-//                 $record_model->add_views(intval( $record['id'] )); 
-                
-               // echo "read: uid:{$uid}, record_id:{$record['id']} \n";
-              
                 
                 
                 // 注意，这里重新定义随机数，这样就分散了，评论的视频不一定点赞。
@@ -136,7 +117,7 @@ limit {$record_count}
             }
             
         }
-        return ['code'=>1];
+        return ['code'=>1,'data' =>['list' => $record_arr ] ];
         
     }
     
@@ -149,11 +130,7 @@ limit {$record_count}
      */
     private function comment($uid, $record_id)
     {
-      //  $db = Sys::get_container_db_eloquent();
         $content = $this->get_comment_content();
-        
-     //   $uid =10010;
-     //   $record_id=354;
         
         $comment = new \BBExtend\model\UserUpdatesComment();
         $comment->create_time = time();
@@ -163,9 +140,6 @@ limit {$record_count}
         $comment->updates_id = $record_id;
         $comment->is_reply = 0;
         $comment->save();
-        
-        // $article = \BBExtend\model\WebArticle::find( $record_id );
-        // $article->incr(  );
         
         $db = Sys::get_container_db_eloquent();
         
