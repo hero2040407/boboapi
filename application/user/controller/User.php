@@ -19,6 +19,7 @@ use BBExtend\BBRecord;
 use BBExtend\Currency;
 use BBExtend\message\Message;
 use BBExtend\BBUser;
+use think\Config;
 
 use BBExtend\user\TaskManager;
 use BBExtend\user\Ranking;
@@ -779,12 +780,64 @@ limit 1";
     }
     
     
+    public function  get_falseinfo($uid=100){
+        $random = mt_rand(100000,999999);
+        $random = md5($random);
+        $random = substr($random,0,13);
+        
+        $phone = mt_rand(10000000, 99999999);
+        $phone = "139".$phone;
+        $email = mt_rand(10000000, 99999999) ."@qq.com";
+        $pic = "http://upload.guaishoubobo.com/uploads/headpic/{$random}.JPG";
+        $data = [
+           'uid' =>$uid,
+                'platform_id'=>'',
+                'nickname'=>'小朋友',
+                'pic'=>$pic,
+                'phone'=>$phone,
+                'device'=>'',
+                'address'=>'',
+                'login_type'=>'',
+                'login_time'=>'',
+                'login_count'=>'',
+                'logout_time'=>'',
+                'sex'=>'1',
+                'email'=>$email,
+                'birthday'=>'2007-10-10',
+                'register_time'=>'',
+                'signature'=>'',
+                'level'=>'',
+                'age'=>8,
+                'gold'=>100,
+                'constellation'=>'白羊座',
+                'user_agent'=>"(BoBo)/(4.1.2) (android;7.0)/bobo (phone:MI 5) (MacAddress:02:00:00:00:00:00)",
+                
+        ];
+        
+        return [
+            'code'=>1,
+                'data'=>$data,
+                
+        ];
+        
+       
+    }
+    
+    
     /**
      * 返回用户详细信息
      */
     public function get_userallinfo($token='')
     {
         $uid = input('?param.uid')?(int)input('param.uid'):0;
+        $user_agent =Config::get("http_head_user_agent");
+        
+        if ( preg_match('#python#i', $user_agent) ) {
+            return $this->get_falseinfo($uid);
+        }
+        
+        
+        
         $self_uid = input('?param.self_uid')?(int)input('param.self_uid'):$uid;//2016 10加字段。兼容性
         $token = input('?param.token')?input('param.token'):'';
         
@@ -796,11 +849,11 @@ limit 1";
             
             $user_detail = \BBExtend\model\User::find( $UserDB['uid']);
             $user_self = \BBExtend\model\User::find( $self_uid);
-            if ( $token ){
+         //   if ( $token ){
                 if (!$user_self->check_token($token)) {
-                    return ['code'=>-201, 'message' => 'token错误' ];
+                    return ['code'=>0, 'message' => '' ];
                 }
-            }
+         //   }
             
             
             $UserDB['currency'] = self::get_currency($UserDB['uid']);
