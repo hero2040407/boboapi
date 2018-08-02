@@ -837,6 +837,24 @@ limit 1";
             return $this->get_falseinfo($uid);
         }
         
+        $redis = Sys::get_container_redis();
+        $ip = Config::get("http_head_ip");
+        $key ="limit:ip:{$ip}";
+        if ($ip == '122.224.90.210' || $ip =='127.0.0.1' ) {
+            
+        }else {
+            // 每分钟最多60次。
+            $new = $redis->incr($key);
+            if ($new<3) {
+                $redis->setTimeout($key,60 );// 仅能存活60秒
+            }
+            if ($new >30) {
+                sleep(3);
+                // 限制每分钟每个ip最多访问30次这个接口。
+                
+                return ['code'=>0];
+            }
+        }
         
         
         $self_uid = input('?param.self_uid')?(int)input('param.self_uid'):$uid;//2016 10加字段。兼容性
