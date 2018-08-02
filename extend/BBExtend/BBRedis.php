@@ -89,7 +89,7 @@ class BBRedis
      */
     public function hSet($key,$field,$value)
     {
-        \BBExtend\Sys::debugxieye("bbredis:hset:{$key}:{$field}");
+   //     \BBExtend\Sys::debugxieye("bbredis:hset:{$key}:{$field}");
         return $this->redis->hSet($key,$field,$value);
     }
 
@@ -107,7 +107,7 @@ class BBRedis
     
     public function Set($key,$value)
     {
-        \BBExtend\Sys::debugxieye("bbredis:set:{$key}:");
+  //      \BBExtend\Sys::debugxieye("bbredis:set:{$key}:");
         return $this->redis->set($key,$value);
     }
     /**

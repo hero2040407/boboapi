@@ -43,7 +43,7 @@ class Index
                 }
                 Session::set('thirdparty_is_login', '1');
                 Session::set('thirdparty_account_id', $row['id']);
-                
+                Session::set('thirdparty_phone', $phone );
                 
                 return ['code' =>1, 'data' =>[ 'account' =>$row['account'],'password' => $row['pwd_original']  ] ];
                 
@@ -66,6 +66,7 @@ class Index
                 
                 Session::set('thirdparty_is_login', '1');
                 Session::set('thirdparty_account_id', $id);
+                Session::set('thirdparty_phone', $phone );
                 
                 return ['code' =>1, 'data' =>[ 'account' =>$phone ,'password' =>$pwd  ] ];
             }
@@ -102,7 +103,18 @@ class Index
             $race->end_time = intval( $end_time );
             
             
-            $race->uid = 0;
+            
+            $phone = Session::get('thirdparty_phone');
+            $db = Sys::get_container_dbreadonly();
+            $sql="select uid from bb_users_platform where platform_id=md5( ?  ) and type=3";
+            $uid = $db->fetchOne($sql ,[ $phone ] );
+            if  (!$uid) {
+                $uid=10000;
+            }
+            
+            $race->uid = $uid;
+            
+            
             $race->is_active =0;
             
             $race->title = strval( $title );

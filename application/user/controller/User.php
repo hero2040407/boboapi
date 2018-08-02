@@ -832,13 +832,10 @@ limit 1";
     {
         $uid = input('?param.uid')?(int)input('param.uid'):0;
         $user_agent =Config::get("http_head_user_agent");
-        
-        if ( preg_match('#python#i', $user_agent) ) {
-            return $this->get_falseinfo($uid);
-        }
+        $ip = Config::get("http_head_ip");
         
         $redis = Sys::get_container_redis();
-        $ip = Config::get("http_head_ip");
+        
         $key ="limit:ip:{$ip}";
         if ($ip == '122.224.90.210' || $ip =='127.0.0.1' ) {
             
@@ -849,12 +846,21 @@ limit 1";
                 $redis->setTimeout($key,60 );// 仅能存活60秒
             }
             if ($new >30) {
-                sleep(3);
+                sleep(10);
                 // 限制每分钟每个ip最多访问30次这个接口。
-                
+                Sys::debugxieye("get_userallinfo, 每分钟30次限制，ip:{$ip}");
                 return ['code'=>0];
             }
         }
+        
+        
+        if ( preg_match('#python#i', $user_agent) ) {
+            Sys::debugxieye("get_userallinfo, python拦截，ip:{$ip}");
+            
+            return $this->get_falseinfo($uid);
+        }
+        
+        
         
         
         $self_uid = input('?param.self_uid')?(int)input('param.self_uid'):$uid;//2016 10加字段。兼容性
@@ -876,6 +882,9 @@ limit 1";
             $user_self = \BBExtend\model\User::find( $self_uid);
             if ( $token ){
                 if (!$user_self->check_token($token)) {
+                    
+                    Sys::debugxieye("get_userallinfo, 有token，但错误,ip:{$ip}");
+                    
                     return ['code'=>0, 'message' => '' ];
                 }
             }
