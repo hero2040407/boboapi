@@ -20,6 +20,7 @@ use BBExtend\Currency;
 use BBExtend\message\Message;
 use BBExtend\BBUser;
 use think\Config;
+use think\Cookie;
 
 use BBExtend\user\TaskManager;
 use BBExtend\user\Ranking;
@@ -796,10 +797,10 @@ limit 1";
                 'pic'=>$pic,
                 'phone'=>$phone,
                 'device'=>'',
-                'address'=>'',
-                'login_type'=>'',
-                'login_time'=>'',
-                'login_count'=>'',
+                'address'=>'上海市',
+                'login_type'=>'3',
+                'login_time'=>time()-24*3600,
+                'login_count'=>'2',
                 'logout_time'=>'',
                 'sex'=>'1',
                 'email'=>$email,
@@ -841,6 +842,12 @@ limit 1";
         $self_uid = input('?param.self_uid')?(int)input('param.self_uid'):$uid;//2016 10加字段。兼容性
         $token = input('?param.token')?input('param.token'):'';
         
+        if (!$token) {
+            $token = Cookie::get('token');
+            
+        }
+        
+        
         $UserDB = self::get_user($uid);
         if ($UserDB)
         {
@@ -849,11 +856,11 @@ limit 1";
             
             $user_detail = \BBExtend\model\User::find( $UserDB['uid']);
             $user_self = \BBExtend\model\User::find( $self_uid);
-         //   if ( $token ){
+            if ( $token ){
                 if (!$user_self->check_token($token)) {
                     return ['code'=>0, 'message' => '' ];
                 }
-         //   }
+            }
             
             
             $UserDB['currency'] = self::get_currency($UserDB['uid']);
