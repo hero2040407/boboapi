@@ -672,6 +672,8 @@ class Dochtml
       self::get_href('增加视频观看').
       self::get_href('增加粉').
       self::get_href('增加新闻观看').
+      self::get_href('增加动态观看数').
+      
       self::get_href('短视频生成').
       self::get_href('活动排名确认').
       

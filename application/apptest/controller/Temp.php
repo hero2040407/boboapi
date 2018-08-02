@@ -6,7 +6,8 @@ use BBExtend\DbSelect;
 use BBExtend\common\Date;
 use BBExtend\fix\MessageType;
 use think\Db;
-
+use BBExtend\common\EmojiData;
+use BBExtend\user\Comment;
 
 
 
@@ -30,13 +31,80 @@ class Temp
     
     
     
-    public function index($time=0)
+    public function index( )
     {
-        $client = new \BBExtend\service\pheanstalk\Client();
-        $data = new \BBExtend\service\pheanstalk\DataWeixin(1,2,3);
-        $client->add_weixin($data);
+        $content = $this->get_comment_content();
+        
+        $uid =10010;
+        $record_id=354;
+        
+        $comment = new \BBExtend\model\UserUpdatesComment();
+        $comment->create_time = time();
+        $comment->uid = $uid;
+        $comment->status=1; // 设置为已审核
+        $comment->content = $content;
+        $comment->updates_id = $record_id;
+        $comment->is_reply = 0;
+        $comment->save();
+        
+        // $article = \BBExtend\model\WebArticle::find( $record_id );
+        // $article->incr(  );
+        
+        $db = Sys::get_container_db_eloquent();
+        
+        $db::table('bb_users_updates')->where("id",'=', $record_id )->increment('comment_count');
+        
+        return $comment->id;
+        
+      //  echo 123;
+        
         
     }
+    
+    
+   
+    
+    
+    private function get_comment_content()
+    {
+        $arr = range(1,5);
+        $emoji_one = EmojiData::get_one_str();
+        $emoji_str ='';
+        $count = $arr[ array_rand( $arr ) ];
+        
+        for($i=0; $i< $count;$i++) {
+            $emoji_str .= $emoji_one;
+        }
+        
+        // 纯文字。
+        $db = Sys::get_container_db_eloquent();
+        $dbzend = Sys::get_container_dbreadonly();
+        $sql="select content from  bb_comment_public order by rand() limit 1";
+        //$content_str = DbSelect::fetchOne($db, $sql);
+        $content_str = $dbzend->fetchOne($sql);
+        
+        
+        $content_str = trim( $content_str );
+        
+        // 颜文字
+        $yan_str = Comment::get_one();
+        //         $result='嗯嗯';
+        $rand = mt_rand(1,100);
+        if ($rand< 20) {
+            $result = $content_str;
+        }elseif ($rand < ( 20+ 30 ) ) {
+            $result = $content_str . $yan_str;
+        }elseif ($rand < ( 20+ 30 + 20 ) ) {
+            $result = $content_str . $emoji_str;
+        }elseif ($rand < ( 20+ 30 + 20 + 20 ) ) {
+            $result = $yan_str;
+        }else {
+            $result = $emoji_str;
+        }
+        return $result;
+        
+    }
+    
     
     
     public function index222(){

@@ -56,7 +56,7 @@ FROM bb_users AS t1 inner JOIN
 (SELECT ROUND(RAND() * 5000000+ 3000000) AS uid) AS t2
 WHERE t1.uid >= t2.uid
 and t1.permissions=10
-ORDER BY t1.uid LIMIT 1;
+ORDER BY t1.uid LIMIT 1
 ";
              $uid = $dbzend->fetchOne($sql);
              if ($uid) 

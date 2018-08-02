@@ -45,7 +45,7 @@ class Index
                 Session::set('thirdparty_account_id', $row['id']);
                 
                 
-                return ['code' =>1, 'data' =>[ 'account' =>$row['account'],'password' =>'pwd_original'  ] ];
+                return ['code' =>1, 'data' =>[ 'account' =>$row['account'],'password' => $row['pwd_original']  ] ];
                 
             }else {
                 // 现在我要创建代理账号。

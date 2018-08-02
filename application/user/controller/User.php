@@ -930,6 +930,10 @@ limit 1";
                 $ach2 = new \BBExtend\model\Achievement();
                 $ach = $ach2->create_default_by_user($user);
                 $UserDB['achievement'] = $ach->get_pic_arr();
+                
+                
+                $UserDB['phone']='***********';
+                
             }
             // xieye 20171017，关于禁止token字段的代码
             if (isset($UserDB['userlogin_token'] )) {

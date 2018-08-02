@@ -6,7 +6,8 @@ use BBExtend\DbSelect;
 use BBExtend\common\EmojiData;
 use BBExtend\user\Comment;
 
-class Robotnews
+
+class Robotupdates
 {
     
     /**
@@ -20,17 +21,16 @@ class Robotnews
      * 
      * @return number[]|number[]
      */
-    public function index($record_count=1, $people_count=1)
+    public function index($record_count=1 )
     {
+        $people_count=1;
+        
         $db = Sys::get_container_db_eloquent();
         $dbzend = Sys::get_container_dbreadonly();
      //   Sys::debugxieye("record_count:{$record_count},people_count:{$people_count}");
         $redis = Sys::getredis11();
         $key = "index:recommend:list:news";
         
-//         $sql="update bb_alitemp set test1=test1+1 where id=1";
-//         $db::update($sql);
-//         $db::update($sql);
         $people_count = intval( $people_count );
         $record_count = intval( $record_count );
 //         if ($people_count >10) {
@@ -40,9 +40,6 @@ class Robotnews
             $people_count=1;
         }
         
-//         if ($record_count > 5) {
-//             $record_count =5;
-//         }
         if ($record_count <1) {
             $record_count =1;
         }
@@ -71,9 +68,9 @@ ORDER BY t1.uid LIMIT 1
         }else {
             $time = time() - 3 * 30*24 * 3600;
         }
-        $temp_click_count = mt_rand(20000,32000);
+        $temp_click_count = mt_rand(10000,20000);
         $sql="
-          select * from web_article 
+          select * from bb_users_updates 
 where is_remove=0
 and status=1
 and click_count < {$temp_click_count}
@@ -81,16 +78,6 @@ and create_time > {$time}
 order by rand() 
 limit {$record_count}
 ";
-//         if ($rand < 30) {
-            
-//             $records  = $redis->get($key);
-//             $records = unserialize($records);
-//             shuffle($records);
-//             $record_arr=[];
-//             foreach ( range(1, $record_count)  as $v) {
-//                 $record_arr[]= array_pop( $records );
-//             }
-//         }
 //         else {
             $record_arr = $dbzend->fetchAll($sql);
 //         }
@@ -116,10 +103,21 @@ limit {$record_count}
 //                         'is_robot' =>1,
 //                 ]);
                 $look_random = mt_rand(10,100);
-                $db::table('web_article')->where('id', $record['id'] )->update([
+                $db::table('bb_users_updates')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);
                 echo "uid:{$uid} view news id:{$record['id']},count:{$look_random}\n";
+                
+                // 点赞。
+                $rand = mt_rand(1,100);
+                if ($rand < 30) {
+                    $db::table('bb_users_updates')->where('id', $record['id'] )->update([
+                            'like_count' => $db::raw( 'like_count + 1' ),
+                    ]);
+                    
+                }
+                
+                
 //                 $record_model = new \BBExtend\model\Record();
 //                 $record_model->add_views(intval( $record['id'] )); 
                 
@@ -133,11 +131,6 @@ limit {$record_count}
                     // 机器人评论。/
                     $this->comment(intval($uid),  $record['id'] );
                     echo "uid:{$uid} commented news id:{$record['id']}\n";
-//                     $db::table('bb_alitemp')->insert([
-//                             'create_time' => date("Y-m-d H:i:s"),
-//                             'url' => "comment: uid:{$uid}, record_id:{$record['id']} ",
-//                             'test1' => 445,
-//                             ]);
                     
                 }
             }
@@ -148,14 +141,7 @@ limit {$record_count}
     }
     
     
-    private function test(){
-        $db = Sys::get_container_db_eloquent();
-        $sql="select content from bb_record_comments 
-order by id desc 
-limit 10";
-        $result = DbSelect::fetchCol($db, $sql);
-        return $result;
-    }
+    
     
     /**
      * 每10个点赞里有大概0.5~1.5个评论，
@@ -166,24 +152,26 @@ limit 10";
       //  $db = Sys::get_container_db_eloquent();
         $content = $this->get_comment_content();
         
+     //   $uid =10010;
+     //   $record_id=354;
         
-        $comment = new \BBExtend\model\WebArticleComment();
+        $comment = new \BBExtend\model\UserUpdatesComment();
         $comment->create_time = time();
         $comment->uid = $uid;
         $comment->status=1; // 设置为已审核
         $comment->content = $content;
-        $comment->article_id = $record_id;
+        $comment->updates_id = $record_id;
         $comment->is_reply = 0;
         $comment->save();
         
-       // $article = \BBExtend\model\WebArticle::find( $record_id );
-       // $article->incr(  );
+        // $article = \BBExtend\model\WebArticle::find( $record_id );
+        // $article->incr(  );
         
         $db = Sys::get_container_db_eloquent();
         
-        $db::table('web_article')->where("id",'=', $record_id )->increment('comment_count');
+        $db::table('bb_users_updates')->where("id",'=', $record_id )->increment('comment_count');
         
-        return $$comment->id;
+        return $comment->id;
     }
     
     /**
