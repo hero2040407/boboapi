@@ -138,6 +138,8 @@ class Index
             
             $race->save();
             
+            $this->add_pic($race->id,$banner);
+            
             return ['code' =>1,'data' =>[ 'race_id' =>$race->id  ] ];
         }else {
             
@@ -150,7 +152,32 @@ class Index
         
     }
     
-    
+    private function add_pic($race_id,$banner)
+    {
+        
+        $ds_id = $race_id;
+        
+        $db = Sys::get_container_db_eloquent();
+        $db::table("ds_lunbo")->where('ds_id', $ds_id)->delete();
+      //  $pic_arr =  \BBExtend\common\Json::decode($list);
+        //  Sys::debugxieye($pic_arr);
+        
+        //foreach ($pic_arr as $v) {
+          //  $v2 = $v;
+            //$v2['ds_id'] = $ds_id;
+            $db::table("ds_lunbo")->insert([
+                    'ds_id' =>$race_id,
+                    'sort' =>1,
+                    'pic_bignew' => $banner,
+                    
+            ]);
+            
+        //}
+        //Sys::debugxieye( '3:'. time() );
+        
+        return ['code'=>1];
+        
+    }
     
 
 }
