@@ -23,6 +23,8 @@ class Robotupdates
      */
     public function index($record_count=1 )
     {
+        Sys::debugxieye("增加点击  count=". $record_count);
+         
         $people_count=1;
         
         $db = Sys::get_container_db_eloquent();

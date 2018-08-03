@@ -6,6 +6,7 @@ use BBExtend\Sys;
 use BBExtend\DbSelect;
 use BBExtend\service\Sms;
 use think\Session;
+use BBExtend\model\UserCreate;
 
 /**
  * 234
@@ -44,8 +45,12 @@ class Index
                 Session::set('thirdparty_is_login', '1');
                 Session::set('thirdparty_account_id', $row['id']);
                 Session::set('thirdparty_phone', $phone );
+                $uid = UserCreate::create($phone);
+                Session::set('thirdparty_uid', $uid );
                 
-                return ['code' =>1, 'data' =>[ 'account' =>$row['account'],'password' => $row['pwd_original']  ] ];
+                return ['code' =>1, 'data' =>[ 
+                        'uid'  =>$uid,
+                        'account' =>$row['account'],'password' => $row['pwd_original']  ] ];
                 
             }else {
                 // 现在我要创建代理账号。
@@ -68,7 +73,12 @@ class Index
                 Session::set('thirdparty_account_id', $id);
                 Session::set('thirdparty_phone', $phone );
                 
-                return ['code' =>1, 'data' =>[ 'account' =>$phone ,'password' =>$pwd  ] ];
+                $uid = UserCreate::create($phone);
+                Session::set('thirdparty_uid', $uid );
+                
+                return ['code' =>1, 'data' =>[ 
+                        'uid'  =>$uid,
+                        'account' =>$phone ,'password' =>$pwd  ] ];
             }
             
             
@@ -94,6 +104,8 @@ class Index
         if ($is_login && $is_login == 1 ) {
             $proxy_id = Session::get('thirdparty_account_id');
             
+            $uid = Session::get('thirdparty_uid');
+            
             $race  = new \BBExtend\model\Race();
             
             $race->proxy_id = $proxy_id;
@@ -105,12 +117,7 @@ class Index
             
             
             $phone = Session::get('thirdparty_phone');
-            $db = Sys::get_container_dbreadonly();
-            $sql="select uid from bb_users_platform where platform_id=md5( ?  ) and type=3";
-            $uid = $db->fetchOne($sql ,[ $phone ] );
-            if  (!$uid) {
-                $uid=10000;
-            }
+           
             
             $race->uid = $uid;
             

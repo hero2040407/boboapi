@@ -342,7 +342,9 @@ limit {$startid},{$length}
         $activity = input('?post.activity_id')?(int)input('post.activity_id'):0;//活动id
         $theme_title = input('?post.theme_title')?(string)input('post.theme_title'):'';//话题
         
-        
+        if ($type==1) {
+            $type=6;
+        }
         
         if (!in_array($type, [1,2,3,4,5,6,])){
             return ['code'=>0,'message'=>'type error2'];

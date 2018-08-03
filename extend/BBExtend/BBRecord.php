@@ -960,11 +960,11 @@ class BBRecord
         $DataDB['is_focus'] = Focus::get_focus_state( $uid, $DB['uid'] );
         $DataDB['like'] = (int) $DB['like'];
         $Look = false;
-        if ($Look !== false) {
-            $DataDB['people'] = (int) $Look;
-        } else {
-            $DataDB['people'] = (int) $DB['look'];
-        }
+//         if ($Look !== false) {
+//             $DataDB['people'] = (int) $Look;
+//         } else {
+//             $DataDB['people'] = (int) $DB['look'];
+//         }
         
         // xieye 20180107
         $record_model = new \BBExtend\model\Record( );
@@ -1003,10 +1003,10 @@ class BBRecord
                                                           // ,'audit'=>1,'is_remove'=>0])->count();
                                                           
         // 2017 04
-        if (self::display_comment_count_by_version( )) {
+       
             $DataDB['comment_count'] = \BBExtend\BBComments::Get_comments_count( 
                     "bb_record_comments", $DataDB['id'] );
-        }
+        //}
         // 2017 04
         $db = Sys::get_container_db( );
         $sql = "select ds_id,rank from ds_record where record_id={$DataDB['id']}";
@@ -1240,6 +1240,15 @@ class BBRecord
         }
         if ($table == 'bb_record') {
             // return 20;该视频类型 1：秀场 2：邀约 3：个人验证 , 
+            
+            if ($type== 6 ) {
+                return 36;
+            }
+            if ($type== 4 ) {
+                return 35;
+            }
+            
+            
             if ($type == 3) {
                 return 30;
             }

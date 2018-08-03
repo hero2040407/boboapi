@@ -10,6 +10,8 @@ define('ALIPAY_SELLER_ID', '201457175@qq.com' );
 define('DASAI_PUSH_QUDAO_ID', 156 );
 // 缺省图片
 define('const_default_pic', "https://bobo.yimwing.com/public/toppic/topdefault.png" );
+// 是否使用通告的值显示通告短视频。
+define('USE_UPDATES_RECORD', 1 );
 
 
 

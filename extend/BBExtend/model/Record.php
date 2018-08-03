@@ -24,9 +24,46 @@ class Record extends Model
         return $this->belongsTo('BBExtend\model\User', 'uid', 'uid');
     }
     
+    // 查关联的通告
+    public function updates()
+    {
+        // 重要说明：
+        return $this->belongsTo('BBExtend\model\User', 'activity_id', 'id');
+    }
+    
+    
+    
     public function is_checked(){
         return $this->audit == \BBExtend\fix\TableType::bb_record__audit_yishenhe;
     }
+    
+    /**
+     * 得到点击量
+     */
+    public function get_updates_view_count()
+    {
+        if ($this->type==6) {
+            
+        }
+        return $this->good_get_views();
+    }
+    
+    /**
+     * 得到点赞
+     */
+    public function get_updates_like_count()
+    {
+        
+    }
+    /**
+     * 得到评论数量
+     */
+    public function get_updates_like_count()
+    {
+        
+    }
+    
+    
     
     
     
@@ -55,6 +92,31 @@ class Record extends Model
 //         $redis->incr( $this->views_key_by_room_id($room_id) );
         return intval( $result );
     }
+    
+    
+    // get必须有两个方法，这是方法一
+    public function good_get_views()
+    {
+        $redis = Sys::get_container_redis();
+        $id = $this->id;
+        $key = $this->views_key($id);
+        // 先取，发现没有，就调用init，然后再取
+        $result = $redis->get( $key );
+        if ($result === false) {
+            //             $db = Sys::get_container_db_eloquent();
+            //             $sql="select room_id
+            //                    from bb_record where id=".intval($id);
+            //             $room_id = DbSelect::fetchOne($db, $sql);
+            
+            $result =  $this->initv($id);
+            return $result;
+            
+        }else {
+            return intval( $result );
+        }
+        
+    }
+    
     
    
     // get必须有两个方法，这是方法一

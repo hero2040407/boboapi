@@ -120,7 +120,7 @@ class RecordCheck
             $db = Sys::get_container_db();
             $sql = "select * from bb_record where id = ". $this->record_id;
             $recordDB = $db->fetchRow($sql);
-            BBRedis::getInstance('record')->hMset($recordDB['room_id'].'record',$recordDB);
+       //     BBRedis::getInstance('record')->hMset($recordDB['room_id'].'record',$recordDB);
             
             $reason = strval( $this->fail_reason);
             if (!$reason) {

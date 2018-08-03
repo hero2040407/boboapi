@@ -287,6 +287,10 @@ class UserUpdates extends Model
         }
         $updates->save();
         
+        $db::table('bb_record')->where('id',$record_arr['id'])->where('type',6)
+           ->update(['activity_id' =>$updates->id ]);
+        
+        
         if ( $record_arr['title'] ) {
         
           $media = new UserUpdatesMedia();
@@ -310,5 +314,23 @@ class UserUpdates extends Model
     }
 
    
+    public function get_record_id()
+    {
+        if ($this->type==4 || $this->type ==6) {
+            $db = Sys::get_container_db();
+            $sql = "select bb_record_id from bb_users_updates_media 
+                   where type=3 and bb_users_updates_id=?";
+            $record_id = $db->fetchOne($sql,  $this->id );
+            return intval($record_id);
+//             if ($record_id) {
+//                 ret
+                
+//             }
+        }
+        return 0;
+    }
+    
+    
+    
 
 }

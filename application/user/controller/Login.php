@@ -262,7 +262,12 @@ limit 1";
         $obj = \app\user\model\UserModel::getinstance( $uid );
         $UserDB['age'] = $obj->get_userage( );
         $UserDB['pic'] = $obj->get_userpic( );
-        $UserDB['user_count'] = Db::table( 'bb_users' )->count( );
+       // $UserDB['user_count'] = Db::table( 'bb_users' )->count( );
+        
+        // 谢烨 201808
+        $UserDB['user_count'] = 0;
+        
+        
         
         // xieye，除了钱表，还有经验表，必须注册时添加 2016 10 24
         \BBExtend\Level::get_user_exp( $uid );
