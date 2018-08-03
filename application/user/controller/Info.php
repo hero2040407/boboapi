@@ -11,6 +11,8 @@ use BBExtend\DbSelect;
 use BBExtend\model\Achievement as Ach;
 
 use BBExtend\model\UserInfo;
+use think\Config;
+use think\Cookie;
 
 class Info 
 {
@@ -482,7 +484,8 @@ and exists (
         return $new;
     }
     
-    public function get_public($uid)
+    
+    private function get_public($uid)
     {
         $uid = intval($uid);
         $user = \BBExtend\model\User::find($uid);
@@ -500,7 +503,7 @@ and exists (
     
     
     
-    public function get_public_addi($uid,$self_uid)
+    private function get_public_addi($uid,$self_uid)
     {
         $uid = intval($uid);
         $user = \BBExtend\model\User::find($uid);
@@ -527,7 +530,59 @@ and exists (
      */
     public function get_public_addi_video($uid,$self_uid, $length=2)
     {
-        Sys::display_all_error();
+//         Sys::display_all_error();
+
+        
+        
+        $user_agent =Config::get("http_head_user_agent");
+        $ip = Config::get("http_head_ip");
+        
+        $redis = Sys::get_container_redis();
+        
+        $key ="limit:ip:{$ip}";
+        $key_hour ="limit:ip:hour:{$ip}";
+        $key_list ="limit:ip:week";
+        
+      //  $limit_ip = $redis->
+        $has_limit =  $redis->sIsMember($key_list, $ip);
+        if ($has_limit===true) {
+            sleep(30);exit;
+        }
+         
+        //$limit = $redis->get( $k );
+        
+        
+        if ($ip == '122.224.90.210' || $ip =='127.0.0.1' ) {
+            
+        }else {
+            // 每分钟最多60次。
+            $new = $redis->incr($key);
+            $new2 = $redis->incr($key_hour);
+            if ($new < 3) {
+                $redis->setTimeout($key,60 );// 仅能存活1分钟
+            }
+            if ($new2  < 3) {
+                $redis->setTimeout($key_hour,  600 );// 存活10分钟
+            }
+            
+            if ($new2 >100) { // 10分钟超过100次，永久限制。
+                $redis->sadd( $key_list, $ip );
+                Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
+                return ['code'=>0];
+            }
+            
+            if ($new >20) { // 每分钟超过20次，限制。
+                Sys::debugxieye("get_public_addi_video, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
+                sleep(30);
+                // 限制每分钟每个ip最多访问30次这个接口。
+                
+                return ['code'=>0];
+            }
+        }
+        
+        
+        
+        
         $uid = intval($uid);
         $user = \BBExtend\model\User::find($uid);
         if (!$user) {

@@ -113,7 +113,7 @@ limit {$record_count}
                 if ($rand <= 3) {
                     // 机器人评论。/
                     $this->comment(intval($uid),  $record['id'] );
-                    echo "uid:{$uid} commented news id:{$record['id']}\n";
+                 //   echo "uid:{$uid} commented news id:{$record['id']}\n";
                     
                 }
             }

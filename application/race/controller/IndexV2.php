@@ -546,7 +546,7 @@ order by id desc limit 1";
         $db = Sys::get_container_db();
         $sql ="
         select * from ds_race
-        where is_active=1 and parent=0
+        where  parent=0
         and id = {$ds_id}
         order by sort desc , start_time desc
         ";
