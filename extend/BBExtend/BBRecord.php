@@ -967,8 +967,10 @@ class BBRecord
 //         }
         
         // xieye 20180107
-        $record_model = new \BBExtend\model\Record( );
-        $DataDB['people'] = $record_model->get_views( $DataDB['id'] );
+        $record_model =  \BBExtend\model\Record::find( $DataDB['id'] );
+//         $record_model
+        $DataDB['people'] = $record_model->get_updates_view_count();
+        
         
         $DataDB['nickname'] = $user->get_nickname( );
         $Pic = $DB['big_pic'];
@@ -1027,7 +1029,7 @@ class BBRecord
         
         // xieye 20180107,掩盖bug
         if ($DataDB['people'] < $DataDB['like']) {
-            $DataDB['people'] = intval( $DataDB['like'] * 1.05 );
+     //       $DataDB['people'] = intval( $DataDB['like'] * 1.05 );
         }
         
         return $DataDB;

@@ -163,16 +163,16 @@ class RecordCheck
             }
             
             
-            // 发消息
+            // 审核成功，结果如下
             if ($this->audit==1) {
                 
-                if ($this->type==1) {
+                if ($this->type==1 || $this->type==6 ) {
                 // 谢烨，201807 ，添加到动态表中去。
                    \BBExtend\model\UserUpdates::insert_record( $recordDB );
                 }
                 
                 // 2 邀约活动，3，个人认证,4大赛，1才艺秀。
-                if ($this->type==1) {
+                if ($this->type==1 || $this->type==6 ) {
                     $ach = new \BBExtend\user\achievement\Neirong($this->uid);
                     $ach->update(1);
                 }
@@ -190,19 +190,19 @@ class RecordCheck
                 
                 $this->push_fensi($this->uid,$this->record_id,$title);
                 
-                // 谢烨，20180105，给星推官发消息
-                $sql="select * from bb_record_invite_starmaker
-                       where record_id = {$this->record_id}
-                         and status=1
-                 ";
-                $invite = $db->fetchRow($sql);
-                if ($invite) {
-                    $client = new \BBExtend\service\pheanstalk\Client();
-                    $client->add(
-                            new \BBExtend\service\pheanstalk\Data($invite['starmaker_uid'],
-                                    MessageType::yaoqing_dianping, ['record_id' => $this->record_id ,], time()  )
-                            );
-                }
+//                 // 谢烨，20180105，给星推官发消息
+//                 $sql="select * from bb_record_invite_starmaker
+//                        where record_id = {$this->record_id}
+//                          and status=1
+//                  ";
+//                 $invite = $db->fetchRow($sql);
+//                 if ($invite) {
+//                     $client = new \BBExtend\service\pheanstalk\Client();
+//                     $client->add(
+//                             new \BBExtend\service\pheanstalk\Data($invite['starmaker_uid'],
+//                                     MessageType::yaoqing_dianping, ['record_id' => $this->record_id ,], time()  )
+//                             );
+//                 }
                 
                 if ($this->type==4) { // 大赛
                     
@@ -322,9 +322,9 @@ class RecordCheck
         $audit = $this->audit;
         $db = Sys::get_container_db();
         
-        $this->tuibobi();
+    //    $this->tuibobi();
         
-        if ($this->type == 1) { // 普通短视频。//1秀场，2邀约，3个人认证
+        if ($this->type == 6) { // 普通短视频。//1秀场，2邀约，3个人认证
             
             $sql = "select * from bb_record where id = ". $this->record_id;
             $recordDB = $db->fetchRow($sql);
@@ -369,24 +369,24 @@ class RecordCheck
             return true;
         }
         
-        $this->act_id = $this->record['activity_id'];
-        $this->activity = Db::table('bb_task_activity')->where('id', $this->act_id)->find();
-        if (!$this->activity) {
-            throw  new \Exception('activity not found');
-        }
-        $this->task_id = $this->activity['task_id'];
+//         $this->act_id = $this->record['activity_id'];
+//         $this->activity = Db::table('bb_task_activity')->where('id', $this->act_id)->find();
+//         if (!$this->activity) {
+//             throw  new \Exception('activity not found');
+//         }
+//         $this->task_id = $this->activity['task_id'];
         
-        if ($this->audit==1) {
-           return $this->success();
-        }
+//         if ($this->audit==1) {
+//            return $this->success();
+//         }
         
-        if ($this->audit==2) {
-            if ($this->type==3) {
-                return $this->fail_type3();
-            }
-           return $this->fail();
-        }
-        $this->message='参数错误';
+//         if ($this->audit==2) {
+//             if ($this->type==3) {
+//                 return $this->fail_type3();
+//             }
+//            return $this->fail();
+//         }
+//         $this->message='参数错误';
         return  false;
         
     }

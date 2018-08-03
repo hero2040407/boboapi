@@ -316,7 +316,8 @@ class UserUpdates extends Model
    
     public function get_record_id()
     {
-        if ($this->type==4 || $this->type ==6) {
+        if ($this->style==4 || $this->style ==6) {
+//             echo "123";
             $db = Sys::get_container_db();
             $sql = "select bb_record_id from bb_users_updates_media 
                    where type=3 and bb_users_updates_id=?";

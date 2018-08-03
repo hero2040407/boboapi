@@ -47,10 +47,16 @@ where style in(4,6)
  ";
        $updates_id_arr = $db->fetchCol($sql);
        foreach ( $updates_id_arr as $updates_id  ) {
-           echo "updates_id:{$updates_id}\n";
+          // echo "updates_id:{$updates_id}\n";
            $updates_obj = \BBExtend\model\UserUpdates::find($updates_id);
+           if ($updates_obj) {
+            //   echo "update_obj:you  \n";
+           }
+           
            $record_id = $updates_obj->get_record_id();
+           
            if ($record_id) {
+               echo "updates_id:{$updates_id} 22!\n";
                $db->update('bb_record',['type' =>6,'activity_id'=> $updates_id  ],'id='.$record_id);
                echo "updates_id:{$updates_id} success!\n";
            }

@@ -28,7 +28,7 @@ class Record extends Model
     public function updates()
     {
         // 重要说明：
-        return $this->belongsTo('BBExtend\model\User', 'activity_id', 'id');
+        return $this->belongsTo('BBExtend\model\UserUpdates', 'activity_id', 'id');
     }
     
     
@@ -43,7 +43,7 @@ class Record extends Model
     public function get_updates_view_count()
     {
         if ($this->type==6) {
-            
+            return $this->updates->click_count;
         }
         return $this->good_get_views();
     }
@@ -58,7 +58,7 @@ class Record extends Model
     /**
      * 得到评论数量
      */
-    public function get_updates_like_count()
+    public function get_updates_like_count22()
     {
         
     }
