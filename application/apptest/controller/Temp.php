@@ -30,8 +30,13 @@ class Temp
    }
     
     
+   public function index()
+   {
+       echo "aaaab";
+   }
+   
     
-    public function index( )
+    public function help_comment( )
     {
         $content = $this->get_comment_content();
         

@@ -845,17 +845,18 @@ limit 1";
             if ($new<3) {
                 $redis->setTimeout($key,60 );// 仅能存活60秒
             }
-            if ($new >30) {
-                sleep(10);
+            if ($new >20) {
+                Sys::debugxieye("get_userallinfo, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
+                sleep(50);
                 // 限制每分钟每个ip最多访问30次这个接口。
-                Sys::debugxieye("get_userallinfo, 每分钟30次限制，ip:{$ip}");
+                
                 return ['code'=>0];
             }
         }
         
         
         if ( preg_match('#python#i', $user_agent) ) {
-            Sys::debugxieye("get_userallinfo, python拦截，ip:{$ip}");
+            Sys::debugxieye("get_userallinfo, python拦截，ip:{$ip},agent:{$user_agent}");
             
             return $this->get_falseinfo($uid);
         }
@@ -866,9 +867,8 @@ limit 1";
         $self_uid = input('?param.self_uid')?(int)input('param.self_uid'):$uid;//2016 10加字段。兼容性
         $token = input('?param.token')?input('param.token'):'';
         
-        if (!$token) {
-            $token = Cookie::get('token');
-            
+        if ((!$token) && (Cookie::has('token')) ) {
+              $token = Cookie::get('token');
         }
         
         
@@ -883,12 +883,12 @@ limit 1";
             if ( $token ){
                 if (!$user_self->check_token($token)) {
                     
-                    Sys::debugxieye("get_userallinfo, 有token，但错误,ip:{$ip}");
+                    Sys::debugxieye("get_userallinfo, 有token，但错误,token:{$token} ,uid: {$self_uid} , ip:{$ip},agent:{$user_agent}");
                     
-                    return ['code'=>0, 'message' => '' ];
+                    return ['code'=>-201, 'message' => '' ];
                 }
             }
-            
+            Sys::debugxieye("get_userallinfo, 没有错误，但不知是否是抓取，token:{$token} ,uid: {$self_uid} , ip:{$ip},agent:{$user_agent}");
             
             $UserDB['currency'] = self::get_currency($UserDB['uid']);
             
@@ -952,6 +952,10 @@ limit 1";
               }
             }
             // 看他人，需要加 成就
+            if ( isset($UserDB['phone']) &&  preg_match('#^\d{11}$#',  $UserDB['phone'])   ) {
+                $UserDB['phone'] = preg_replace('#^(\d{3}).+$#', '$1', $UserDB['phone']) . "******";
+            }
+            
             if ($self_uid && $self_uid!= $uid) {
                 $user = \BBExtend\model\User::find($uid);
                 $ach2 = new \BBExtend\model\Achievement();
