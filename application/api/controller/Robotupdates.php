@@ -92,7 +92,7 @@ limit {$record_count}
                     break;
                 }
                 
-                $look_random = mt_rand(10,100);
+                $look_random = mt_rand(10,120);
                 $db::table('bb_users_updates')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);

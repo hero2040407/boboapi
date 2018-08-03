@@ -55,6 +55,8 @@ class Advise extends Model
         $prepare->third_name= $paytype;
         $prepare->third_serial= $transaction_id;
         $prepare->price_fen = $total_fee;
+        $prepare->price = $total_fee/100;
+        
         $prepare->update_time = time();
         
         $prepare->save();
@@ -69,6 +71,7 @@ class Advise extends Model
         $order->third_serial = $prepare->third_serial;
         $order->newtype = $prepare->newtype;
         $order->price_fen = $prepare->price_fen;
+        $order->price = $total_fee/100;
         $order->json_parameter = $prepare->json_parameter;
         $order->save();
         

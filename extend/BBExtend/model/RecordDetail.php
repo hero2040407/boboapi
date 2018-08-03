@@ -117,13 +117,10 @@ class RecordDetail extends Record
     
     private function get_record()
     {
-        $like = $this->like;
+        $like = $this->get_updates_like_count() ;
         $people = $this->get_updates_view_count() ;
-        if ($people < $like) {
-  //          $people = intval( $like * 1.05 );
-        }
-        $comment_count = \BBExtend\BBComments::Get_comments_count(
-                "bb_record_comments", $this->id );
+        $comment_count =  $this->get_updates_comment_count() ;
+        
         
         $word='';
         $redis = Sys::get_container_redis();

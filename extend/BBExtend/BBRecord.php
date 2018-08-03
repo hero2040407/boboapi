@@ -958,7 +958,7 @@ class BBRecord
         $DataDB['sex'] = $user->get_usersex( );
         $DataDB['is_like'] = self::get_is_like( $uid, $DB['room_id'] );
         $DataDB['is_focus'] = Focus::get_focus_state( $uid, $DB['uid'] );
-        $DataDB['like'] = (int) $DB['like'];
+//         $DataDB['like'] = (int) $DB['like'];
         $Look = false;
 //         if ($Look !== false) {
 //             $DataDB['people'] = (int) $Look;
@@ -970,7 +970,7 @@ class BBRecord
         $record_model =  \BBExtend\model\Record::find( $DataDB['id'] );
 //         $record_model
         $DataDB['people'] = $record_model->get_updates_view_count();
-        
+        $DataDB['like'] = $record_model->get_updates_like_count();
         
         $DataDB['nickname'] = $user->get_nickname( );
         $Pic = $DB['big_pic'];
@@ -1006,8 +1006,8 @@ class BBRecord
                                                           
         // 2017 04
        
-            $DataDB['comment_count'] = \BBExtend\BBComments::Get_comments_count( 
-                    "bb_record_comments", $DataDB['id'] );
+        $DataDB['comment_count'] = $record_model->get_updates_comment_count();
+        
         //}
         // 2017 04
         $db = Sys::get_container_db( );
@@ -1027,10 +1027,10 @@ class BBRecord
             $DataDB['ds'] = null;
         }
         
-        // xieye 20180107,掩盖bug
-        if ($DataDB['people'] < $DataDB['like']) {
-     //       $DataDB['people'] = intval( $DataDB['like'] * 1.05 );
-        }
+//         // xieye 20180107,掩盖bug
+//         if ($DataDB['people'] < $DataDB['like']) {
+//      //       $DataDB['people'] = intval( $DataDB['like'] * 1.05 );
+//         }
         
         return $DataDB;
     }
