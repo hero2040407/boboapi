@@ -581,7 +581,7 @@ and exists (
             $request_size = $redis2->lSize( $redis2 );
             if ( $request_size && $request_size >=2  ) {
             }else {
-                
+                Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
                 $redis->sadd( $key_list, $ip );exit;
             }
             
