@@ -543,18 +543,14 @@ and exists (
         $key_hour ="limit:ip:hour:{$ip}";
         $key_list ="limit:ip:week";
         
-      //  $limit_ip = $redis->
-        $has_limit =  $redis->sIsMember($key_list, $ip);
-        if ($has_limit===true) {
-            sleep(30);exit;
-        }
-          
-        //$limit = $redis->get( $k );
         
-        
-        if ($ip == '122.224.90.210' || $ip =='127.0.0.1' ) {
+        $white_list = Config::get( 'bb_request_white_list_ip' );
+        if ( !in_array($ip, $white_list) ) {
             
-        }else {
+            $has_limit =  $redis->sIsMember($key_list, $ip);
+            if ($has_limit===true   ) {
+                sleep(30);exit;
+            }
             // 每分钟最多60次。
             $new = $redis->incr($key);
             $new2 = $redis->incr($key_hour);
@@ -565,20 +561,19 @@ and exists (
                 $redis->setTimeout($key_hour,  600 );// 存活10分钟
             }
             
-            if ($new2 >100) { // 10分钟超过100次，永久限制。
+            if ($new2 >100 ) { // 10分钟超过100次，永久限制。
                 $redis->sadd( $key_list, $ip );
                 Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
-                exit();
+                return ['code'=>0];
             }
             
-            if ($new >20) { // 每分钟超过20次，限制。
-                Sys::debugxieye("get_public_addi_video, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
+            if ($new >20 ) { // 每分钟超过20次，限制。
+              //  Sys::debugxieye("get_public_addi_video, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
                 sleep(30);
                 // 限制每分钟每个ip最多访问30次这个接口。
                 
                 return ['code'=>0];
             }
-            
             
             // xieye ,特殊情况，查此ip之前是否访问至少2个url
             $requst_redis_key =  "limit_index:ip:request_list:{$ip}";

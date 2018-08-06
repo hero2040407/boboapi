@@ -75,7 +75,14 @@ Config::set( "http_head_mobile_type", preg_match( '#android#i', $user_agent ) ? 
 Config::set( "http_head_user_agent", $user_agent );
 Config::set( "bb_request_arr", $bb_request_arr );
 
-if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shell
+//定义请求白名单。
+Config::set( "bb_request_white_list_ip", [
+        '127.0.0.1','0.0.0.0','122.224.90.210','218.72.27.194',
+        
+] );
+$ip = Config::get( "http_head_ip" );
+// 只有http请求，且 不在白名单内，才有以下处理。
+if (IS_CLI === false && ( !in_array($ip,  Config::get( 'bb_request_white_list_ip' ) ) ) ) { // 谢烨，确保是http请求，必须放过本机shell
     $user_agent = Config::get( "http_head_user_agent" );
     
     // 以下条件判断语句，严格检查user-agent信息，可以注释掉。
@@ -94,7 +101,7 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
     
     
     
-    $ip = Config::get( "http_head_ip" );
+    
     
     $redis = Sys::get_container_redis( );
     
@@ -104,14 +111,12 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
     
     // 如果查到哪个ip是在封禁ip列表内，禁止访问。
     $has_limit = $redis->sIsMember( $key_list, $ip );
-    if ($has_limit === true) {
+    if ($has_limit === true  ) {
         sleep( 30 );
         exit( );
     }
     
-    if ($ip == '122.224.90.210' || $ip == '127.0.0.1' || $ip == '0.0.0.0') {
-    
-    } else {
+   
         
         
         // 谢烨，加请求前置判断。最少两个请求。
@@ -143,7 +148,7 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
             $redis->setTimeout( $key_hour, 600 ); // 存活10分钟
         }
         
-        if ($new2 > 600) { // 10分钟超过100次，永久限制。
+        if ($new2 > 600 ) { // 10分钟超过100次，永久限制。
             $redis->sadd( $key_list, $ip );
             Sys::debugxieye( "get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}" );
             return [
@@ -151,7 +156,7 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
             ];
         }
         
-        if ($new > 200) { // 每分钟超过20次，限制。
+        if ($new > 200 ) { // 每分钟超过20次，限制。
                          // Sys::debugxieye("get_public_addi_video,
                          // 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
             sleep( 6 );
@@ -162,11 +167,11 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
             ];
         }
         $batagent = 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Maxthon/4.3.2.1000 Chrome/30.0.1599.101 Safari/537.36';
-        if (strpos( $user_agent, $batagent ) !== false) {
-            return [
-                    'code' => 0
-            ];
-        }
+//         if (strpos( $user_agent, $batagent ) !== false) {
+//             return [
+//                     'code' => 0
+//             ];
+//         }
         
         $weiagent = 'MicroMessenger';
         $weiphonagent = 'Windows Phone';
@@ -179,7 +184,7 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
         
         // }
     
-    }
+   
 }
 
 

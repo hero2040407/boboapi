@@ -2,7 +2,7 @@
 //  1    2    3
 namespace app\apptest\controller;
     
-
+use think\Config;
 use  BBExtend\Sys;
 //use app\shop\model\Area;
 /**
@@ -23,6 +23,11 @@ class Ip
         dump($result);
         
         
+        
+    }
+    
+    public function my(){
+        echo  Config::get('http_head_ip');
         
     }
    
