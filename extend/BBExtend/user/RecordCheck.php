@@ -166,13 +166,13 @@ class RecordCheck
             // 审核成功，结果如下
             if ($this->audit==1) {
                 
-                if ($this->type==1 || $this->type==6 ) {
+                if ($this->type==1 || $this->type==\BBExtend\fix\TableType::bb_record__type_updates ) {
                 // 谢烨，201807 ，添加到动态表中去。
                    \BBExtend\model\UserUpdates::insert_record( $recordDB );
                 }
                 
                 // 2 邀约活动，3，个人认证,4大赛，1才艺秀。
-                if ($this->type==1 || $this->type==6 ) {
+                if ($this->type==1 || $this->type==\BBExtend\fix\TableType::bb_record__type_updates ) {
                     $ach = new \BBExtend\user\achievement\Neirong($this->uid);
                     $ach->update(1);
                 }

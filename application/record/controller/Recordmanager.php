@@ -336,17 +336,18 @@ limit {$startid},{$length}
         $baidu_citycode = input('?post.baidu_citycode')?input('post.baidu_citycode'):'';
         
         $uid = input('?post.uid')?(int)input('post.uid'):0;
-        $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。5广告，6通告上传
+        $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。5广告，6通告上传,7动态
         $video_path = input('?post.video_path')?(string)input('post.video_path'):'';
         $thumbnailpath = input('?post.thumbnailpath')?(string)input('post.thumbnailpath'):'';
         $activity = input('?post.activity_id')?(int)input('post.activity_id'):0;//活动id
         $theme_title = input('?post.theme_title')?(string)input('post.theme_title'):'';//话题
         
+        //强转一下。
         if ($type==1) {
-            $type=6;
+            $type= \BBExtend\fix\TableType::bb_record__type_updates ;
         }
         
-        if (!in_array($type, [1,2,3,4,5,6,])){
+        if (!in_array($type, [1,2,3,4,5,6,7,])){
             return ['code'=>0,'message'=>'type error2'];
         }
         
