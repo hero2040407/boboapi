@@ -283,6 +283,24 @@ class Sys
         return $redis;
     }
     
+    
+    /**
+     * 得到redis2
+     * @return \Redis
+     */
+    public static function getredis2()
+    {
+        static $redis = null;
+        if ($redis == null) {
+            $redis = new \Redis();
+            $redis->connect(Config::get('REDIS_HOST'),Config::get('REDIS_PORT'));
+            $redis->auth(Config::get('REDIS_AUTH'));
+            $redis->select(2);
+        }
+        return $redis;
+    }
+    
+    
     public static function getredis_paihangbang()
     {
         static $redis = null;

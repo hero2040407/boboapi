@@ -109,9 +109,30 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
         exit( );
     }
     
-    if ($ip == '122.224.90.210' || $ip == '127.0.0.1') {
+    if ($ip == '122.224.90.210' || $ip == '127.0.0.1' || $ip == '0.0.0.0') {
     
     } else {
+        
+        
+        // 谢烨，加请求前置判断。最少两个请求。
+        $redis2 = Sys::getredis2();
+        $requst_redis_key =  "limit_index:ip:request_list:{$ip}";
+        
+        if ( preg_match('#^/user/info/get_public_addi_video#',$url   ) || 
+             preg_match('#^/user/user/get_userallinfo#',$url   ) 
+                
+                ) {
+                    
+        }else {
+            $redis2->lPush( $requst_redis_key, $url );
+            $redis2->lTrim( $requst_redis_key, 0,9 ); // 0,9 保留10个。
+            $redis2->setTimeout($requst_redis_key, 5*60);// 存活5分钟。
+            
+        }
+        
+        
+        
+        
         // 每分钟最多60次。
         $new = $redis->incr( $key );
         $new2 = $redis->incr( $key_hour );
@@ -122,7 +143,7 @@ if (IS_CLI === false) { // 谢烨，确保是http请求，必须放过本机shel
             $redis->setTimeout( $key_hour, 600 ); // 存活10分钟
         }
         
-        if ($new2 > 800) { // 10分钟超过100次，永久限制。
+        if ($new2 > 600) { // 10分钟超过100次，永久限制。
             $redis->sadd( $key_list, $ip );
             Sys::debugxieye( "get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}" );
             return [

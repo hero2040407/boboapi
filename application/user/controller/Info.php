@@ -548,7 +548,7 @@ and exists (
         if ($has_limit===true) {
             sleep(30);exit;
         }
-         
+          
         //$limit = $redis->get( $k );
         
         
@@ -565,10 +565,10 @@ and exists (
                 $redis->setTimeout($key_hour,  600 );// 存活10分钟
             }
             
-            if ($new2 >100) { // 10分钟超过100次，永久限制。
+            if ($new2 >10) { // 10分钟超过100次，永久限制。
                 $redis->sadd( $key_list, $ip );
                 Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
-                return ['code'=>0];
+                exit();
             }
             
             if ($new >20) { // 每分钟超过20次，限制。
@@ -578,6 +578,18 @@ and exists (
                 
                 return ['code'=>0];
             }
+            
+            
+            // xieye ,特殊情况，查此ip之前是否访问至少2个url
+            $requst_redis_key =  "limit_index:ip:request_list:{$ip}";
+            $redis2 = Sys::getredis2();
+            $request_size = $redis2->lSize( $redis2 );
+            if ( $request_size && $request_size >=2  ) {
+            }else {
+                
+                $redis->sadd( $key_list, $ip );exit;
+            }
+            
         }
         
         

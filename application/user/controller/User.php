@@ -878,6 +878,17 @@ limit 1";
                 
                 return ['code'=>0];
             }
+            
+            // xieye ,特殊情况，查此ip之前是否访问至少2个url
+            $requst_redis_key =  "limit_index:ip:request_list:{$ip}";
+            $redis2 = Sys::getredis2();
+            $request_size = $redis2->lSize( $redis2 );
+            if ( $request_size && $request_size >=2  ) {
+            }else {
+                
+                $redis->sadd( $key_list, $ip );exit;
+            }
+            
         }
         
         
