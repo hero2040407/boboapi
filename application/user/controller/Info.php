@@ -565,7 +565,7 @@ and exists (
                 $redis->setTimeout($key_hour,  600 );// 存活10分钟
             }
             
-            if ($new2 >10) { // 10分钟超过100次，永久限制。
+            if ($new2 >100) { // 10分钟超过100次，永久限制。
                 $redis->sadd( $key_list, $ip );
                 Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
                 exit();
