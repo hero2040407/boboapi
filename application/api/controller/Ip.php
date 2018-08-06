@@ -31,4 +31,20 @@ class Ip
         
     }
     
+    public function allowall() {
+        $redis = Sys::get_container_redis();
+        $key_list = "limit:ip:week";
+        $redis->del($key_list);
+        
+//         $has_limit = $redis->sIsMember( $key_list, $ip );
+//         if ($has_limit === true) {
+//             $redis->sRemove( $key_list, $ip );
+//         }
+        return ['code'=>1,'data' =>['list' => $redis->sMembers($key_list)  ] ];
+        
+        
+        
+    }
+    
+    
 }

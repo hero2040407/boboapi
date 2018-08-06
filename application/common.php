@@ -77,7 +77,7 @@ Config::set( "bb_request_arr", $bb_request_arr );
 
 //定义请求白名单。
 Config::set( "bb_request_white_list_ip", [
-        '127.0.0.1','0.0.0.0','122.224.90.210','218.72.27.194',
+        '127.0.0.1','0.0.0.0','122.224.90.210',
         
 ] );
 $ip = Config::get( "http_head_ip" );
