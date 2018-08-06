@@ -523,6 +523,92 @@ and exists (
     }
     
     
+    public function get_public_addi_video_new($uid,$self_uid, $length=2, $token)
+    {
+        $uid = intval($uid);
+        $user = \BBExtend\model\User::find($uid);
+        if (!$user) {
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        
+        $self_uid = intval($self_uid);
+        $self_user = \BBExtend\model\User::find($self_uid);
+        if (!$self_user) {
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        if (!$self_user->check_token( $token )){
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        
+        // 谢烨，查询是否1转vip
+        $db = Sys::get_container_dbreadonly();
+        
+        $word='';
+        $status = $user->get_status();
+        
+        if ( $uid == $self_uid  ) {
+            
+            if ( $status == 3 && $user->role==1 ) {
+                
+                $word ="恭喜你成为小童星，请完善个人信息升级个人主页！";
+            }
+            if ( $status == 2 && $user->role==1 ) {
+                
+                $word ="恭喜您通过导师审核，请完善个人信息升级个人主页！";
+            }
+            if ( $status == 4 && $user->role==1 ) {
+                
+                $word ="恭喜您通过品牌馆审核，请完善个人信息升级个人主页！";
+            }
+        }
+        
+        $new=$this->public1($user);
+        $addi = $this->public2($user,$self_uid);
+        $addi['word']=$word;
+        $addi['status'] = $status;
+        $list = $this->private_get_user_video($uid, $self_uid,0,$length,$user->role );
+        
+        
+        $self=[];
+        
+        $is_focus=true;
+        if ($uid != $self_uid) {
+            $is_focus = \BBExtend\Focus::get_focus_state($self_uid, $uid);
+        }
+        if ($uid==$self_uid) {
+            $role= $user->role;
+        }else {
+            $temp = \BBExtend\model\User::find($self_uid);
+            if (!$temp) {
+                return ['code'=>0,'message' =>'self用户不存在' ];
+            }
+            $role = $temp->role;
+        }
+        
+        
+        $self['is_focus']=$is_focus;
+        $self['role']=$role;
+        if ($uid== $self_uid) {
+            $self=null;
+        }
+        
+        return [
+                'code'=>1,
+                'data' => [
+                        'public' => $new,
+                        'addi' => $addi,
+                        'list'=> $list,
+                        'is_bottom'=> $this->is_bottom,
+                        'self' =>$self,
+                ],
+        ];
+        
+        
+        
+        
+    }
+    
+    
     /**
      * 获取主页全部信息
      * @param unknown $uid

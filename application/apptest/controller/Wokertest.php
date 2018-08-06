@@ -66,6 +66,45 @@ where style in(4,6)
        
    }
    
+   // 
+   public function index2()
+   {
+       Sys::display_all_error();
+       //echo 12;
+       $db = Sys::get_container_db();
+       $sql="select * from bb_users_card where status=3
+ ";
+       $card_arr = $db->fetchAll($sql);
+       
+       foreach ( $card_arr as $card  ) {
+           // echo "updates_id:{$updates_id}\n";
+           $sql="select * from bb_users_updates_media where bb_users_card_id=?";
+           
+           $has = $db->fetchRow($sql,[ $card['id'] ]);
+           if (!$has) {
+               //
+               $updates_obj = new \BBExtend\model\UserUpdates();
+               $updates_obj->uid         = $card['uid'];
+               
+               $updates_obj->create_time = $card['create_time'] ;
+               
+               $updates_obj->style=1;//模块
+               $updates_obj->status=1;//正常
+               $updates_obj->save();
+               
+               $media_obj = new \BBExtend\model\UserUpdatesMedia();
+               $media_obj->bb_users_updates_id = $updates_obj->id;
+               $media_obj->type= 4;
+               $media_obj->bb_users_card_id= $card['id'];
+               $media_obj->save();
+               
+               echo "创建模块动态成功，动态id：{$updates_obj->id}";
+           }
+           
+       }
+       
+   }
+   
    
    
    

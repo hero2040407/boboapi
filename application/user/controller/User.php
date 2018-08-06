@@ -922,7 +922,7 @@ limit 1";
                     return ['code'=>-201, 'message' => '' ];
                 }
             }
-            Sys::debugxieye("get_userallinfo, 没有错误，但不知是否是抓取，token:{$token} ,uid: {$self_uid} , ip:{$ip},agent:{$user_agent}");
+           // Sys::debugxieye("get_userallinfo, 没有错误，但不知是否是抓取，token:{$token} ,uid: {$self_uid} , ip:{$ip},agent:{$user_agent}");
             
             $UserDB['currency'] = self::get_currency($UserDB['uid']);
             

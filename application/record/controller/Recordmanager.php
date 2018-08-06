@@ -440,6 +440,7 @@ limit {$startid},{$length}
         $theme_id =  \BBExtend\model\Theme::get_and_create_id($theme_title);
         $recordDB['theme_id'] = $theme_id;
         
+        $recordDB['time'] =time();
         
         if (preg_match('#(mov|qt|quicktime)$#i', $video_path)) {
             $recordDB['transcoding_complete'] = 0;
@@ -514,7 +515,7 @@ limit {$startid},{$length}
         // 动态特殊处理
         if ($type==TableType::bb_record__type_updates ) {
             
-            \BBExtend\model\UserUpdates::insert_record_no_check($record_arr);
+            \BBExtend\model\UserUpdates::insert_record_no_check($recordDB);
             
 //             $help = new \BBExtend\video\RaceUpload();
 //             $help->upload_record($record_arr['id'], $activity, $uid);
