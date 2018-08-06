@@ -1233,6 +1233,10 @@ class BBRecord
         // 32 课程秀
         // 33 才艺秀
         // 34 玩啥（vip专区）
+        
+//         35 短视频：大赛参赛短视频，
+        // 36 短视频：通告的短视频
+        // 37 短视频：动态短视频。
         $table = self::get_table_name( $room_id );
         if ($table == 'bb_push') {
             return 10;
@@ -1242,6 +1246,10 @@ class BBRecord
         }
         if ($table == 'bb_record') {
             // return 20;该视频类型 1：秀场 2：邀约 3：个人验证 , 
+            
+            if ($type== 7 ) {
+                return 37;
+            }
             
             if ($type== 6 ) {
                 return 36;
