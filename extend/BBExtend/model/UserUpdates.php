@@ -313,6 +313,70 @@ class UserUpdates extends Model
         
     }
 
+    
+    
+    /**
+     * 短视频审核成功
+     *
+     * @param unknown $record_arr
+     */
+    public static function insert_record_no_check($record_arr)
+    {
+        $db = Sys::get_container_db_eloquent();
+        
+        $updates = new self();
+        $updates->uid = $record_arr['uid'];
+        $updates->create_time = $record_arr['time'];
+        $updates->is_remove = 0;
+        $updates->status = 0; // 因为审核过，再调用此接口，所以固定为完成状态。
+        $updates->baidu_citycode = $record_arr['baidu_citycode'];; // 因为审核过，再调用此接口，所以固定为完成状态。
+        
+        
+        
+        if ($record_arr['title']) {
+            $updates->style = 6;
+        }else {
+            $updates->style = 4;
+        }
+        $updates->save();
+        
+        $db::table('bb_record')->where('id',$record_arr['id'])->where('type',7)
+        ->update(['activity_id' =>$updates->id ]);
+        
+        
+        if ( $record_arr['title'] ) {
+            
+            $media = new UserUpdatesMedia();
+            $media->bb_users_updates_id = $updates->id;
+            $media->type = 1;
+            $media->word = $record_arr['title'] ;
+            $media->save();
+            
+        }
+        
+        $media = new UserUpdatesMedia();
+        $media->bb_users_updates_id = $updates->id;
+        $media->type = 3;
+        $media->url = $record_arr['video_path'];
+        $media->bb_record_id = $record_arr['id'];
+        $media->time_length =  \BBExtend\common\Date::time_length_display(
+                $record_arr['time_length_second'] );
+        $media->save();
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
    
     public function get_record_id()
     {

@@ -511,6 +511,15 @@ limit {$startid},{$length}
             $help->upload_record($record_arr['id'], $activity, $uid);
         }
         
+        // 动态特殊处理
+        if ($type==TableType::bb_record__type_updates ) {
+            
+            \BBExtend\model\UserUpdates::insert_record_no_check($record_arr);
+            
+//             $help = new \BBExtend\video\RaceUpload();
+//             $help->upload_record($record_arr['id'], $activity, $uid);
+        }
+        
         // 这句话重要，勿删
         $time_limit->set_limit();
         
