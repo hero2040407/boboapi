@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>怪兽BoBo大赛视频</title>
+    <link rel="stylesheet" type="text/css" href="/share/css/task_activity.css">
+</head>
+<body>
+
+<header>
+	<div>
+        <img src="/share/images/logo.jpg" />
+    </div>
+    <div class="button">
+        <a href="http://apk.guaishoubobo.com/downloads/">
+            <img src="/share/images/button.gif" />
+        </a>
+    </div>
+    <div>
+        <div class="wrap" id='wrap'>
+            <img src="/share/images/banner.png" alt="" />
+        </div>
+    </div>
+</header>
+
+    <div class="favorable">
+        {volist name="list" id="vo" key="k"}
+        <div class="fb">
+            <div class="fb-lt">
+                <a href="{$server_url}/boboshare?type=3&id={$vo.room_id}" ><img class="bigpic" src="{$vo.big_pic|default='/share/images/default.jpg'}" onerror="this.src='/share/images/default.jpg'"/></a>
+                <div style="font-size: 0.26rem;margin-top: -0.1rem;">{$vo.username|default='小怪兽'} 投票编号:{$vo.count|default='0'}</div>
+            </div>
+        </div>
+        {/volist}
+    </div>
+    <div class="more">
+        <a href="http://apk.guaishoubobo.com/downloads/"> <img src="/share/images/bottom.gif" /></a>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</html>

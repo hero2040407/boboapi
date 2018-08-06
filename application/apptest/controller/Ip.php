@@ -18,7 +18,7 @@ class Ip
         $redis = Sys::get_container_redis();
         $key =  "limit:ip:week";
         
-        $result = $redis->sMembers();
+        $result = $redis->sMembers($key);
         echo "所有被封禁的ip如下：";
         dump($result);
         

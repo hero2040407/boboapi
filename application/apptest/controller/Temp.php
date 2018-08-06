@@ -32,7 +32,7 @@ class Temp
     
    public function index()
    {
-       echo "aaaab";
+       var_dump(IS_CLI);
    }
    
     
