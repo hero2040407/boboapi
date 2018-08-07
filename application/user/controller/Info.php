@@ -874,13 +874,13 @@ and exists (
                 $redis->setTimeout($key_hour,  600 );// 存活10分钟
             }
             
-            if ($new2 >100 ) { // 10分钟超过100次，永久限制。
+            if ($new2 >REQUEST_LIMIT_USERINFO_TEN_MINUTE ) { // 10分钟超过100次，永久限制。
                 $redis->sadd( $key_list, $ip );
                 Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
                 return ['code'=>0];
             }
             
-            if ($new >20 ) { // 每分钟超过20次，限制。
+            if ($new >REQUEST_LIMIT_USERINFO_PER_MINUTE ) { // 每分钟超过20次，限制。
               //  Sys::debugxieye("get_public_addi_video, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
                 sleep(30);
                 // 限制每分钟每个ip最多访问30次这个接口。

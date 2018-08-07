@@ -12,6 +12,16 @@ define( 'DASAI_PUSH_QUDAO_ID', 156 );
 define( 'const_default_pic', "https://bobo.yimwing.com/public/toppic/topdefault.png" );
 // 是否使用通告的值显示通告短视频。
 define( 'USE_UPDATES_RECORD', 1 );
+// 1分钟限制次数-个人信息页面。
+define( 'REQUEST_LIMIT_USERINFO_PER_MINUTE', 50 );
+// 10分钟限制次数-个人信息页面。
+define( 'REQUEST_LIMIT_USERINFO_TEN_MINUTE', 400 );
+// 1分钟限制次数- 所有页面。
+define( 'REQUEST_LIMIT_ALL_PER_MINUTE', 200 );
+// 10分钟限制次数 - 所有页面。
+define( 'REQUEST_LIMIT_ALL_TEN_MINUTE', 1000 );
+
+
 
 \think\Debug::remark( 'begin_bobo' );
 
@@ -148,7 +158,7 @@ if (IS_CLI === false && ( !in_array($ip,  Config::get( 'bb_request_white_list_ip
             $redis->setTimeout( $key_hour, 600 ); // 存活10分钟
         }
         
-        if ($new2 > 600 ) { // 10分钟超过100次，永久限制。
+        if ($new2 > REQUEST_LIMIT_ALL_TEN_MINUTE ) { // 10分钟超过100次，永久限制。
             $redis->sadd( $key_list, $ip );
             Sys::debugxieye( "get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}" );
             return [
@@ -156,7 +166,7 @@ if (IS_CLI === false && ( !in_array($ip,  Config::get( 'bb_request_white_list_ip
             ];
         }
         
-        if ($new > 200 ) { // 每分钟超过20次，限制。
+        if ($new > REQUEST_LIMIT_ALL_PER_MINUTE ) { // 每分钟超过20次，限制。
                          // Sys::debugxieye("get_public_addi_video,
                          // 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
             sleep( 6 );
