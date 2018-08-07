@@ -43,7 +43,7 @@ class Record extends Model
     public function get_updates_view_count()
     {
         
-        if ($this->type==6) {
+        if ($this->type==7) {
             $temp =  $this->updates->click_count;
         }else {
             $temp =  $this->good_get_views();
@@ -63,7 +63,7 @@ class Record extends Model
      */
     public function get_updates_like_count()
     {
-        if ($this->type==6) {
+        if ($this->type==7) {
             $temp =  $this->updates->like_count;
         }else {
             $temp =  $this->like;
@@ -77,7 +77,7 @@ class Record extends Model
      */
     public function get_updates_comment_count()
     {
-        if ($this->type==6) {
+        if ($this->type==7) {
             $temp =  $this->updates->comment_count;
         }else {
             $temp =   \BBExtend\BBComments::Get_comments_count(

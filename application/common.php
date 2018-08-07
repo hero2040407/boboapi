@@ -13,13 +13,13 @@ define( 'const_default_pic', "https://bobo.yimwing.com/public/toppic/topdefault.
 // 是否使用通告的值显示通告短视频。
 define( 'USE_UPDATES_RECORD', 1 );
 // 1分钟限制次数-个人信息页面。
-define( 'REQUEST_LIMIT_USERINFO_PER_MINUTE', 50 );
+define( 'REQUEST_LIMIT_USERINFO_PER_MINUTE', 200 );
 // 10分钟限制次数-个人信息页面。
-define( 'REQUEST_LIMIT_USERINFO_TEN_MINUTE', 400 );
+define( 'REQUEST_LIMIT_USERINFO_TEN_MINUTE', 800 );
 // 1分钟限制次数- 所有页面。
-define( 'REQUEST_LIMIT_ALL_PER_MINUTE', 200 );
+define( 'REQUEST_LIMIT_ALL_PER_MINUTE', 400 );
 // 10分钟限制次数 - 所有页面。
-define( 'REQUEST_LIMIT_ALL_TEN_MINUTE', 1000 );
+define( 'REQUEST_LIMIT_ALL_TEN_MINUTE', 2000 );
 
 
 
@@ -76,6 +76,18 @@ $dbe::table( "bb_request" )->insert(
                 'datestr' => date( "Ymd" ),
                 'post' => $post
         ] );
+$dbe::table( "bb_request2" )->insert(
+        [
+                'create_time' => APP_TIME,
+                'url' => $request->url( ),
+                'ip' => $request->ip( ),
+                'version' => $version,
+                'user_agent' => $user_agent,
+                'domain' => $request->domain( ),
+                'datestr' => date( "Ymd" ),
+                'post' => $post
+        ] );
+
 
 // 谢烨，下面的代码不可删除，因为程序中用到了，会读取这几个配置！
 Config::set( "http_head_version", $version );
