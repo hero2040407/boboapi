@@ -42,16 +42,16 @@ class Login extends BBUser
     
     
     
-    public function man_machine_recognition($token,$type=1){
-        $a = mt_rand( 1,100 );
-        $b = mt_rand( 1,100 );
-        session( 'man_machine_recognition', $a+$b );
-        $str = mt_rand( 1,100 ) . " + " . mt_rand(1, 100) ;
-        return ['code'=>1, 'data' =>[ 'result'  => $str ] ];
-       // session('man_machine_recognition');
-    }
+//     public function man_machine_recognition($token,$type=1){
+//         $a = mt_rand( 1,100 );
+//         $b = mt_rand( 1,100 );
+//         session( 'man_machine_recognition', $a+$b );
+//         $str = mt_rand( 1,100 ) . " + " . mt_rand(1, 100) ;
+//         return ['code'=>1, 'data' =>[ 'result'  => $str ] ];
+//        // session('man_machine_recognition');
+//     }
     
-    
+    // 这是访问过多的对付手段。
     public function man_machine_recognition_check($token,$type=1,$cal_result)
     {
         if (session('?man_machine_recognition')) {
@@ -60,11 +60,13 @@ class Login extends BBUser
                 // 首先，这个token得存在。且和 header中的token相同，
                 $obj = new \BBExtend\Secure();
                 
-                if ( $obj->get_header_token() == $token  )
+                if ( $obj->get_header_token() == $token && $obj->test_valid($token) ) {
+                    $obj->clear_token_count($token);
                 
-                return ['code'=>1, ];
+                   return ['code'=>1, ];
+                }
             }
-            return ['code'=>0,'message' =>'计算错误' ];
+            return ['code'=>0,'message' =>'填写校验错误' ];
         }
         return ['code'=>0];
     }

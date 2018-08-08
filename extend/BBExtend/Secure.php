@@ -108,25 +108,33 @@ class Secure
         header("CODE: {$code}");
     }
     
-    
+    // 单独被轮询接口调用。
     public function get_good_token()
     {
-     
-        $token = $this->get_header_token_and_is_valid();
-        if (!$token) {
-            // 我创建新的。
-            $token = $this->set_http_header_temptoken();
-            return $token;
-        }
-        // 现在必定有效率。
-        $token = $this->get_header_token();
-        if ($this->test_is_short($token)) {
-            $token = $this->set_http_header_temptoken();
-            return $token;
-        }
-        return $token;
+     // 如果 不传来，新增。
+     // 如果传来，
+         // 如果redis中有效。
+             // 如果快过期     替换老的。
+             // 如果 新的。    直接返回新的。
         
+         // 如果redis中无效。新增。
+        
+        $token = $this->get_header_token();
+        if ( !$token ) {
+            return $this->set_new_http_header_temptoken();
+        }
+        // 如果传来有效
+        if ( $this->test_valid($token) ) {
+            
+            // 过期替换，否则原来，是这个函数的作用。
+            return $this->set_new_http_header_temptoken_by_oldtoken($token);
+            
+        }else {
+            // 传来无效
+            return $this->set_new_http_header_temptoken();
+        }
     }
+    
     
     public function set_new_http_header_temptoken()
     {
@@ -149,17 +157,18 @@ class Secure
         return $temptoken;
     }
     
+    // 本方法要求 参数 oldtoken必须 有效
     public function set_new_http_header_temptoken_by_oldtoken($oldtoken)
     {
         if (!$oldtoken) {
             throw new \Exception('token err');
         }
-        $key = '61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF';
+        $key = '61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF6167yXtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF';
         
         
         $redis = $this->redis;
         $is_valid = $this->test_valid($oldtoken);
-        if ( !$is_valid ) {
+        if ( !$is_valid ) { // 注意必须这么写，因为判断short不验证原本存在。
             throw new \Exception('token err');
         }
         
@@ -175,11 +184,6 @@ class Secure
             return $newtoken;
         }
         $this->set_http_header_temptoken($oldtoken);
-        
-//         $key = self::key_prefix_token . $newtoken;
-//         $redis->setEx( $key,$this->get_token_live() , '-1'  );
-//         $key = self::key_prefix_token_short . $newtoken;
-//         $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
         return $oldtoken;
     }
     
@@ -229,7 +233,14 @@ class Secure
         return false;
     }
     
-    
+    public function clear_token_count($temptoken){
+        $redis = $this->redis;
+        $key = self::key_prefix_token_request_count.$temptoken;
+         $redis->delete( $key );
+//         if ($count == 1 ) {
+//             $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
+//         }
+    }
     
     //
     public function check()
@@ -318,10 +329,7 @@ class Secure
                     $this->output(['code' =>self::code_token_need_login , 'message'=> '校验错误'  ]);
                 }
                 if ( $this->is_polling($url) ) {
-                    // 假如快过期，则 更换新 的。
-//                     if ( $this->test_is_short($temptoken) ) {
-//                         $this->set_new_http_header_temptoken_by_oldtoken($temptoken);
-//                     }
+                    
                 }
             }
             
