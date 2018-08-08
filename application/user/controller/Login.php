@@ -41,6 +41,74 @@ class Login extends BBUser
     public $weixin_token=null; //这个参数专门用于微信注册的。
     
     
+    
+    public function man_machine_recognition($token,$type=1){
+        $a = mt_rand( 1,100 );
+        $b = mt_rand( 1,100 );
+        session( 'man_machine_recognition', $a+$b );
+        $str = mt_rand( 1,100 ) . " + " . mt_rand(1, 100) ;
+        return ['code'=>1, 'data' =>[ 'result'  => $str ] ];
+       // session('man_machine_recognition');
+    }
+    
+    
+    public function man_machine_recognition_check($token,$type=1,$cal_result)
+    {
+        if (session('?man_machine_recognition')) {
+            $temp = session('man_machine_recognition');
+            if ( $cal_result== $temp ) {
+                // 首先，这个token得存在。且和 header中的token相同，
+                $obj = new \BBExtend\Secure();
+                
+                if ( $obj->get_header_token() == $token  )
+                
+                return ['code'=>1, ];
+            }
+            return ['code'=>0,'message' =>'计算错误' ];
+        }
+        return ['code'=>0];
+    }
+    
+    public function man_machine_recognition_pic()
+    {
+        $a = mt_rand( 1,100 );
+        $b = mt_rand( 1,100 );
+        session( 'man_machine_recognition', $a+$b );
+      //  if (session('?man_machine_recognition')) {
+            $temp = session('man_machine_recognition');
+            $im = imagecreate(100, 30);
+            $bg = imagecolorallocate($im, 255, 255, 255);
+            $textcolor = imagecolorallocate($im, 0, 0, 0);
+            imagestring($im, 5, 0, 0, $temp, $textcolor);
+            // 输出图像 白纸黑字
+            header("Content-type: image/png");
+            imagepng($im); 
+            
+        //}
+        //return ['code'=>0];
+    }
+    
+    
+    public function polling()
+    {
+        return ['code'=>1];
+    }
+    
+    
+    // 换token接口
+    public function check($uid,$token   ){
+        $user_self = \BBExtend\model\User::find( $uid);
+            if (!$user_self->check_token($token)) {
+                
+                
+                return ['code'=>-201, 'message' => '' ];
+            }
+         $secure_help = new \BBExtend\Secure();
+         $token = $secure_help->set_new_http_header_temptoken();
+         $token = base64_encode($token );
+         return ['code'=>1, 'data'=>['result' => $token ] ];
+    }
+    
     public function qq_index($code)
     {
 //         if (!$code) {
@@ -296,6 +364,9 @@ limit 1";
         if ($login_type==1) {// 微信登录返回openid
             $return_platform_id=$platform_id;
         }
+        $secure_help = new \BBExtend\Secure();
+        $secure_help->set_new_http_header_temptoken();
+        
         return [
                 'code' => 1,
                 'data'=>[
@@ -393,7 +464,8 @@ limit 1";
                 'lottery' => null,
                  'platform_id' =>$return_platform_id,
         ]];
-        
+        $secure_help = new \BBExtend\Secure();
+        $secure_help->set_new_http_header_temptoken();
         return $temp;
     
     }

@@ -160,6 +160,8 @@ class Dochtml
       
       self::get_href('用户注册和登录','用户注册和登录',1).
       self::get_href('用户注册和登录2018').
+      self::get_href('用户换临时token').
+      
       self::get_href('用户只登录').
       self::get_href('用户微信网页登录').
       self::get_href('用户注册发送短信').
