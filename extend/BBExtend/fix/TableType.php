@@ -41,11 +41,14 @@ class TableType
     const bb_toppic__sort_id_shouye = 2;
     const bb_toppic__sort_id_brandshop = 6;
     
-    // 短视频类型//视频类型 //秀场 1   邀约 2  个人验证 3，      4是大赛
+    // 短视频类型//视频类型 //秀场 1   邀约 2  个人验证 3，      4是大赛，6通告，7动态
     const bb_record__type_xiuchang = 1;
     const bb_record__type_yaoyue = 2;
     const bb_record__type_yanzheng = 3;
     const bb_record__type_dasai = 4;
+    const bb_record__type_advise = 6;
+    const bb_record__type_updates = 7;
+    
     
     // 短视频审核状态，0未审核，1已审核成功，2审核失败。
     const bb_record__audit_weishenhe = 0;

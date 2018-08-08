@@ -148,6 +148,10 @@ class RecordDetail extends Record
             $word.="觉得此内容很赞";
             
         }
+        $updates_id=0;
+        if ($this->type == 7) {
+            $updates_id = $this->activity_id;
+        }
         
         return [
            'publish_time' => $this->time, 
@@ -163,6 +167,7 @@ class RecordDetail extends Record
            'record_id' => $this->id,
                 'room_id' =>$this->room_id,
                 'audit' =>$this->audit ,  //   0：未审核 1：通过审核 2：未通过
+                'updates_id' => $updates_id,
         ];
     }
     
@@ -214,6 +219,19 @@ class RecordDetail extends Record
                         'id'  => $row['id'],
                         'title' => $row['title'],
                         'is_show' => $row['is_show'],
+                ];
+            }
+        }
+        
+        if ($this->type==6 && $this->activity_id  >0) {
+            $sql="select * from bb_advise where id=?  and is_remove=0";
+            $row = DbSelect::fetchRow( $db, $sql, [ $this->activity_id ] );
+            if ($row) {
+                return [
+                        'type'=>'advise',
+                        'id'  => $row['id'],
+                        'title' => $row['title'],
+                        'is_show' => $row['is_active'],
                 ];
             }
         }

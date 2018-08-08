@@ -52,7 +52,7 @@ class Taskapi
             'title' => $task->title,
             'info'  => $task->info,
             'reward_count' => strval( $task->reward_count),
-            'need_reward'  => TaskManager::getinstance($uid)->can_renzheng_lingjiang(),
+            'need_reward'  => 0,
             'activity_id'  => (int)($task->act_id),
             'big_pic'   => strval($task->big_pic),
             'video_path'=> strval($task->video_path),

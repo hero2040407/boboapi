@@ -58,6 +58,25 @@ class Info
         ];
     }
     
+    /**
+     * 视频列表第2版
+     * @param unknown $uid
+     * @param unknown $self_uid
+     * @param number $startid
+     * @param number $length
+     * @return number[]|number[][]|NULL[][][]
+     */
+    public function get_user_video_v2($uid, $self_uid,  $startid=0, $length=2)
+    {
+        $list = $this->private_get_user_video_v2($uid,$self_uid,$startid, $length);
+        return [
+                'code'=>1,
+                'data'=> [
+                        'list'=>$list,
+                        'is_bottom'=> $this->is_bottom,
+                ]
+        ];
+    }
     
     
     // 机构主页，旗下导师列表
@@ -192,7 +211,54 @@ limit {$startid},{$length}
     }
     
     
+    //模卡数量
+    private function star_count($uid)
+    {
+        $sql="
+select count(*) from bb_users_updates
+where uid = ?
+and status=1 and is_remove=0
+and agent_uid>0
+";
+        $db = Sys::get_container_dbreadonly();
+        $count = $db->fetchOne($sql, $uid);
+        return $count;
+    }
     
+    
+    
+    //模卡数量
+    private function card_count($uid)
+    {
+        $sql="
+select count(*) from bb_users_updates
+where uid = ?
+and status=1 and is_remove=0
+and style=1
+";
+        $db = Sys::get_container_dbreadonly();
+        $count = $db->fetchOne($sql, $uid);
+        return $count;
+    }
+    
+    //数量
+    private function pic_count($uid)
+    {
+        $sql="
+select count(*) from bb_users_updates
+where uid = ?
+and status=1 and is_remove=0
+and style in (3,5)
+";
+        $db = Sys::get_container_dbreadonly();
+        $count = $db->fetchOne($sql, $uid);
+        return $count;
+        
+    }
+    
+    
+    
+    // 视频数量
     public function private_get_user_video_count($uid,$self_uid)
     {
         $uid = intval($uid);
@@ -239,6 +305,9 @@ where uid={$uid}
         }
         return $count1+$count2;;
     }
+    
+    
+    
     
     
     public function private_get_user_video($uid,$self_uid,$startid=0, $length=2,$role=1)
@@ -312,6 +381,89 @@ limit {$startid},{$length}
     }
     
      
+    
+    
+    
+    private function private_get_user_video_v2($uid,$self_uid,$startid=0, $length=2,$role=1)
+    {
+        $uid = intval($uid);
+        $startid= intval( $startid );
+        $length = intval( $length );
+        $self_uid = intval( $self_uid );
+        
+        $db = Sys::get_container_db();
+        $sql="
+           select id,type,time from bb_record
+where bb_record.uid={$uid}
+  and is_remove=0
+  and type !=3
+union all
+select id,-100, start_time as time from bb_rewind
+where uid={$uid}
+  and event='rewind'
+  and is_remove=0
+  and is_save=1
+order by time desc
+limit {$startid},{$length}
+                ";
+        
+        if ($uid != $self_uid) {
+            $sql="
+           select id,type,time from bb_record
+where bb_record.uid={$uid}
+  and is_remove=0
+  and type !=3
+  and audit=1
+union all
+select id,-100, start_time as time from bb_rewind
+where uid={$uid}
+  and event='rewind'
+  and is_remove=0
+  and is_save=1
+order by time desc
+limit {$startid},{$length}
+                ";
+            
+        }
+        
+        
+        $result  = $db->fetchAll($sql);
+        // dump($result);
+        $new=[];
+        foreach ($result as $v) {
+            if ($v['type'] == -100) { // 回播
+                $temp = \BBExtend\model\Rewind::find( $v['id'] );
+                $temp->self_uid = $self_uid;
+                $new[]= $temp->get_all();
+            }else {                    // 短视频
+                $temp = \BBExtend\model\RecordDetail::find( $v['id'] );
+                $temp->self_uid = $self_uid;
+                if ($role==2) {
+                    //   $temp->_is_show=true;
+                }
+                $new[]= $temp->get_all();
+                
+            }
+            
+        }
+        if (count( $new ) == $length ) {
+            $this->is_bottom = 0;
+        }else {
+            $this->is_bottom=1;
+        }
+        return $new;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * 查个人工公共信息
      * 
@@ -432,7 +584,12 @@ and exists (
         
         
         
-        return null;
+//         if ($role==1) {
+//             $new=[];
+//             $db = Sys::get_container_dbreadonly();
+//             //查询我的动态有多少
+//             $new['brandshop_dongtai_count'] = $this->private_get_user_video_count($uid, $self_uid);
+//         }
         
     }
     
@@ -523,6 +680,162 @@ and exists (
     }
     
     
+    public function get_public_addi_video_v2($uid,$self_uid, $length=2, $token)
+    {
+        $uid = intval($uid);
+        $user = \BBExtend\model\User::find($uid);
+        if (!$user) {
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        
+        $self_uid = intval($self_uid);
+        $self_user = \BBExtend\model\User::find($self_uid);
+        if (!$self_user) {
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        if (!$self_user->check_token( $token )){
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        
+        // 谢烨，查询是否1转vip
+        $db = Sys::get_container_dbreadonly();
+        
+        $word='';
+        $status = $user->get_status();
+        
+        if ( $uid == $self_uid  ) {
+            
+            if ( $status == 3 && $user->role==1 ) {
+                
+                $word ="恭喜你成为小童星，请完善个人信息升级个人主页！";
+            }
+            if ( $status == 2 && $user->role==1 ) {
+                
+                $word ="恭喜您通过导师审核，请完善个人信息升级个人主页！";
+            }
+            if ( $status == 4 && $user->role==1 ) {
+                
+                $word ="恭喜您通过品牌馆审核，请完善个人信息升级个人主页！";
+            }
+        }
+        
+        $new=$this->public1($user);
+        $addi = $this->public2($user,$self_uid);
+        $addi['word']=$word;
+        $addi['status'] = $status;
+        $list = $this->private_get_user_video($uid, $self_uid,0,$length,$user->role );
+        
+        
+        $self=[];
+        
+        $is_focus=true;
+        if ($uid != $self_uid) {
+            $is_focus = \BBExtend\Focus::get_focus_state($self_uid, $uid);
+        }
+        if ($uid==$self_uid) {
+            $role= $user->role;
+        }else {
+            $temp = \BBExtend\model\User::find($self_uid);
+            if (!$temp) {
+                return ['code'=>0,'message' =>'self用户不存在' ];
+            }
+            $role = $temp->role;
+        }
+        
+        
+        $self['is_focus']=$is_focus;
+        $self['role']=$role;
+        if ($uid== $self_uid) {
+            $self=null;
+        }
+        
+        return [
+                'code'=>1,
+                'data' => [
+                        'public' => $new,
+                        'addi' => $addi,
+                        'list'=> $list,
+                        'is_bottom'=> $this->is_bottom,
+                        'self' =>$self,
+                        'menu' => $this->get_menu( $user->uid, $user->role ,$self_uid),
+                ],
+        ];
+    }
+    
+    
+    private function get_menu($uid, $role,$self_uid=0){
+        // 普通用户，视频，图片，模卡，星动态。role=1
+        // 不存在  ，视频，图片，模卡，星动态。role= 2
+        
+        // vip童星  ，视频，图片，模卡，星动态。role= 3
+        // 机构  ，视频，图片，role= 4
+        $str1 = '该用户还未上传任何视频';
+        $str2 = '该用户还未上传任何照片';
+        $str3 = '该用户还未上传任何模卡';
+        $str4 = '该用户的经纪人还未上传任何星动态';
+        if ( $role==1 ) {
+            $count_video = $this->private_get_user_video_count($uid, $self_uid);
+            
+            $count_pic   = $this->pic_count($uid);
+            $count_card  = 0;
+            $count_star  = 0;
+            return [
+                    [
+                            'type'=>1,'title'=>'视频','count' => $count_video,
+                            'word' => $str1, ],
+                    [
+                            'type'=>2,'title'=>'图片','count' => $count_pic,
+                            'word' => $str2, ],
+                    [
+                            'type'=>3,'title'=>'模卡','count' => $count_card,
+                            'word' => $str3, ],
+                    [
+                            'type'=>4,'title'=>'星动态','count' => $count_star,
+                            'word' => $str4, ],
+                    
+            ];
+        }
+        if ( $role==3 ) {
+            $count_video = $this->private_get_user_video_count($uid, $self_uid);
+            $count_pic   = $this->pic_count($uid);
+            $count_card  = $this->card_count($uid);
+            $count_star  = $this->star_count($uid);  
+            return [
+                    [
+                            'type'=>1,'title'=>'视频','count' => $count_video,
+                            'word' => $str1, ],
+                    [
+                            'type'=>2,'title'=>'图片','count' => $count_pic,
+                            'word' => $str2, ],
+                    [
+                            'type'=>3,'title'=>'模卡','count' => $count_card,
+                            'word' => $str3, ],
+                    [
+                            'type'=>4,'title'=>'星动态','count' => $count_star,
+                            'word' => $str4, ],
+                    
+            ];
+            
+            
+        }
+        if ( $role==4 ) {
+            $count_video = $this->private_get_user_video_count($uid, $self_uid);
+            $count_pic   = $this->pic_count($uid);
+            return [
+                    [
+                            'type'=>1,'title'=>'视频','count' => $count_video,
+                            'word' => $str1, ],
+                    [
+                            'type'=>2,'title'=>'图片','count' => $count_pic,
+                            'word' => $str2, ],
+                    
+            ];
+        }
+        
+        
+    }
+    
+    
     /**
      * 获取主页全部信息
      * @param unknown $uid
@@ -543,42 +856,49 @@ and exists (
         $key_hour ="limit:ip:hour:{$ip}";
         $key_list ="limit:ip:week";
         
-      //  $limit_ip = $redis->
-        $has_limit =  $redis->sIsMember($key_list, $ip);
-        if ($has_limit===true) {
-            sleep(30);exit;
-        }
-         
-        //$limit = $redis->get( $k );
         
-        
-        if ($ip == '122.224.90.210' || $ip =='127.0.0.1' ) {
+        $white_list = Config::get( 'bb_request_white_list_ip' );
+//         if ( !in_array($ip, $white_list) ) {
             
-        }else {
-            // 每分钟最多60次。
-            $new = $redis->incr($key);
-            $new2 = $redis->incr($key_hour);
-            if ($new < 3) {
-                $redis->setTimeout($key,60 );// 仅能存活1分钟
-            }
-            if ($new2  < 3) {
-                $redis->setTimeout($key_hour,  600 );// 存活10分钟
-            }
+//             $has_limit =  $redis->sIsMember($key_list, $ip);
+//             if ($has_limit===true   ) {
+//                 sleep(30);exit;
+//             }
+//             // 每分钟最多60次。
+//             $new = $redis->incr($key);
+//             $new2 = $redis->incr($key_hour);
+//             if ($new < 3) {
+//                 $redis->setTimeout($key,60 );// 仅能存活1分钟
+//             }
+//             if ($new2  < 3) {
+//                 $redis->setTimeout($key_hour,  600 );// 存活10分钟
+//             }
             
-            if ($new2 >100) { // 10分钟超过100次，永久限制。
-                $redis->sadd( $key_list, $ip );
-                Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
-                return ['code'=>0];
-            }
+//             if ($new2 >REQUEST_LIMIT_USERINFO_TEN_MINUTE ) { // 10分钟超过100次，永久限制。
+//                 $redis->sadd( $key_list, $ip );
+//                 Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
+//                 return ['code'=>0];
+//             }
             
-            if ($new >20) { // 每分钟超过20次，限制。
-                Sys::debugxieye("get_public_addi_video, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
-                sleep(30);
-                // 限制每分钟每个ip最多访问30次这个接口。
+//             if ($new >REQUEST_LIMIT_USERINFO_PER_MINUTE ) { // 每分钟超过20次，限制。
+//               //  Sys::debugxieye("get_public_addi_video, 每分钟30次限制，ip:{$ip},agent:{$user_agent}");
+//                 sleep(30);
+//                 // 限制每分钟每个ip最多访问30次这个接口。
                 
-                return ['code'=>0];
-            }
-        }
+//                 return ['code'=>0];
+//             }
+            
+//             // xieye ,特殊情况，查此ip之前是否访问至少2个url
+//             $requst_redis_key =  "limit_index:ip:request_list:{$ip}";
+//             $redis2 = Sys::getredis2();
+//             $request_size = $redis2->lSize( $redis2 );
+//             if ( $request_size && $request_size >=2  ) {
+//             }else {
+//                 Sys::debugxieye("get_public_addi_video, 封禁ip成功，ip:{$ip},agent:{$user_agent}");
+//         //        $redis->sadd( $key_list, $ip );exit;
+//             }
+            
+//         }
         
         
         
@@ -689,6 +1009,64 @@ and exists (
                 'jingyan' => $user->get_jingyan(),
                 
         ]];
+    }
+    
+    // 动态列表 ,2图片，4，星动态。
+    public function updates_list($uid,$self_uid, $startid=0, $length=2, $token,$type=2 )
+    {
+        $uid = intval($uid);
+        $user = \BBExtend\model\User::find($uid);
+        if (!$user) {
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        
+        $self_uid = intval($self_uid);
+        $self_user = \BBExtend\model\User::find($self_uid);
+        if (!$self_user) {
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        if (!$self_user->check_token( $token )){
+            return ['code'=>0,'message' =>'用户不存在' ];
+        }
+        
+        if (!in_array( $type,[2,4,] )) {
+            return ['code'=>0,'message' =>'type error' ];
+        }
+        
+        // 谢烨，查询是否1转vip
+        $db = Sys::get_container_dbreadonly();
+        if ($type==2) {
+            $sql="select id from bb_users_updates
+   where status=1
+     and is_remove=0
+     and style in (3,5)
+     and  uid = ?
+   order by create_time desc limit ?,?";
+            
+        }
+        if ($type==4) {
+            $sql="select id from bb_users_updates
+   where status=1
+     and is_remove=0
+     and agent_uid>0
+     and  uid = ?
+   order by create_time desc limit ?,?";
+            
+        }
+        $ids = $db->fetchCol($sql,[ $uid, $startid,$length  ]);
+        $new=[];
+        foreach ($ids as $id) {
+            $updates = \BBExtend\model\UserUpdates::find( $id );
+            
+            $new[]= $updates->list_info($self_uid);
+        }
+        return [
+                'code'=>1,
+                'data'=>[
+                        'list' =>$new,
+                        'is_bottom' =>(count($new) == $length)?0:1,
+                ]
+        ];
     }
     
     

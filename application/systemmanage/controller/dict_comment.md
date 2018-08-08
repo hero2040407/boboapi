@@ -38,10 +38,10 @@
 | bb_toppic | activity_id | 具体的活动id，如果sort_id为6则此代表品牌馆uid  |  
 | bb_record_invite_starmaker | push_type | 1指定某个导师邀请，2抢单模式邀请，3官方推送  |  
 |  bb_record_invite_starmaker_fail| create_time | 视频创建时间  |  
-| bb_record | type |  视频类型 :1秀场 2邀约 3个人验证 4大赛,5广告，6通告上传 |  
+| bb_record | type |  视频类型 :1秀场 2邀约 3个人验证 4大赛,5广告，6通告上传，7动态 |  
 | bb_record | usersort | 用户类型 对应usersort表id,但如果是邀约活动视频且邀约的类型是pk时，usersort=11表示红方，12表示蓝方  |  
 | bb_record |time  |  视频创建时间，是时间戳 |
-| bb_record |activity_id  |  type=2,是活动ID，type=4，是大赛id，type=6，是通告id|
+| bb_record |activity_id  |  type=2表示活动ID，type=4表示大赛id，type=6表示通告id，type=7表示动态id|
 | bb_resource | type | 1动图，2音乐，3新版动图  |  
 | bb_resource_group | type |  1动图，2音乐，3新版动图 |  
 | bb_group | bb_type | 1邀约群，2大赛群，3VIP童星群（201803加）  |  

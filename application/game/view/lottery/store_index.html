@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>幸运大转盘</title>
+    <link rel="stylesheet" type="text/css" href="/lottery/css/store_style.css">
+    <script type='text/javascript' src='/race/js/jquery-2.0.3.min.js'></script>
+    <script type="text/javascript" src="/lottery/js/awardRotate.js"></script>
+</head>
+<body>
+<div class="main">
+    <div class="top_pic"><img class="pointer" src="/lottery/images/store_logo.png"/></div>
+</div>
+{volist name="roulette_list" id="vo"}
+<img src="{$vo.pic}" id="diy{$vo.id - 9}" class="lottery_img" style="display:none;" title="{$vo.title}" lt_type="{$vo.lt_type}"/>
+{/volist}
+
+<div class="lottery_bg">
+    <div class="banner">
+        <div class="turnplate">
+            <canvas class="item" id="wheelcanvas" width="422px" height="422px"></canvas>
+            <img class="pointer" src="/lottery/images/store_jiantou.png" onclick='lottery("{$uid}","{$userlogin_token}")' />
+        </div>
+    </div>
+</div>
+<div>
+    <div class="info_title">兑奖细则：</div>
+    <div class="info_content">
+        <p>1、兑奖截止时间2018年8月31日，逾期视为自动放弃。</p>
+        <p>2、兑奖方式：实物奖励进入我的点击礼品兑换，使用兑换卷进行兑换。</p>
+        <p>3、本活动与苹果公司无关。</p>
+    </div>
+</div>
+
+</body>
+
+
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 100 * (clientWidth / 720) + 'px';
+                };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+<script type="text/javascript" src="/lottery/js/store_common.js"></script>
+</html>

@@ -10,6 +10,31 @@ namespace app\systemmanage\controller;
 use BBExtend\Sys;
 
 class Tool { 
+    
+   public function ipdeny_copy()
+   {
+       Sys::display_all_error();
+       $key =  "limit:ip:week";
+       $redis = Sys::get_container_redis();
+       
+       $result = $redis->sMembers($key);
+       $filename = '/etc/nginx/conf.d/deny.conf';
+//        $content = file_get_contents($filename);
+       
+       
+       $content='deny 58.222.21.50;
+deny 101.132.177.193;
+deny 58.35.38.22;
+';       
+       $content.="\n\n";
+       foreach ( $result as $ip ) {
+           $content .= "deny {$ip};\n";
+           
+       }
+       file_put_contents($filename, $content);
+       echo "ok";
+   }
+    
    public function display_table()
    {
        

@@ -55,7 +55,7 @@ class Backup {
        //检查版本表，自动建立版本表
       $tables = \BBExtend\common\MysqlTool::show_tables();
      // dump($tables);
-      $paichu_arr=['bb_tongji_log','bb_tongji_user_huizong', 'bb_request' ];
+      $paichu_arr=['bb_tongji_log','bb_tongji_user_huizong', ];
       $i=0;
       
       $dir = "/mnt/backup/mysql_backup/".date("Ymd")."/";

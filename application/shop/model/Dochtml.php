@@ -118,6 +118,8 @@ class Dochtml
       
       
       self::get_href('发现和星动态列表').
+      self::get_href('个人动态列表').
+      
       self::get_href('发现和星动态详情').
       self::get_href('动态评论和点赞').
       self::get_href('动态添加').
@@ -149,7 +151,8 @@ class Dochtml
       self::get_href('用户资产查询' ).
       
       
-      self::get_href('用户主页全部' ).
+      self::get_href('用户主页全部','用户主页全部',1 ).
+      self::get_href('用户主页全部V2' ).
       self::get_href('用户主页视频列表' ).
       self::get_href('用户导师主页点评列表' ).
       self::get_href('用户机构主页导师列表' ).
@@ -157,6 +160,8 @@ class Dochtml
       
       self::get_href('用户注册和登录','用户注册和登录',1).
       self::get_href('用户注册和登录2018').
+      self::get_href('用户换临时token').
+      
       self::get_href('用户只登录').
       self::get_href('用户微信网页登录').
       self::get_href('用户注册发送短信').

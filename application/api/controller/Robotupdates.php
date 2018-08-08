@@ -23,7 +23,7 @@ class Robotupdates
      */
     public function index($record_count=1 )
     {
-        Sys::debugxieye("增加点击  count=". $record_count);
+      //  Sys::debugxieye("增加点击  count=". $record_count);
          
         $people_count=1;
         

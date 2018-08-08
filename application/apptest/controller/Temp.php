@@ -9,7 +9,7 @@ use think\Db;
 use BBExtend\common\EmojiData;
 use BBExtend\user\Comment;
 
-
+use think\Config;
 
 class Temp 
 {
@@ -32,7 +32,7 @@ class Temp
     
    public function index()
    {
-       echo "aaaab";
+       return ['code'=>1];
    }
    
     

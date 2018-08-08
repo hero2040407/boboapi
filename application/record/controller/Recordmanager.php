@@ -336,17 +336,18 @@ limit {$startid},{$length}
         $baidu_citycode = input('?post.baidu_citycode')?input('post.baidu_citycode'):'';
         
         $uid = input('?post.uid')?(int)input('post.uid'):0;
-        $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。5广告，6通告上传
+        $type = input('?post.type')?(int)input('post.type'):0;//秀场 1   邀约 2  个人验证 3，       4大赛。5广告，6通告上传,7动态
         $video_path = input('?post.video_path')?(string)input('post.video_path'):'';
         $thumbnailpath = input('?post.thumbnailpath')?(string)input('post.thumbnailpath'):'';
         $activity = input('?post.activity_id')?(int)input('post.activity_id'):0;//活动id
         $theme_title = input('?post.theme_title')?(string)input('post.theme_title'):'';//话题
         
+        //强转一下。
         if ($type==1) {
-            $type=6;
+            $type= \BBExtend\fix\TableType::bb_record__type_updates ;
         }
         
-        if (!in_array($type, [1,2,3,4,5,6,])){
+        if (!in_array($type, [1,2,3,4,5,6,7,])){
             return ['code'=>0,'message'=>'type error2'];
         }
         
@@ -439,6 +440,7 @@ limit {$startid},{$length}
         $theme_id =  \BBExtend\model\Theme::get_and_create_id($theme_title);
         $recordDB['theme_id'] = $theme_id;
         
+        $recordDB['time'] =time();
         
         if (preg_match('#(mov|qt|quicktime)$#i', $video_path)) {
             $recordDB['transcoding_complete'] = 0;
@@ -508,6 +510,15 @@ limit {$startid},{$length}
             
             $help = new \BBExtend\video\RaceUpload();
             $help->upload_record($record_arr['id'], $activity, $uid);
+        }
+        
+        // 动态特殊处理
+        if ($type==TableType::bb_record__type_updates ) {
+            
+            \BBExtend\model\UserUpdates::insert_record_no_check($recordDB);
+            
+//             $help = new \BBExtend\video\RaceUpload();
+//             $help->upload_record($record_arr['id'], $activity, $uid);
         }
         
         // 这句话重要，勿删

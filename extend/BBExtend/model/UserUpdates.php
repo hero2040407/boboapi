@@ -156,6 +156,34 @@ class UserUpdates extends Model
         $sql="update bb_users_updates set like_count = like_count+ 1 
                where id = ". $this->id;
         $db->query($sql);
+        
+        // xieye
+        // 这里做特殊处理，假如这是短视频动态，则也往短视频的点赞缓存添加。
+        $record_id = $this->get_record_id();
+        if ($record_id) {
+            $record = \BBExtend\model\Record::find( $record_id );
+            
+//             $key ="record:like:room_id:". $record->room_id ;
+            // 谢烨，我打算用list。
+//             $db = Sys::get_container_db_eloquent();
+//             $sql="select nickname from bb_users where uid=?";
+//             $name = DbSelect::fetchOne($db, $sql,[$uid]);
+            $redis = Sys::get_container_redis();
+//             $redis->lRem($key, $name, 1000);//去除重复
+//             $redis->lPush($key, $name);
+//             $redis->lTrim($key, 0, 19);// 修剪
+            
+            $key ="record:like:room_id:display_id:". $record->room_id ;
+            // 谢烨，我打算用list。
+            $redis = Sys::get_container_redis();
+            $redis->lRem($key, $uid, 1000);//去除重复
+            $redis->lPush($key, $uid);
+            $redis->lTrim($key, 0, 19);// 修剪
+            
+            
+        }
+        
+        
         return true;
     }
     
@@ -313,6 +341,70 @@ class UserUpdates extends Model
         
     }
 
+    
+    
+    /**
+     * 短视频审核成功
+     *
+     * @param unknown $record_arr
+     */
+    public static function insert_record_no_check($record_arr)
+    {
+        $db = Sys::get_container_db_eloquent();
+        
+        $updates = new self();
+        $updates->uid = $record_arr['uid'];
+        $updates->create_time = $record_arr['time'];
+        $updates->is_remove = 0;
+        $updates->status = 0; // 因为审核过，再调用此接口，所以固定为完成状态。
+        $updates->baidu_citycode = $record_arr['baidu_citycode'];; // 因为审核过，再调用此接口，所以固定为完成状态。
+        
+        
+        
+        if ($record_arr['title']) {
+            $updates->style = 6;
+        }else {
+            $updates->style = 4;
+        }
+        $updates->save();
+        
+        $db::table('bb_record')->where('id',$record_arr['id'])->where('type',7)
+        ->update(['activity_id' =>$updates->id ]);
+        
+        
+        if ( $record_arr['title'] ) {
+            
+            $media = new UserUpdatesMedia();
+            $media->bb_users_updates_id = $updates->id;
+            $media->type = 1;
+            $media->word = $record_arr['title'] ;
+            $media->save();
+            
+        }
+        
+        $media = new UserUpdatesMedia();
+        $media->bb_users_updates_id = $updates->id;
+        $media->type = 3;
+        $media->url = $record_arr['video_path'];
+        $media->bb_record_id = $record_arr['id'];
+        $media->time_length =  \BBExtend\common\Date::time_length_display(
+                $record_arr['time_length_second'] );
+        $media->save();
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
    
     public function get_record_id()
     {

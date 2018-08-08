@@ -13,8 +13,6 @@ use BBExtend\BBPush;
  */
 class Index
 {
-    
-
     /**
      * 新版首页
      * @param number $uid
