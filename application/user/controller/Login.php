@@ -89,8 +89,22 @@ class Login extends BBUser
     }
     
     
-    public function polling()
+    public function polling($token='')
     {
+        if ($token) {
+            $db = Sys::get_container_db();
+            $sql="select uid from bb_users where userlogin_token=?";
+            $result = $db->fetchOne($sql,$token);
+            if ($result) {
+                
+                $secure_help = new \BBExtend\Secure();
+                $token = $secure_help->get_good_token();
+                
+                $token = base64_encode($token );
+                return ['code'=>1, 'data'=>['result' => $token ] ];
+            }
+        }
+        
         return ['code'=>1];
     }
     

@@ -10,17 +10,14 @@ class Secure
     
     const code_ip_blacklist = -205;       // ip进入ip黑名单
     const code_token_need_login = -206;   // token错误，需登录
-  //  const code_token_err = -207;          // token错误，需进入人机交互页面。
     const code_token_too_much = -207;          // token过于频繁，需进入人机交互页面。
-    
-    
     
     
     const  key_ip_blacklist = "limit:ip:week"; // ip黑名单key
     const key_prefix_ip_request_count='limit:ip:request_count:'; // ip请求次数
     const key_prefix_token_request_count='limit:ip:request_count:token'; // token请求次数
     const key_prefix_token='limit:ip:token:';    // token，值是 uid。
-    const key_prefix_token_short='limit:ip:token:short:';    // 
+    const key_prefix_token_short='limit:ip:token:short:';    // token的生存判断键。
     
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
@@ -34,7 +31,7 @@ class Secure
     
     // token生存时间，暂定半小时。
     private function get_token_live(){
-        return 0.5 * 3600;
+        return 60 * 30;
     }
     
     // 这个是提前量，必须用上面函数的值减去本函数。
@@ -78,6 +75,29 @@ class Secure
         return false;
     }
     
+    
+    public function is_login_api($url)
+    {
+        if (preg_match('#^/user/login#', $url )) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    public function is_polling($url)
+    {
+        if (preg_match('#^/user/login/polling#', $url )) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+   // public function 
+    
+    
     public function set_http_header_temptoken($temptoken)
     {
         header("Cache-Contro1: {$temptoken}");
@@ -89,6 +109,24 @@ class Secure
     }
     
     
+    public function get_good_token()
+    {
+     
+        $token = $this->get_header_token_and_is_valid();
+        if (!$token) {
+            // 我创建新的。
+            $token = $this->set_http_header_temptoken();
+            return $token;
+        }
+        // 现在必定有效率。
+        $token = $this->get_header_token();
+        if ($this->test_is_short($token)) {
+            $token = $this->set_http_header_temptoken();
+            return $token;
+        }
+        return $token;
+        
+    }
     
     public function set_new_http_header_temptoken()
     {
@@ -193,7 +231,7 @@ class Secure
     
     
     
-    //返回真，表示通过，返回假表示
+    //
     public function check()
     {
 //         最前面是，ip白名单，接口白名单。
@@ -211,14 +249,16 @@ class Secure
         $ip = $this->ip;
         $redis = $this->redis;
         if (IS_CLI === true) {
-            return true;
+            return ;
         }
         
         if ( $ip == '127.0.0.0' || $ip == '0.0.0.0' ) {
-            return true;
+            return ;
         }
         $request = Request::instance();
+        $url = $request->url( );
         $module_name = $request->module();
+     //   $action_name = 
 //         echo "当前模块名称是" . $request->module();
 //         echo "当前控制器名称是" . $request->controller();
 //         echo "当前操作名称是" . $request->action();
@@ -226,7 +266,7 @@ class Secure
         if ( in_array( $module_name,[ 'apptest','backstage','shop','thirdparty','sytemmanage',
                 'command',
         ] ) ) {
-            return true;
+            return ;
         }
         
         $key_ip_blacklist = self::key_ip_blacklist;
@@ -259,7 +299,7 @@ class Secure
                 $this->output(['code' =>self::code_ip_blacklist, 'message'=> $ip  ]);
             }
             // 如果他请求关键接口。
-            if ( $this->is_secure_api($request->url( )) ) {
+            if ( $this->is_secure_api($url ) ) {
                 $this->set_http_header_code(self::code_token_need_login);
                 $this->output(['code' =>self::code_token_need_login, 'message'=> '需要登录'  ]);
             }
@@ -269,25 +309,40 @@ class Secure
         // 这是请求 有 token 的情况。
         if ( $temptoken )  {
             
-            // 错误的情况。
+            // 错误的情况。但是啊，错误必须排除几个登录性质的接口！！重要。
             $result = $this->get_header_token_and_is_valid(); 
             if ( $result === false ) {
-                // 假如redis里没有，则说明 传来的是错的。重新登录。
-                $this->set_http_header_code(self::code_token_need_login);
-                $this->output(['code' =>self::code_token_need_login , 'message'=> '校验错误'  ]);
+                if (   !$this->is_login_api($url) ) {
+                    // 假如redis里没有，则说明 传来的是错的。重新登录。
+                    $this->set_http_header_code(self::code_token_need_login);
+                    $this->output(['code' =>self::code_token_need_login , 'message'=> '校验错误'  ]);
+                }
+                if ( $this->is_polling($url) ) {
+                    // 假如快过期，则 更换新 的。
+//                     if ( $this->test_is_short($temptoken) ) {
+//                         $this->set_new_http_header_temptoken_by_oldtoken($temptoken);
+//                     }
+                }
             }
             
-            
+            if ( $result === true ) {
             // 下面的逻辑全部是 token正确的情况
-            $key = self::key_prefix_token_request_count.$temptoken;
-            $count = $redis->incr( $key );
-            if ($count == 1 ) {
-                $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
+                $key = self::key_prefix_token_request_count.$temptoken;
+                $count = $redis->incr( $key );
+                if ($count == 1 ) {
+                    $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
+                }
+                if ($count > self::allow_request_count_per_token_minute) {
+                    $this->set_http_header_code(self::code_token_too_much);
+                    $this->output(['code' =>self::code_token_too_much , 'message'=> '检查错误'  ]);
+                }
+                
+                // 假如快过期，则 更换新 的。
+                if ( $this->test_is_short($temptoken) ) {
+                    $this->set_new_http_header_temptoken_by_oldtoken($temptoken);
+                }
             }
-            if ($count > self::allow_request_count_per_token_minute) {
-                $this->set_http_header_code(self::code_token_too_much);
-                $this->output(['code' =>self::code_token_too_much , 'message'=> '检查错误'  ]);
-            }
+            
         }
         
         
