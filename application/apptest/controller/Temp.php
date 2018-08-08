@@ -32,7 +32,7 @@ class Temp
     
    public function index()
    {
-       dump(   Config::get( 'bb_request_white_list_ip' ) );
+       return ['code'=>1];
    }
    
     

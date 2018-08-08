@@ -103,6 +103,10 @@ Config::set( "bb_request_white_list_ip", [
         
 ] );
 $ip = Config::get( "http_head_ip" );
+
+
+
+
 // 只有http请求，且 不在白名单内，才有以下处理。
 if (IS_CLI === false && ( !in_array($ip,  Config::get( 'bb_request_white_list_ip' ) ) ) ) { // 谢烨，确保是http请求，必须放过本机shell
     $user_agent = Config::get( "http_head_user_agent" );
