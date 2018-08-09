@@ -34,6 +34,37 @@ class Wokertest
        
 //    }
    
+    
+    // 谢烨，修改评论数量
+    public function comment_count(){
+        $db = Sys::get_container_db();
+        $sql="select id from bb_users_updates
+
+ ";
+        $updates_id_arr = $db->fetchCol($sql);
+        foreach ( $updates_id_arr as $updates_id  ) {
+            // echo "updates_id:{$updates_id}\n";
+            $updates_obj = \BBExtend\model\UserUpdates::find($updates_id);
+            if ($updates_obj) {
+                //   echo "update_obj:you  \n";
+            }
+            
+            $sql="select count(*) from bb_users_updates_comment where is_reply=0 and updates_id = ?  
+                 and status=1  ";
+            $count = $db->fetchOne($sql , $updates_id );
+            
+            //$sql="update ";
+            $updates_obj->comment_count=$count;
+            echo "{$updates_id} : {$count}\n";
+            $updates_obj->save();
+            
+            
+        }
+        
+        
+    }
+    
+    
    /**
     * 代码修正短视频表，通告的id未设置的情况。
     */

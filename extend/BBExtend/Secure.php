@@ -82,6 +82,11 @@ class Secure
         return false;
     }
     
+    public function white_list_module_name(){
+        return [ 'apptest','backstage','shop','thirdparty','sytemmanage',
+                'command',      ];
+    }
+    
     
     public function is_login_api($url)
     {
@@ -279,7 +284,7 @@ class Secure
             return ;
         }
         
-        if ( $ip == '127.0.0.0' || $ip == '0.0.0.0' ) {
+        if ( $ip == '127.0.0.1' || $ip == '0.0.0.0' ) {
             return ;
         }
         $request = Request::instance();
@@ -297,9 +302,7 @@ class Secure
         $redis->rpush( $key,  $ip );
         $redis->ltrim( $key,  0,99 );
         
-        if ( in_array( $module_name,[ 'apptest','backstage','shop','thirdparty','sytemmanage',
-                'command',
-        ] ) ) {
+        if ( in_array( $module_name, $this->white_list_module_name()  ) ) {
             return ;
         }
         
