@@ -367,6 +367,17 @@ class RecordCheck
             if ($audit==1) {
                 $db->update("bb_record", ['audit_success_time' => time() ],"id=". $this->record_id);
             }
+            
+            $user = \BBExtend\model\User::find( $recordDB['uid'] );
+            
+            if ($audit==1) {
+              $user->attestation = 2;
+              $user->save();
+            }
+//             if ($audit==2) {
+//                 $user->attestation = 1;
+//                 $user->save();
+//             }
             return true;
         }
         

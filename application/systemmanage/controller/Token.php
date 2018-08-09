@@ -64,6 +64,11 @@ class Token
            
            $val = $redis->get( Secure::key_prefix_token.$token );
            
+           //过期
+//            $is_exists=1;
+//            $result = $redis->get( Sec );
+           
+           
            echo "
            
 <li><a href='/systemmanage/token/token_detail/token/{$token}'>{$token}</a> ,uid :{$val}  </li>

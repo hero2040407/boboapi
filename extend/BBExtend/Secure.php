@@ -380,8 +380,8 @@ class Secure
                 $redis->ltrim( $key_ip,  0,99 );
                 
             // 下面的逻辑全部是 token正确的情况
-                $key = self::key_prefix_token_request_count.$temptoken;
-                $count = $redis->incr( $key );
+                $key_minute = self::key_prefix_token_request_count.$temptoken;
+                $count = $redis->incr( $key_minute );
                 if ($count == 1 ) {
                     $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
                 }
