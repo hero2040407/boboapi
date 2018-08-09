@@ -55,31 +55,43 @@ class Token
        
        $key = Secure::key_prefix_ip_token_set . $ip;
        
-       $list = $redis->lrange($key ,0,-1);
+       $list = $redis->lrange($key ,-20,-1);
        echo "<h2>单个ip详情：ip{$ip}</h2>";
        echo "<h2>1分钟内请求次数：{$count}</h2>";
        echo "<h2>下面是该ip拥有的token列表：</h2>";
-       echo "<ol>";
+       
+       $title_arr=['token','uid', '每分钟请求次数', '使用ip' ];
+       $result_arr=[];
+       
        foreach ($list as $token) {
            
            $val = $redis->get( Secure::key_prefix_token.$token );
+           $ips = $redis->lrange( Secure::key_prefix_token_ip_set .$token,0,-1);
+           $ips2 = implode(',', $ips);
+            if ( $ips2 ) {
+               
+               $ips2=  array_unique($ips);
+               $ips2 = implode(',', $ips2);
+            }
+           $token_count = $redis->get( Secure::key_prefix_token_request_count.$token );
+           $uid_count = null;
+           if ($val) {
+               $uid_count = $redis->scard( Secure::key_prefix_uid_set.$val );
+               
+           }
            
-           //过期
-//            $is_exists=1;
-//            $result = $redis->get( Sec );
+           $str2="";
+           if ($val) {
+               $str2="{$val}({$uid_count})";
+           }
            
-           
-           echo "
-           
-<li><a href='/systemmanage/token/token_detail/token/{$token}'>{$token}</a> ,uid :{$val}  </li>
-
-
-";
+           $temp=[$token, $str2, $token_count, $ips2 ];
+           $result_arr[]=$temp;
            
            
        }
-       echo "</ol>";
-       
+       $obj = new \BBExtend\common\HtmlTable($title_arr, $result_arr);
+       echo $obj->to_html();
        
    }
    

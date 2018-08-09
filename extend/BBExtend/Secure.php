@@ -22,7 +22,10 @@ class Secure
     const key_prefix_ip_token_set='limit:ip:ip_token:'; // ip包含token
     const key_ip_all='limit:ip:all:ip'; // 所有ip，但我会修剪。
     const key_token_all='limit:ip:all:token'; // 所有token，但我会修剪。
+    const key_prefix_uid_set='limit:ip:uid:token'; // 所有token，但我会修剪。
     
+    
+    // 谢烨，我要记录uid 在一小时内的token次数。
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
     const allow_request_count_per_token_minute=6; //允许的 token 的每分钟访问次数。
@@ -379,13 +382,32 @@ class Secure
                 $redis->rpush( $key_ip,  $temptoken );
                 $redis->ltrim( $key_ip,  0,99 );
                 
+                
+                // 记录一个小时内，一个uid的token次数。
+                
+                $uid = $redis->get( self::key_prefix_token . $temptoken );
+                if ($uid >0) {
+                    $key = self::key_prefix_uid_set.$uid;
+                    $temp= $redis->exists( $key );
+                     if ($temp===false) {
+                         $redis->sadd( $key, $temptoken );
+                         $redis->setTimeout($key, 2* 3600);
+                     }else {
+                         // 已存在
+                         $redis->sadd( $key, $temptoken );
+                     }
+                    
+                }
+                
+//                 $key = self::key_prefix_uid_set . 
+                
             // 下面的逻辑全部是 token正确的情况
                 $key_minute = self::key_prefix_token_request_count.$temptoken;
                 $count = $redis->incr( $key_minute );
                 if ($count == 1 ) {
                     $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
                 }
-                if ($count > self::allow_request_count_per_token_minute) {
+                if ($count > self::allow_request_count_per_token_minute  &&  ( !$this->is_login_api($url)) ) {
                     $this->set_http_header_code(self::code_token_too_much);
                     $this->output(['code' =>self::code_token_too_much , 'message'=> '检查错误'  ]);
                 }

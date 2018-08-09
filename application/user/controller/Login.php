@@ -101,14 +101,14 @@ class Login extends BBUser
             if ($result) {
                 
                 $secure_help = new \BBExtend\Secure();
-                $token = $secure_help->get_good_token();
+                $token = $secure_help->get_good_token($result);
                 
                 $token = base64_encode($token );
                 return ['code'=>1, 'data'=>['result' => $token ] ];
             }
         }
         
-        return ['code'=>1];
+        return ['code'=>0];
     }
     
     
