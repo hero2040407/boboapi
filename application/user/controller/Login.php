@@ -75,17 +75,18 @@ class Login extends BBUser
     {
         $a = mt_rand( 1,100 );
         $b = mt_rand( 1,100 );
+        $c = $a +$b;
         session( 'man_machine_recognition', $a+$b );
       //  if (session('?man_machine_recognition')) {
-            $temp = session('man_machine_recognition');
-            $im = imagecreate(100, 30);
+            $temp = $c;
+            $im = imagecreate(252, 88);
             $bg = imagecolorallocate($im, 255, 255, 255);
             $textcolor = imagecolorallocate($im, 0, 0, 0);
             imagestring($im, 5, 0, 0, $temp, $textcolor);
             // 输出图像 白纸黑字
             header("Content-type: image/png");
             imagepng($im); 
-            
+            exit;
         //}
         //return ['code'=>0];
     }
@@ -120,7 +121,7 @@ class Login extends BBUser
                 return ['code'=>-201, 'message' => '' ];
             }
          $secure_help = new \BBExtend\Secure();
-         $token = $secure_help->set_new_http_header_temptoken();
+         $token = $secure_help->set_new_http_header_temptoken($uid);
          $token = base64_encode($token );
          return ['code'=>1, 'data'=>['result' => $token ] ];
     }
@@ -381,7 +382,7 @@ limit 1";
             $return_platform_id=$platform_id;
         }
         $secure_help = new \BBExtend\Secure();
-        $secure_help->set_new_http_header_temptoken();
+        $secure_help->set_new_http_header_temptoken($uid);
         
         return [
                 'code' => 1,
@@ -481,7 +482,7 @@ limit 1";
                  'platform_id' =>$return_platform_id,
         ]];
         $secure_help = new \BBExtend\Secure();
-        $secure_help->set_new_http_header_temptoken();
+        $secure_help->set_new_http_header_temptoken($uid);
         return $temp;
     
     }

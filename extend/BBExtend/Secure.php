@@ -17,11 +17,15 @@ class Secure
     const key_prefix_ip_request_count='limit:ip:request_count:'; // ip请求次数
     const key_prefix_token_request_count='limit:ip:request_count:token'; // token请求次数
     const key_prefix_token='limit:ip:token:';    // token，值是 uid。
+    const key_prefix_token_ip_set='limit:ip:token_ip:';    // token，包含ip。
     const key_prefix_token_short='limit:ip:token:short:';    // token的生存判断键。
+    const key_prefix_ip_token_set='limit:ip:ip_token:'; // ip包含token
+    const key_ip_all='limit:ip:all:ip'; // 所有ip，但我会修剪。
+    const key_token_all='limit:ip:all:token'; // 所有token，但我会修剪。
     
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
-    const allow_request_count_per_token_minute=130; //允许的 token 的每分钟访问次数。
+    const allow_request_count_per_token_minute=6; //允许的 token 的每分钟访问次数。
     
     public $redis;
     public $ip;
@@ -100,6 +104,8 @@ class Secure
     
     public function set_http_header_temptoken($temptoken)
     {
+       // header("Cache-Contro1: {$temptoken}");
+       $temptoken = base64_encode($temptoken );
         header("Cache-Contro1: {$temptoken}");
     }
     
@@ -109,7 +115,7 @@ class Secure
     }
     
     // 单独被轮询接口调用。
-    public function get_good_token()
+    public function get_good_token($uid)
     {
      // 如果 不传来，新增。
      // 如果传来，
@@ -121,7 +127,7 @@ class Secure
         
         $token = $this->get_header_token();
         if ( !$token ) {
-            return $this->set_new_http_header_temptoken();
+            return $this->set_new_http_header_temptoken($uid);
         }
         // 如果传来有效
         if ( $this->test_valid($token) ) {
@@ -131,12 +137,12 @@ class Secure
             
         }else {
             // 传来无效
-            return $this->set_new_http_header_temptoken();
+            return $this->set_new_http_header_temptoken($uid);
         }
     }
     
     
-    public function set_new_http_header_temptoken()
+    public function set_new_http_header_temptoken($uid=0)
     {
         $ip = $this->ip;
         $random = mt_rand(100000,999999);
@@ -149,7 +155,13 @@ class Secure
         
         $redis = $this->redis;
         $key = self::key_prefix_token . $temptoken;
-        $redis->setEx( $key,$this->get_token_live() , '-1'  );
+        if ($uid ) {
+            
+        }else {
+            $uid=-1;
+        }
+        
+        $redis->setEx( $key,$this->get_token_live() , $uid  );
         $key = self::key_prefix_token_short . $temptoken;
         $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
         
@@ -178,7 +190,8 @@ class Secure
             $this->set_http_header_temptoken($newtoken);
     
             $key = self::key_prefix_token . $newtoken;
-            $redis->setEx( $key,$this->get_token_live() , '-1'  );
+            $redis->setEx( $key,$this->get_token_live() , 
+                     $redis->get( self::key_prefix_token.$oldtoken   )  );
             $key = self::key_prefix_token_short . $newtoken;
             $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
             return $newtoken;
@@ -191,8 +204,8 @@ class Secure
     // 得到头部token
     public function get_header_token(){
         $temptoken = '';
-        if (isset( $_SERVER['HTTP_TEMPTOKEN'] )) {
-            $temptoken = $_SERVER['HTTP_TEMPTOKEN'];
+        if (isset( $_SERVER['HTTP_TEMP_TOKEN'] )) {
+            $temptoken = $_SERVER['HTTP_TEMP_TOKEN'];
         }
         return $temptoken;
     }
@@ -274,6 +287,13 @@ class Secure
 //         echo "当前控制器名称是" . $request->controller();
 //         echo "当前操作名称是" . $request->action();
         // 根据模块忽略白名单。
+        
+        
+        $key = self::key_ip_all;
+        $redis->lrem( $key,  $ip,0 );
+        $redis->rpush( $key,  $ip );
+        $redis->ltrim( $key,  0,99 );
+        
         if ( in_array( $module_name,[ 'apptest','backstage','shop','thirdparty','sytemmanage',
                 'command',
         ] ) ) {
@@ -323,6 +343,12 @@ class Secure
             // 错误的情况。但是啊，错误必须排除几个登录性质的接口！！重要。
             $result = $this->get_header_token_and_is_valid(); 
             if ( $result === false ) {
+                // ip监视token
+                $key_ip = self::key_prefix_ip_token_set . $ip;
+                $redis->sRemove( $key_ip,  $temptoken );
+                
+                //$redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1分钟
+                
                 if (   !$this->is_login_api($url) ) {
                     // 假如redis里没有，则说明 传来的是错的。重新登录。
                     $this->set_http_header_code(self::code_token_need_login);
@@ -334,6 +360,25 @@ class Secure
             }
             
             if ( $result === true ) {
+                // 添加到特定键，做一个记录处理。
+                $key_ip = self::key_prefix_ip_token_set . $ip;
+                $redis->lrem( $key_ip,  $temptoken,0 );
+                $redis->rpush( $key_ip,  $temptoken );
+                $redis->ltrim( $key_ip,  0,49 );
+                $redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1
+                
+                $key_ip = self::key_prefix_token_ip_set .$temptoken;
+                $redis->lrem( $key_ip,  $ip,0 );
+                $redis->rpush( $key_ip,  $ip );
+                $redis->ltrim( $key_ip,  0,9 );
+                $redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1
+                
+                // 添加到所有token
+                $key_ip = self::key_token_all;
+                $redis->lrem( $key_ip,  $temptoken,0 );
+                $redis->rpush( $key_ip,  $temptoken );
+                $redis->ltrim( $key_ip,  0,99 );
+                
             // 下面的逻辑全部是 token正确的情况
                 $key = self::key_prefix_token_request_count.$temptoken;
                 $count = $redis->incr( $key );

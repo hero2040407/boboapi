@@ -36,7 +36,7 @@ CODE
 值是 -206 或 -207 .
 
 而客户端传给我的头部临时token的键是
-TEMPTOKEN
+Temp-Token
 
 
 ~~~
