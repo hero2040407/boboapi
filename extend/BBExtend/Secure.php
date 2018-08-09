@@ -28,7 +28,7 @@ class Secure
     // 谢烨，我要记录uid 在一小时内的token次数。
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
-    const allow_request_count_per_token_minute=6; //允许的 token 的每分钟访问次数。
+    const allow_request_count_per_token_minute=60; //允许的 token 的每分钟访问次数。
     
     public $redis;
     public $ip;

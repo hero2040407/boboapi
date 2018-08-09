@@ -54,28 +54,55 @@ class Login extends BBUser
     // 这是访问过多的对付手段。
     public function man_machine_recognition_check($token,$type=1,$cal_result)
     {
-        if (session('?man_machine_recognition')) {
-            $temp = session('man_machine_recognition');
-            if ( $cal_result== $temp ) {
-                // 首先，这个token得存在。且和 header中的token相同，
-                $obj = new \BBExtend\Secure();
-                
-                if ( $obj->get_header_token() == $token && $obj->test_valid($token) ) {
-                    $obj->clear_token_count($token);
-                
-                   return ['code'=>1, ];
-                }
-            }
-            return ['code'=>0,'message' =>'填写校验错误' ];
+        
+        if ( !session('?man_machine_recognition') ) {
+            return ['code'=>0];
         }
-        return ['code'=>0];
+        
+        
+//         if ( $token && ( $redis->get( \BBExtend\Secure::key_prefix_token.$token )!== false ) ) {
+//          //   $redis->setex( "limit:ip:pic:check".$token,  120 ,$c );
+//             $save_check = $redis->get( "limit:ip:pic:check".$token);
+//             if (!$save_check) {
+//                 return ['code'=>0];
+//             }
+//         }else {
+//             return ['code'=>0];
+//         }
+        
+        
+        if ( $cal_result== session('man_machine_recognition') ) {
+                // 首先，这个token得存在。且和 header中的token相同，
+            $obj = new \BBExtend\Secure();
+                
+            if ( $obj->get_header_token() == $token && $obj->test_valid($token) ) {
+                $obj->clear_token_count($token);
+                
+                return ['code'=>1, ];
+            } else {
+                return ['code'=>0,'message' =>'token参数错误' ];
+            }
+        }
+        
+        return ['code'=>0,'message' =>'填写校验错误' ];
     }
     
-    public function man_machine_recognition_pic()
+    public function man_machine_recognition_pic($token)
     {
         $a = mt_rand( 1,100 );
         $b = mt_rand( 1,100 );
         $c = $a +$b;
+        
+        $redis = Sys::getredis2();
+        
+        
+        if ( $token && ( $redis->get( \BBExtend\Secure::key_prefix_token.$token )!== false ) ) {
+            $redis->setex( "limit:ip:pic:check".$token,  120 ,$c );
+        }else {
+            return ['code'=>0];
+        }
+        
+        
         session( 'man_machine_recognition', $a+$b );
       //  if (session('?man_machine_recognition')) {
             $temp = $c;

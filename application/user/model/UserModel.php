@@ -33,14 +33,7 @@ class UserModel
             $UserDB['min_record_time'] = (int)$UserDB['min_record_time'];
             $UserDB['max_record_time'] = (int)$UserDB['max_record_time'];
             //缓存中有，则必须每次都核查
-            if ($UserDB['vip'] ) {
-                if ($UserDB['vip_time'] < APP_TIME)
-                {
-                    $UserDB['vip'] = 0;
-                    $sql ="update bb_users set vip='0' where uid={$uid}";
-                    $db->query($sql);
-                }
-            }
+           
         }else {
             $this->error=1;
         }

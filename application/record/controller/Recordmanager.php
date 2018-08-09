@@ -124,6 +124,7 @@ limit {$startid},{$length}
     {
         $uid = input('?param.uid')?(int)input('param.uid'):0;
         $query_uid = input('?param.query_uid')?(int)input('param.query_uid'):$uid;
+       $dbzend = \BBExtend\Sys::get_container_dbreadonly();
        
         $startid = input('?param.startid')?(int)input('param.startid'):0;
         $length = input('?param.length')?(int)input('param.length'):20;
@@ -188,6 +189,16 @@ limit {$startid},{$length}
                 $MoviesDB[$i]['sex']= $user->get_usersex();
                 $MoviesDB[$i]['nickname']=$user->get_nickname();
                 $MoviesDB[$i]['level']=$user->get_user_level();
+                
+                if ( $MoviesDB[$i]['content_type']==37  ) {
+                    
+                    $MoviesDB[$i]['updates_id']= $MoviesDB[$i]['activity_id']  ;
+                }else {
+                    $MoviesDB[$i]['updates_id']=0;
+                }
+                
+                
+                
             }
             if (count($MoviesDB) == $length) {
                 return ['data'=>$MoviesDB,'is_bottom'=>0,'code'=>1];
