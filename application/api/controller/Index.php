@@ -47,7 +47,7 @@ order by id asc";
         $db = Sys::get_container_dbreadonly();
         $sql="select * from bb_users_recommend
 order by create_time desc
-limit 9
+limit 0, 9
 ";
         $result = $db->fetchAll($sql);
         $new =[];

@@ -13,22 +13,22 @@ class Secure
     const code_token_too_much = -207;          // token过于频繁，需进入人机交互页面。
     
     
-    const  key_ip_blacklist = "limit:ip:week"; // ip黑名单key
-    const key_prefix_ip_request_count='limit:ip:request_count:'; // ip请求次数
-    const key_prefix_token_request_count='limit:ip:request_count:token'; // token请求次数
-    const key_prefix_token='limit:ip:token:';    // token，值是 uid。
-    const key_prefix_token_ip_set='limit:ip:token_ip:';    // token，包含ip。
-    const key_prefix_token_short='limit:ip:token:short:';    // token的生存判断键。
-    const key_prefix_ip_token_set='limit:ip:ip_token:'; // ip包含token
-    const key_ip_all='limit:ip:all:ip'; // 所有ip，但我会修剪。
-    const key_token_all='limit:ip:all:token'; // 所有token，但我会修剪。
-    const key_prefix_uid_set='limit:ip:uid:token'; // 所有token，但我会修剪。
+    const  key_ip_blacklist = "limit:ip:week"; // ip黑名单key，生存时间，无限。
+    const key_prefix_ip_request_count='limit:ip:request_count:'; // ip请求次数，生存时间：1分钟。
+    const key_prefix_token_request_count='limit:ip:request_count:token'; // token请求次数，生存时间，1分钟。
+    const key_prefix_token='limit:ip:token:';    // token，值是 uid。              生存时间：60 ×30　半小时
+    const key_prefix_token_ip_set='limit:ip:token_ip:';    // token，包含ip。生存时间：自动连续1小时。
+    const key_prefix_token_short='limit:ip:token:short:';    // token的生存判断键。生存时间，比token略短10分钟。
+    const key_prefix_ip_token_set='limit:ip:ip_token:'; // ip包含token，ip生存时间：自动连续1小时。
+    const key_ip_all='limit:ip:all:ip'; // 所有ip，但我会修剪。无限时。
+    const key_token_all='limit:ip:all:token'; // 所有token，但我会修剪。无限时。
+    const key_prefix_uid_set='limit:ip:uid:token'; // 所有token，但我会修剪。2小时。
     
     
     // 谢烨，我要记录uid 在一小时内的token次数。
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
-    const allow_request_count_per_token_minute=60; //允许的 token 的每分钟访问次数。
+    const allow_request_count_per_token_minute=10; //允许的 token 的每分钟访问次数。
     
     public $redis;
     public $ip;
@@ -64,7 +64,8 @@ class Secure
     
     private function add_ip_to_blacklist(){
         $redis = $this->redis;
-        $redis->sadd( self::key_ip_blacklist, $this->ip );
+        $redis11 = \BBExtend\Sys::get_container_redis();
+        $redis11->sadd( self::key_ip_blacklist, $this->ip );
     }
     
     
@@ -82,10 +83,21 @@ class Secure
         return false;
     }
     
+    
+//     /api/alihuidiao|/user/weixin|/shop/api|/api/file
+// 上面几个是临时的。
+    
     public function white_list_module_name(){
         return [ 'apptest','backstage','shop','thirdparty','sytemmanage',
                 'command',      ];
     }
+    
+    public function white_list_url($url){
+        
+        return false;
+    }
+    
+    
     
     
     public function is_login_api($url)
@@ -284,7 +296,8 @@ class Secure
             return ;
         }
         
-        if ( $ip == '127.0.0.1' || $ip == '0.0.0.0' ) {
+//         if ( $ip == '127.0.0.1' || $ip == '0.0.0.0' || $ip='122.224.90.210' ) {
+            if ( $ip == '127.0.0.1' || $ip == '0.0.0.0'  ) {
             return ;
         }
         $request = Request::instance();
@@ -305,6 +318,12 @@ class Secure
         if ( in_array( $module_name, $this->white_list_module_name()  ) ) {
             return ;
         }
+        
+        // 白名单url
+        if ( $this->white_list_url($url) ) {
+            return ;
+        }
+        
         
         $key_ip_blacklist = self::key_ip_blacklist;
         // 如果查到哪个ip是在封禁ip列表内，禁止访问。
@@ -351,9 +370,9 @@ class Secure
             if ( $result === false ) {
                 // ip监视token
                 $key_ip = self::key_prefix_ip_token_set . $ip;
-                $redis->sRemove( $key_ip,  $temptoken );
+             //   $redis->sRemove( $key_ip,  $temptoken );
                 
-                //$redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1分钟
+                $redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1分钟
                 
                 if (   !$this->is_login_api($url) ) {
                     // 假如redis里没有，则说明 传来的是错的。重新登录。
@@ -363,6 +382,7 @@ class Secure
                 if ( $this->is_polling($url) ) {
                     
                 }
+                
             }
             
             if ( $result === true ) {
@@ -413,6 +433,15 @@ class Secure
                 if ($count > self::allow_request_count_per_token_minute  &&  ( !$this->is_login_api($url)) ) {
                     $this->set_http_header_code(self::code_token_too_much);
                     $this->output(['code' =>self::code_token_too_much , 'message'=> '检查错误'  ]);
+                }
+                
+                
+                if ( $this->is_secure_api($url ) ) {
+                    if ( $uid <=0 ) {
+                    
+                        $this->set_http_header_code(self::code_token_need_login);
+                        $this->output(['code' =>self::code_token_need_login, 'message'=> '需要登录'  ]);
+                    }
                 }
                 
                 // 假如快过期，则 更换新 的。
