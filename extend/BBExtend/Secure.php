@@ -89,11 +89,11 @@ class Secure
     
     public function white_list_module_name(){
         return [ 'apptest','backstage','shop','thirdparty','sytemmanage',
-                'command',      ];
+                'command', 'api',     ];
     }
     
     public function white_list_url($url){
-        
+       // if (preg_match( '#^#' ))
         return false;
     }
     

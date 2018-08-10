@@ -45,7 +45,7 @@ class Recordmanager extends BBRecord
         $db = Sys::get_container_db_eloquent();
         $record = $db::table( 'bb_record' )->where('is_remove',0)
            ->where('id',$id)
-           ->where('type' ,'<>',3)->first();
+           ->first();
         
         if (!$record) {
             return ['code'=>0,'message'=>'视频不存在'];
