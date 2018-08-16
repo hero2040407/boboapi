@@ -54,9 +54,11 @@ limit 0, 9
         foreach ( $result as $v ) {
             $uid = $v['uid'];
             $user = \BBExtend\model\UserDetail::find($uid);
-            $temp = $user->get_info_201807_extend();
+            if ($user) {
+              $temp = $user->get_info_201807_extend();
          //   $temp['is_upgrade'] = $v['is_upgrade'] ; 
-            $new[]= $temp;
+              $new[]= $temp;
+            }
         }
         return $new;
     }

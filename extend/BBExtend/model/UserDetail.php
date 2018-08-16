@@ -71,7 +71,7 @@ class UserDetail extends User
         
         $time = time() - 7 * 24 * 3600;
         $sql="
-             select count(*) from bb_users_info where vip_time > {$time} or sign_time >{$time}
+             select count(*) from bb_users_info where (vip_time > {$time} or sign_time >{$time})
  and uid=?
 
 ";

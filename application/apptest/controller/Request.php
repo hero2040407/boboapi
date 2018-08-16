@@ -15,7 +15,7 @@ class Request {
     public function index() {
 //        $db = Sys::get_container_dbreadonly();
  Sys::display_all_error();
-        $arr = range(190000, 2060000, 10000);
+        $arr = range(1000000, 2060000, 10000);
         $db = Sys::get_container_db();
         foreach ( $arr as $startid ) {
                
