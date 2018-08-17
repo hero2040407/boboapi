@@ -4,6 +4,7 @@ namespace BBExtend;
 
 use think\Config;
 use think\Request;
+use BBExtend\Sys;
 
 class Secure
 {
@@ -28,7 +29,7 @@ class Secure
     // 谢烨，我要记录uid 在一小时内的token次数。
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
-    const allow_request_count_per_token_minute=10; //允许的 token 的每分钟访问次数。
+    const allow_request_count_per_token_minute=90; //允许的 token 的每分钟访问次数。
     
     public $redis;
     public $ip;
@@ -90,6 +91,15 @@ class Secure
     public function white_list_module_name(){
         return [ 'apptest','backstage','shop','thirdparty','sytemmanage',
                 'command', 'api',     ];
+    }
+    
+    
+    public function is_white_module($url){
+        
+        if (preg_match("#^/(apptest|backstage|shop|thirdparth|systemmanage|command|api)#i" , $url)) {
+            return true;
+        }
+        return false;
     }
     
     public function white_list_url($url){
@@ -303,6 +313,7 @@ class Secure
         $request = Request::instance();
         $url = $request->url( );
         $module_name = $request->module();
+  //      Sys::debugxieye("外部".$url);
      //   $action_name = 
 //         echo "当前模块名称是" . $request->module();
 //         echo "当前控制器名称是" . $request->controller();
@@ -315,12 +326,15 @@ class Secure
         $redis->rpush( $key,  $ip );
         $redis->ltrim( $key,  0,99 );
         
-        if ( in_array( $module_name, $this->white_list_module_name()  ) ) {
+        if ( $this->is_white_module($url)   ) {
+           // Sys::debugxieye($module_name);
+          //  Sys::debugxieye("自动忽略了上面".$url);
             return ;
         }
         
         // 白名单url
         if ( $this->white_list_url($url) ) {
+            
             return ;
         }
         
