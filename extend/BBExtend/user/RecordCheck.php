@@ -93,8 +93,10 @@ class RecordCheck
         if ($result) {
             if ($result['push_type'] !=3 ) {
                 \BBExtend\Currency::add_bobi( $result['uid'] ,$result['gold'], '点评邀请退回');
+                
             }
-
+            
+       
             $sql="delete from bb_record_invite_starmaker
                    where record_id = " .$this->record_id ;
             $db::delete($sql);
@@ -102,8 +104,14 @@ class RecordCheck
                    where record_id = " .$this->record_id ;
             $db::delete($sql);
         }
+        
+        
     }
-
+    
+    
+    
+    
+    
     public function check()
     {
         $result = $this->check_all();
@@ -112,7 +120,7 @@ class RecordCheck
             $db = Sys::get_container_db();
             $sql = "select * from bb_record where id = ". $this->record_id;
             $recordDB = $db->fetchRow($sql);
-            BBRedis::getInstance('record')->hMset($recordDB['room_id'].'record',$recordDB);
+       //     BBRedis::getInstance('record')->hMset($recordDB['room_id'].'record',$recordDB);
             
             $reason = strval( $this->fail_reason);
             if (!$reason) {
@@ -145,14 +153,6 @@ class RecordCheck
 //                 if ($result2) {
 //                     $yaoqing_uid = $result2['uid'];
                     
-<<<<<<< HEAD
-                    Currency::add_score($yaoqing_uid, 20, '被邀请人注册后认证成功奖励',175);
-                    $client = new \BBExtend\service\pheanstalk\Client();
-                    $client->add(
-                            new \BBExtend\service\pheanstalk\Data($yaoqing_uid,175,['bonus' => ' 20 积分',], time())
-                    );
-                }
-=======
 //                     Currency::add_score($yaoqing_uid, 20, '被邀请人注册后认证成功奖励',175);
 //                     $client = new \BBExtend\service\pheanstalk\Client();
 //                     $client->add(
@@ -160,7 +160,6 @@ class RecordCheck
 //                     );
                     
 //                 }
->>>>>>> ef45c8d81dc2b84974a38279e196b38de8f7db62
             }
             
             
@@ -349,9 +348,6 @@ class RecordCheck
             
             return true;
         }
-<<<<<<< HEAD
-
-=======
         
         
         if ($this->type == 3) { // 普通短视频。//1秀场，2邀约，3个人认证，4大赛短视频。
@@ -385,7 +381,6 @@ class RecordCheck
             return true;
         }
         
->>>>>>> ef45c8d81dc2b84974a38279e196b38de8f7db62
         if ($this->type == 4) { // 普通短视频。//1秀场，2邀约，3个人认证，4大赛短视频。
             $sql = "select * from bb_record where id = ". $this->record_id;
             $recordDB = $db->fetchRow($sql);
@@ -423,7 +418,7 @@ class RecordCheck
 //             }
 //            return $this->fail();
 //         }
-         $this->message='参数错误';
+//         $this->message='参数错误';
         return  false;
         
     }

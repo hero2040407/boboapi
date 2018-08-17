@@ -447,7 +447,6 @@ class App
                 include $path . 'common' . EXT;
             }
 
-
             // 加载当前模块语言包
             if ($config['lang_switch_on'] && $module) {
                 Lang::load($path . 'lang' . DS . Request::instance()->langset() . EXT);
