@@ -174,7 +174,6 @@ class Message extends BBMessage
                         ->set_type(MessageType::houtai_fasong)
                         ->set_uid($uid)
                         ->send();
-       
     }
     
     // 153 视频标记热门

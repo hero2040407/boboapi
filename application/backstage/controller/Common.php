@@ -10,7 +10,7 @@ use BBExtend\DbSelect;
 
 class Common extends Controller
 {
-
+    protected $param;
     /**
      * 便利方法，获得当前用户详情。
      * 
@@ -113,36 +113,28 @@ class Common extends Controller
     
     public function _initialize ( )
     {
-        header( 'Access-Control-Allow-Origin: *' );
-        header( 'Access-Control-Allow-Credentials: true' );
-        header( 'Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS' );
-        header( 
-                "Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, authKey, sessionId" );
+        header('Access-Control-Allow-Origin: *' );
+        header('Access-Control-Allow-Credentials: true' );
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS' );
+        header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, authKey, sessionId" );
         
         $request = Request::instance( );
         $controller = $request->controller();
-        
+        $this->param = $request->param();
+
         $action = $request->action( );
         $route = $controller . '/' . $action;
-//         Sys::debugxieye(211);
-        if (preg_match('/bobo.yimwing.com/', $request->domain())) {
-            
-//             echo "This is the interface used in the front end, prohibiting access";
-//             die(); 
-        }
-        
-//         Request::instance()->get(['aaa'=>120]);
+
         
         
         if ($action != 'login' && $action != 'logout' ) { // login是个例外
-            
-//             $login = session( "backstage_islogin" );
+
             $my_id = \BBExtend\Session::get_my_id();
-//             Sys::debugxieye("my_id:{$my_id}");
-            
+
+
             if ($my_id !== false) { // 已登录
 //                 Sys::debugxieye(213);
-                
+
                 //第一步，路由校验。
                 if ( $my_id== -1 ){
                     $role ='admin';

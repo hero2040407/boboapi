@@ -574,7 +574,7 @@ limit {$startid},{$length}
             if ($result) {
                 return ["code"=>1];
             }else {
-                return ['code'=>0,'message'=>$record_check->message];
+                return ['code'=>0,'message' => $record_check->message];
             }
         }
         return ['code'=>0,'message'=>'有错'];
