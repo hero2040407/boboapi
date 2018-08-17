@@ -61,11 +61,11 @@ $bb_request_arr = [
 $post = '';
 if ($request->method( ) == "POST") {
     $temp = (array) $_POST;
-
+    
     $post = json_encode( $temp, JSON_UNESCAPED_UNICODE );
 }
 
-$dbe::table( "bb_request" )->insert(
+$dbe::table( "bb_request" )->insert( 
         [
                 'create_time' => APP_TIME,
                 'url' => $request->url( ),
@@ -100,7 +100,7 @@ Config::set( "bb_request_arr", $bb_request_arr );
 //定义请求白名单。
 Config::set( "bb_request_white_list_ip", [
         '127.0.0.1','0.0.0.0','122.224.90.210',
-
+        
 ] );
 $ip = Config::get( "http_head_ip" );
 
@@ -110,26 +110,26 @@ $ip = Config::get( "http_head_ip" );
 // 只有http请求，且 不在白名单内，才有以下处理。
 if (IS_CLI === false && ( !in_array($ip,  Config::get( 'bb_request_white_list_ip' ) ) ) ) { // 谢烨，确保是http请求，必须放过本机shell
     $user_agent = Config::get( "http_head_user_agent" );
-
+    
     // 以下条件判断语句，严格检查user-agent信息，可以注释掉。
 //     if (preg_match('#MicroMessenger#', $user_agent) ||
 //             preg_match('#^BoBo/4\.\d\.\d \((iPhone|iPad)#', $user_agent) ||
 //             preg_match( '#^\(BoBo\)/\(4\.\d\.\d\) \(android#', $user_agent )
-
+            
 //             ){
 //         // 这些正确的user-agent不做任何处理
 //     }else {
 //         // 错误的 agent 直接退出。
-
+        
 //         exit;
 //     }
-
+    
     $redis = Sys::get_container_redis( );
-
+    
     $key = "limit_index:ip:{$ip}";
     $key_hour = "limit_index:ip:hour:{$ip}";
     $key_list = "limit:ip:week";
-
+    
     // 如果查到哪个ip是在封禁ip列表内，禁止访问。
     $has_limit = $redis->sIsMember( $key_list, $ip );
     if ($has_limit === true  ) {
