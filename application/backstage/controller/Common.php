@@ -124,22 +124,14 @@ class Common extends Controller
 
         $action = $request->action( );
         $route = $controller . '/' . $action;
-//         Sys::debugxieye(211);
-        if (preg_match('/bobo.yimwing.com/', $request->domain())) {
-            
-//             echo "This is the interface used in the front end, prohibiting access";
-//             die(); 
-        }
-        
-//         Request::instance()->get(['aaa'=>120]);
+
         
         
         if ($action != 'login' && $action != 'logout' ) { // login是个例外
-            
-//             $login = session( "backstage_islogin" );
-//            $my_id = \BBExtend\Session::get_my_id();
-//             Sys::debugxieye("my_id:{$my_id}");
-            $my_id = -1;
+
+            $my_id = \BBExtend\Session::get_my_id();
+
+
             if ($my_id !== false) { // 已登录
 //                 Sys::debugxieye(213);
 
