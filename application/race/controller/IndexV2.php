@@ -27,6 +27,75 @@ class IndexV2 extends Controller
     private  $is_bottom_ds;
     
     
+    public function select_field_v5($uid, $ds_id)
+    {
+        //    Sys::display_all_error();
+        $result = \BBExtend\video\RaceStatus::get_status_v5($uid, $ds_id);
+        if ($result['code'] == 0 ) {
+            return $result;
+        }
+        
+        $race = \BBExtend\model\Race::find($ds_id);
+        //
+        
+        // 谢烨，查 个人参赛信息。
+        $db = Sys::get_container_dbreadonly();
+        
+        $sql="select * from ds_dangan_config order by sort desc where ds_id=?";
+        $config = $db->fetchAll($sql,[ $ds_id ]);
+        
+        
+        $sql="select * from ds_register_log
+where uid= ? and phone !=''
+order by id desc limit 1";
+        $row = $db->fetchRow($sql,[$uid]);
+        if ($row) {
+            $info=[
+                    'phone'=>$row['phone'],
+                    'name'=>$row['name'],
+                    'sex'=>$row['sex'],
+                    'birthday'=>$row['birthday'],
+                   
+                    'pic'=>$row['pic'],
+            ];
+        }else {
+            $info=null;
+        }
+        
+        if ($result['data']['status']==2  ) {
+            $db = Sys::get_container_dbreadonly();
+            $sql="select id,address,title,status from ds_race_field where race_id = ? and is_valid=1 ";
+            $result = $db->fetchAll($sql,[ $ds_id ]);
+            
+            // 谢烨，额外查一下
+            $sql="select id                      from ds_race_field  where race_id = ? and is_valid=1 and
+                    
+                  exists(
+                   select 1 from ds_register_log
+                     where ds_register_log.uid=?
+                       and has_pay=1 and has_dangan=1
+                       and ds_register_log.ds_id = ds_race_field.id
+)
+                    
+";
+            $ids = $db->fetchCol($sql,[   $ds_id, $uid]);
+            
+            foreach ($result as $k => $v) {
+                if (in_array( $v['id'], $ids  )) {
+                    $result[$k]['status'] = 0;
+                }
+            }
+            
+            
+            return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config , 'online_type'=> $race->online_type  ]  ];
+        } else {
+            return ['code'=>1, 'data'=> ['list' => [],'info'=>$info,'config'=>$config ,'online_type'=> $race->online_type  ]  ];
+        }
+        
+        
+    }
+    
+    
     /**
      * 提供某个大赛的赛区列表。
      * @param unknown $uid
@@ -35,6 +104,11 @@ class IndexV2 extends Controller
      */
     public function select_field($v=1, $uid, $ds_id)
     {
+        if ($v>=5) {
+            return $this->select_field_v5($uid, $ds_id);
+        }
+        
+        
     //    Sys::display_all_error();
         $result = \BBExtend\video\RaceStatus::get_status($uid, $ds_id);
         $code = $result['code'];
