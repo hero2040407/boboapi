@@ -237,6 +237,11 @@ return [
     'ALY_SERVER_LIVE_URL'=>'www.yimwing.com',
 
     //短信设置
+        // 登录网址  http://sms.mob.com/developer/login
+        // 账号 hzguaishoudao@163.com
+        // 密码 guaishoubobo
+        // 进入后左边点击，选择怪兽bobo
+        
     'APPKEY'=>'1428e884e07b9',
     'SENDURL'=>'https://webapi.sms.mob.com/sms/sendmsg',
     'CHECKURL'=>'https://webapi.sms.mob.com/sms/checkcode',

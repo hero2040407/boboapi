@@ -138,19 +138,29 @@ class RecordCheck
                        is_complete = ? 
                        and
                        create_time > ? ";
-                $result2 =  DbSelect::fetchRow($dbe, $sql,[ $this->uid, 
-                    TableType::bb_users_invite_register__is_complete_yizhuce,
-                    Date::pre_day_start(7)
-                ]);
-                if ($result2) {
-                    $yaoqing_uid = $result2['uid'];
+//                 $result2 =  DbSelect::fetchRow($dbe, $sql,[ $this->uid, 
+//                     TableType::bb_users_invite_register__is_complete_yizhuce,
+//                     Date::pre_day_start(7)
+//                 ]);
+//                 if ($result2) {
+//                     $yaoqing_uid = $result2['uid'];
                     
+<<<<<<< HEAD
                     Currency::add_score($yaoqing_uid, 20, '被邀请人注册后认证成功奖励',175);
                     $client = new \BBExtend\service\pheanstalk\Client();
                     $client->add(
                             new \BBExtend\service\pheanstalk\Data($yaoqing_uid,175,['bonus' => ' 20 积分',], time())
                     );
                 }
+=======
+//                     Currency::add_score($yaoqing_uid, 20, '被邀请人注册后认证成功奖励',175);
+//                     $client = new \BBExtend\service\pheanstalk\Client();
+//                     $client->add(
+//                             new \BBExtend\service\pheanstalk\Data($yaoqing_uid,175,['bonus' => ' 20 积分',], time()  )
+//                     );
+                    
+//                 }
+>>>>>>> ef45c8d81dc2b84974a38279e196b38de8f7db62
             }
             
             
@@ -339,7 +349,43 @@ class RecordCheck
             
             return true;
         }
+<<<<<<< HEAD
 
+=======
+        
+        
+        if ($this->type == 3) { // 普通短视频。//1秀场，2邀约，3个人认证，4大赛短视频。
+            $sql = "select * from bb_record where id = ". $this->record_id;
+            $recordDB = $db->fetchRow($sql);
+            $change=['audit' => $audit ];
+            if ($audit == $recordDB['audit']) {
+                $this->message='重复审核错误';
+                return false;
+            }
+            
+            if ($audit == 2) {
+                $change['fail_reason'] = $this->fail_reason;
+            }
+            
+            $db->update("bb_record", $change,"id=". $this->record_id);
+            if ($audit==1) {
+                $db->update("bb_record", ['audit_success_time' => time() ],"id=". $this->record_id);
+            }
+            
+            $user = \BBExtend\model\User::find( $recordDB['uid'] );
+            
+            if ($audit==1) {
+              $user->attestation = 2;
+              $user->save();
+            }
+//             if ($audit==2) {
+//                 $user->attestation = 1;
+//                 $user->save();
+//             }
+            return true;
+        }
+        
+>>>>>>> ef45c8d81dc2b84974a38279e196b38de8f7db62
         if ($this->type == 4) { // 普通短视频。//1秀场，2邀约，3个人认证，4大赛短视频。
             $sql = "select * from bb_record where id = ". $this->record_id;
             $recordDB = $db->fetchRow($sql);

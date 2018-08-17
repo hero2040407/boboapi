@@ -46,6 +46,14 @@ class Check
                 'gold' => $gold, // 波币
                 'bean' => $bean, // 波豆。
                 'new_role_name' => $user->new_role_name(),
+                // 是否认证 0 未认证, 1审核中, 2认证成功
+                'authentication' => $user->attestation,
+
+                'authentication_demo'=>[
+                  'big_pic' =>'http://upload.guaishoubobo.com/10000/5hT5fkfHCK.png',
+                  'video_path'=>'https://upload.guaishoubobo.com/10000/EHpYQTtrFf.mp4',
+                ],
+
         ]  ];
         
     }

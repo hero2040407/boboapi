@@ -12,7 +12,8 @@ namespace app\backstage\controller;
  * Class Generateform
  * @package app\backstage\controller
  */
-class Generateform extends Common{
+class Generateform extends Common
+{
 
     public function create()
     {

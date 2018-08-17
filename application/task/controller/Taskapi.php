@@ -21,6 +21,7 @@ class Taskapi
      */
     public function get_list($uid=0)
     {
+/*
         $user_taskDB = self::get_user_task($uid);
         if ($user_taskDB)
         {
@@ -31,6 +32,36 @@ class Taskapi
             return ['data'=>$data,'code'=>1];
         }
         return['message'=>'没有这个用户的任务信息','code'=>0];
+*/
+return [
+          'code'=>1,
+                'data'=> [
+                   'task_list'=>[
+                           [
+                                   'id' =>'0',
+                                   'title'=>'没有',
+                                   'info'=>'没有',
+                                   
+                           ],
+                           [
+                                   'id' =>'0',
+                                   'title'=>'没有',
+                                   'info'=>'没有',
+                                   
+                           ],
+                           [
+                                   'id' =>'0',
+                                   'title'=>'没有',
+                                   'info'=>'没有',
+                                   
+                           ],
+                           
+                           
+                   ]     
+                        
+                ],
+        ];
+
     }
     
     

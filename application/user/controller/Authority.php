@@ -9,6 +9,6 @@ namespace app\user\controller;
 
 class Authority 
 {
-   public function 
+  // public function 
       
 }

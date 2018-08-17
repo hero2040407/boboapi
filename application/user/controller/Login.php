@@ -42,48 +42,78 @@ class Login extends BBUser
     
     
     
-    public function man_machine_recognition($token,$type=1){
-        $a = mt_rand( 1,100 );
-        $b = mt_rand( 1,100 );
-        session( 'man_machine_recognition', $a+$b );
-        $str = mt_rand( 1,100 ) . " + " . mt_rand(1, 100) ;
-        return ['code'=>1, 'data' =>[ 'result'  => $str ] ];
-       // session('man_machine_recognition');
-    }
+//     public function man_machine_recognition($token,$type=1){
+//         $a = mt_rand( 1,100 );
+//         $b = mt_rand( 1,100 );
+//         session( 'man_machine_recognition', $a+$b );
+//         $str = mt_rand( 1,100 ) . " + " . mt_rand(1, 100) ;
+//         return ['code'=>1, 'data' =>[ 'result'  => $str ] ];
+//        // session('man_machine_recognition');
+//     }
     
-    
+    // 这是访问过多的对付手段。
     public function man_machine_recognition_check($token,$type=1,$cal_result)
     {
-        if (session('?man_machine_recognition')) {
-            $temp = session('man_machine_recognition');
-            if ( $cal_result== $temp ) {
+        
+        if ( !session('?man_machine_recognition') ) {
+            return ['code'=>0];
+        }
+        
+        
+//         if ( $token && ( $redis->get( \BBExtend\Secure::key_prefix_token.$token )!== false ) ) {
+//          //   $redis->setex( "limit:ip:pic:check".$token,  120 ,$c );
+//             $save_check = $redis->get( "limit:ip:pic:check".$token);
+//             if (!$save_check) {
+//                 return ['code'=>0];
+//             }
+//         }else {
+//             return ['code'=>0];
+//         }
+        
+        
+        if ( $cal_result== session('man_machine_recognition') ) {
                 // 首先，这个token得存在。且和 header中的token相同，
-                $obj = new \BBExtend\Secure();
+            $obj = new \BBExtend\Secure();
                 
-                if ( $obj->get_header_token() == $token  )
+            if ( $obj->get_header_token() == $token && $obj->test_valid($token) ) {
+                $obj->clear_token_count($token);
                 
                 return ['code'=>1, ];
+            } else {
+                return ['code'=>0,'message' =>'token参数错误' ];
             }
-            return ['code'=>0,'message' =>'计算错误' ];
         }
-        return ['code'=>0];
+        
+        return ['code'=>0,'message' =>'填写校验错误' ];
     }
     
-    public function man_machine_recognition_pic()
+    public function man_machine_recognition_pic($token)
     {
         $a = mt_rand( 1,100 );
         $b = mt_rand( 1,100 );
+        $c = $a +$b;
+        
+        $redis = Sys::getredis2();
+        
+        
+        if ( $token && ( $redis->get( \BBExtend\Secure::key_prefix_token.$token )!== false ) ) {
+            $redis->setex( "limit:ip:pic:check".$token,  120 ,$c );
+        }else {
+            return ['code'=>0];
+        }
+        
+        
         session( 'man_machine_recognition', $a+$b );
       //  if (session('?man_machine_recognition')) {
-            $temp = session('man_machine_recognition');
-            $im = imagecreate(100, 30);
+            $temp = $c;
+            $im = imagecreate(252, 88);
             $bg = imagecolorallocate($im, 255, 255, 255);
             $textcolor = imagecolorallocate($im, 0, 0, 0);
             imagestring($im, 5, 0, 0, $temp, $textcolor);
             // 输出图像 白纸黑字
             header("Content-type: image/png");
             imagepng($im); 
-            
+            exit;
         //}
         //return ['code'=>0];
     }
@@ -98,14 +128,14 @@ class Login extends BBUser
             if ($result) {
                 
                 $secure_help = new \BBExtend\Secure();
-                $token = $secure_help->get_good_token();
+                $token = $secure_help->get_good_token($result);
                 
                 $token = base64_encode($token );
                 return ['code'=>1, 'data'=>['result' => $token ] ];
             }
         }
         
-        return ['code'=>1];
+        return ['code'=>0];
     }
     
     
@@ -118,7 +148,7 @@ class Login extends BBUser
                 return ['code'=>-201, 'message' => '' ];
             }
          $secure_help = new \BBExtend\Secure();
-         $token = $secure_help->set_new_http_header_temptoken();
+         $token = $secure_help->set_new_http_header_temptoken($uid);
          $token = base64_encode($token );
          return ['code'=>1, 'data'=>['result' => $token ] ];
     }
@@ -379,7 +409,7 @@ limit 1";
             $return_platform_id=$platform_id;
         }
         $secure_help = new \BBExtend\Secure();
-        $secure_help->set_new_http_header_temptoken();
+        $secure_help->set_new_http_header_temptoken($uid);
         
         return [
                 'code' => 1,
@@ -479,7 +509,7 @@ limit 1";
                  'platform_id' =>$return_platform_id,
         ]];
         $secure_help = new \BBExtend\Secure();
-        $secure_help->set_new_http_header_temptoken();
+        $secure_help->set_new_http_header_temptoken($uid);
         return $temp;
     
     }

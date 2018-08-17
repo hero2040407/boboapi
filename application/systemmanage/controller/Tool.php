@@ -178,7 +178,7 @@ css;
    
    public function api()
    {
-     //  Sys::display_all_error();
+       Sys::display_all_error();
        $name = Sys::get_machine_name();
        
        
@@ -295,7 +295,7 @@ css;
    
    private function check2($class_name){
        
-       if ( preg_match('#(File|Worker22|Work23|Job23|init_demo|test3)#', $class_name) ) {
+       if ( preg_match('#(File|Worker22|Work23|Job23|init_demo|test3|Jobjuhe|think|test|Myjob|Redisent|Ios|Userfalse)#i', $class_name) ) {
            return [];
        }
        if ( preg_match('#app\\\\config#', $class_name) ) {
@@ -335,7 +335,10 @@ css;
        // 过滤，确保只有正确的文件
        $new=[];
        foreach ($arr as $v) {
-           if (preg_match( '#controller#',$v ) &&  !preg_match( '#apptest#i',$v ) ) {
+           if (preg_match( '#controller#',$v ) &&  !preg_match( '#apptest#i',$v ) 
+                   &&  !preg_match( '#command#i',$v )
+                   &&  !preg_match( '#live_device#i',$v )
+                   ) {
                $new[]= $v;
            }
            

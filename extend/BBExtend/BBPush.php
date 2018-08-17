@@ -105,11 +105,10 @@ class BBPush extends Currency
     {
         $UserDB = \BBExtend\BBUser::get_user($uid);
         $is_vip = $UserDB['vip'];
-        if ($is_vip)
-        {
+        
             $Data =  Db::table('bb_rewind')-> where(['uid'=>$uid,'event'=>'rewind','is_remove'=>0,'is_save'=>1])->order('end_time','desc')->select();
             return  count($Data);
-        }
+        
         $Data =  Db::table('bb_rewind')-> where(['uid'=>$uid,'event'=>'rewind','is_remove'=>0,'is_save'=>1,'is_vip'=>0])->order('end_time','desc')->limit(0,5)->select();
         if ($Data)
         {

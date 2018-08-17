@@ -17,9 +17,14 @@ class TempV2
         
     }
     
-    public function remove_register_7049564()
+    public function remove_register_jw($uid)
     {
-        $uid = 7049564;
+        if ( Sys::is_product_server() ) {
+            exit;
+        }
+        
+        
+       // $uid = 7049564;
         $db = Sys::get_container_db();
         $sql="delete from ds_register_log where uid = {$uid}";
         $db->query($sql);

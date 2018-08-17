@@ -13,15 +13,22 @@ class Secure
     const code_token_too_much = -207;          // token过于频繁，需进入人机交互页面。
     
     
-    const  key_ip_blacklist = "limit:ip:week"; // ip黑名单key
-    const key_prefix_ip_request_count='limit:ip:request_count:'; // ip请求次数
-    const key_prefix_token_request_count='limit:ip:request_count:token'; // token请求次数
-    const key_prefix_token='limit:ip:token:';    // token，值是 uid。
-    const key_prefix_token_short='limit:ip:token:short:';    // token的生存判断键。
+    const  key_ip_blacklist = "limit:ip:week"; // ip黑名单key，生存时间，无限。
+    const key_prefix_ip_request_count='limit:ip:request_count:'; // ip请求次数，生存时间：1分钟。
+    const key_prefix_token_request_count='limit:ip:request_count:token'; // token请求次数，生存时间，1分钟。
+    const key_prefix_token='limit:ip:token:';    // token，值是 uid。              生存时间：60 ×30　半小时
+    const key_prefix_token_ip_set='limit:ip:token_ip:';    // token，包含ip。生存时间：自动连续1小时。
+    const key_prefix_token_short='limit:ip:token:short:';    // token的生存判断键。生存时间，比token略短10分钟。
+    const key_prefix_ip_token_set='limit:ip:ip_token:'; // ip包含token，ip生存时间：自动连续1小时。
+    const key_ip_all='limit:ip:all:ip'; // 所有ip，但我会修剪。无限时。
+    const key_token_all='limit:ip:all:token'; // 所有token，但我会修剪。无限时。
+    const key_prefix_uid_set='limit:ip:uid:token'; // 所有token，但我会修剪。2小时。
     
+    
+    // 谢烨，我要记录uid 在一小时内的token次数。
     
     const allow_request_count_per_minute=60; // 允许的无token 的ip每分钟访问次数。
-    const allow_request_count_per_token_minute=130; //允许的 token 的每分钟访问次数。
+    const allow_request_count_per_token_minute=10; //允许的 token 的每分钟访问次数。
     
     public $redis;
     public $ip;
@@ -57,7 +64,8 @@ class Secure
     
     private function add_ip_to_blacklist(){
         $redis = $this->redis;
-        $redis->sadd( self::key_ip_blacklist, $this->ip );
+        $redis11 = \BBExtend\Sys::get_container_redis();
+        $redis11->sadd( self::key_ip_blacklist, $this->ip );
     }
     
     
@@ -74,6 +82,22 @@ class Secure
         }
         return false;
     }
+    
+    
+//     /api/alihuidiao|/user/weixin|/shop/api|/api/file
+// 上面几个是临时的。
+    
+    public function white_list_module_name(){
+        return [ 'apptest','backstage','shop','thirdparty','sytemmanage',
+                'command', 'api',     ];
+    }
+    
+    public function white_list_url($url){
+       // if (preg_match( '#^#' ))
+        return false;
+    }
+    
+    
     
     
     public function is_login_api($url)
@@ -100,6 +124,8 @@ class Secure
     
     public function set_http_header_temptoken($temptoken)
     {
+       // header("Cache-Contro1: {$temptoken}");
+       $temptoken = base64_encode($temptoken );
         header("Cache-Contro1: {$temptoken}");
     }
     
@@ -108,27 +134,35 @@ class Secure
         header("CODE: {$code}");
     }
     
-    
-    public function get_good_token()
+    // 单独被轮询接口调用。
+    public function get_good_token($uid)
     {
-     
-        $token = $this->get_header_token_and_is_valid();
-        if (!$token) {
-            // 我创建新的。
-            $token = $this->set_http_header_temptoken();
-            return $token;
-        }
-        // 现在必定有效率。
-        $token = $this->get_header_token();
-        if ($this->test_is_short($token)) {
-            $token = $this->set_http_header_temptoken();
-            return $token;
-        }
-        return $token;
+     // 如果 不传来，新增。
+     // 如果传来，
+         // 如果redis中有效。
+             // 如果快过期     替换老的。
+             // 如果 新的。    直接返回新的。
         
+         // 如果redis中无效。新增。
+        
+        $token = $this->get_header_token();
+        if ( !$token ) {
+            return $this->set_new_http_header_temptoken($uid);
+        }
+        // 如果传来有效
+        if ( $this->test_valid($token) ) {
+            
+            // 过期替换，否则原来，是这个函数的作用。
+            return $this->set_new_http_header_temptoken_by_oldtoken($token);
+            
+        }else {
+            // 传来无效
+            return $this->set_new_http_header_temptoken($uid);
+        }
     }
     
-    public function set_new_http_header_temptoken()
+    
+    public function set_new_http_header_temptoken($uid=0)
     {
         $ip = $this->ip;
         $random = mt_rand(100000,999999);
@@ -141,7 +175,13 @@ class Secure
         
         $redis = $this->redis;
         $key = self::key_prefix_token . $temptoken;
-        $redis->setEx( $key,$this->get_token_live() , '-1'  );
+        if ($uid ) {
+            
+        }else {
+            $uid=-1;
+        }
+        
+        $redis->setEx( $key,$this->get_token_live() , $uid  );
         $key = self::key_prefix_token_short . $temptoken;
         $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
         
@@ -149,17 +189,18 @@ class Secure
         return $temptoken;
     }
     
+    // 本方法要求 参数 oldtoken必须 有效
     public function set_new_http_header_temptoken_by_oldtoken($oldtoken)
     {
         if (!$oldtoken) {
             throw new \Exception('token err');
         }
-        $key = '61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF';
+        $key = '61XtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF6167yXtWnmjDCCUa55sQsDF61XtWnmjDCCUa55sQsDF';
         
         
         $redis = $this->redis;
         $is_valid = $this->test_valid($oldtoken);
-        if ( !$is_valid ) {
+        if ( !$is_valid ) { // 注意必须这么写，因为判断short不验证原本存在。
             throw new \Exception('token err');
         }
         
@@ -169,17 +210,13 @@ class Secure
             $this->set_http_header_temptoken($newtoken);
     
             $key = self::key_prefix_token . $newtoken;
-            $redis->setEx( $key,$this->get_token_live() , '-1'  );
+            $redis->setEx( $key,$this->get_token_live() , 
+                     $redis->get( self::key_prefix_token.$oldtoken   )  );
             $key = self::key_prefix_token_short . $newtoken;
             $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
             return $newtoken;
         }
         $this->set_http_header_temptoken($oldtoken);
-        
-//         $key = self::key_prefix_token . $newtoken;
-//         $redis->setEx( $key,$this->get_token_live() , '-1'  );
-//         $key = self::key_prefix_token_short . $newtoken;
-//         $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
         return $oldtoken;
     }
     
@@ -187,8 +224,8 @@ class Secure
     // 得到头部token
     public function get_header_token(){
         $temptoken = '';
-        if (isset( $_SERVER['HTTP_TEMPTOKEN'] )) {
-            $temptoken = $_SERVER['HTTP_TEMPTOKEN'];
+        if (isset( $_SERVER['HTTP_TEMP_TOKEN'] )) {
+            $temptoken = $_SERVER['HTTP_TEMP_TOKEN'];
         }
         return $temptoken;
     }
@@ -229,7 +266,14 @@ class Secure
         return false;
     }
     
-    
+    public function clear_token_count($temptoken){
+        $redis = $this->redis;
+        $key = self::key_prefix_token_request_count.$temptoken;
+         $redis->delete( $key );
+//         if ($count == 1 ) {
+//             $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
+//         }
+    }
     
     //
     public function check()
@@ -252,7 +296,8 @@ class Secure
             return ;
         }
         
-        if ( $ip == '127.0.0.0' || $ip == '0.0.0.0' ) {
+//         if ( $ip == '127.0.0.1' || $ip == '0.0.0.0' || $ip='122.224.90.210' ) {
+            if ( $ip == '127.0.0.1' || $ip == '0.0.0.0'  ) {
             return ;
         }
         $request = Request::instance();
@@ -263,11 +308,22 @@ class Secure
 //         echo "当前控制器名称是" . $request->controller();
 //         echo "当前操作名称是" . $request->action();
         // 根据模块忽略白名单。
-        if ( in_array( $module_name,[ 'apptest','backstage','shop','thirdparty','sytemmanage',
-                'command',
-        ] ) ) {
+        
+        
+        $key = self::key_ip_all;
+        $redis->lrem( $key,  $ip,0 );
+        $redis->rpush( $key,  $ip );
+        $redis->ltrim( $key,  0,99 );
+        
+        if ( in_array( $module_name, $this->white_list_module_name()  ) ) {
             return ;
         }
+        
+        // 白名单url
+        if ( $this->white_list_url($url) ) {
+            return ;
+        }
+        
         
         $key_ip_blacklist = self::key_ip_blacklist;
         // 如果查到哪个ip是在封禁ip列表内，禁止访问。
@@ -312,29 +368,80 @@ class Secure
             // 错误的情况。但是啊，错误必须排除几个登录性质的接口！！重要。
             $result = $this->get_header_token_and_is_valid(); 
             if ( $result === false ) {
+                // ip监视token
+                $key_ip = self::key_prefix_ip_token_set . $ip;
+             //   $redis->sRemove( $key_ip,  $temptoken );
+                
+                $redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1分钟
+                
                 if (   !$this->is_login_api($url) ) {
                     // 假如redis里没有，则说明 传来的是错的。重新登录。
                     $this->set_http_header_code(self::code_token_need_login);
                     $this->output(['code' =>self::code_token_need_login , 'message'=> '校验错误'  ]);
                 }
                 if ( $this->is_polling($url) ) {
-                    // 假如快过期，则 更换新 的。
-//                     if ( $this->test_is_short($temptoken) ) {
-//                         $this->set_new_http_header_temptoken_by_oldtoken($temptoken);
-//                     }
+                    
                 }
+                
             }
             
             if ( $result === true ) {
+                // 添加到特定键，做一个记录处理。
+                $key_ip = self::key_prefix_ip_token_set . $ip;
+                $redis->lrem( $key_ip,  $temptoken,0 );
+                $redis->rpush( $key_ip,  $temptoken );
+                $redis->ltrim( $key_ip,  0,49 );
+                $redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1
+                
+                $key_ip = self::key_prefix_token_ip_set .$temptoken;
+                $redis->lrem( $key_ip,  $ip,0 );
+                $redis->rpush( $key_ip,  $ip );
+                $redis->ltrim( $key_ip,  0,9 );
+                $redis->setTimeout( $key_ip, 1 * 3600 ); // 仅能存活1
+                
+                // 添加到所有token
+                $key_ip = self::key_token_all;
+                $redis->lrem( $key_ip,  $temptoken,0 );
+                $redis->rpush( $key_ip,  $temptoken );
+                $redis->ltrim( $key_ip,  0,99 );
+                
+                
+                // 记录一个小时内，一个uid的token次数。
+                
+                $uid = $redis->get( self::key_prefix_token . $temptoken );
+                if ($uid >0) {
+                    $key = self::key_prefix_uid_set.$uid;
+                    $temp= $redis->exists( $key );
+                     if ($temp===false) {
+                         $redis->sadd( $key, $temptoken );
+                         $redis->setTimeout($key, 2* 3600);
+                     }else {
+                         // 已存在
+                         $redis->sadd( $key, $temptoken );
+                     }
+                    
+                }
+                
+//                 $key = self::key_prefix_uid_set . 
+                
             // 下面的逻辑全部是 token正确的情况
-                $key = self::key_prefix_token_request_count.$temptoken;
-                $count = $redis->incr( $key );
+                $key_minute = self::key_prefix_token_request_count.$temptoken;
+                $count = $redis->incr( $key_minute );
                 if ($count == 1 ) {
                     $redis->setTimeout( $key_minute, 60 ); // 仅能存活1分钟
                 }
-                if ($count > self::allow_request_count_per_token_minute) {
+                if ($count > self::allow_request_count_per_token_minute  &&  ( !$this->is_login_api($url)) ) {
                     $this->set_http_header_code(self::code_token_too_much);
                     $this->output(['code' =>self::code_token_too_much , 'message'=> '检查错误'  ]);
+                }
+                
+                
+                if ( $this->is_secure_api($url ) ) {
+                    if ( $uid <=0 ) {
+                    
+                        $this->set_http_header_code(self::code_token_need_login);
+                        $this->output(['code' =>self::code_token_need_login, 'message'=> '需要登录'  ]);
+                    }
                 }
                 
                 // 假如快过期，则 更换新 的。
