@@ -6,6 +6,7 @@
 | :--------: |:------|
 |2| 产品大改版，时间是2018-04 |
 |2.1| 小改版，时间是2018-04 |
+|5| 大赛大改，时间是2018-08 |
  
 
 | 版本        | 标签  | 修改日志  | 影响接口  | 日期  |
@@ -43,6 +44,7 @@
 | 2.1 |+  | 邀约的视频列表，统一加排名字段， | [/task/taskactivityapi_v2/get_user_list](/shop/doc/index2/name/邀约活动内视频列表) | 2018-06-12 |
 | 3.0 |+  | 新版用户消息推送配置，设置 | [/api/pushconfig/set_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
 | 3.0 |+  | 新版用户消息推送配置 ，获取| [/api/pushconfig/get_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
+| 5 |U  | 大赛报名| [/race/weblogin/register_new](/shop/doc/index2/name/大赛微信报名) | 2018-08-17 |
 
 
 

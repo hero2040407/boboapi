@@ -13,21 +13,7 @@ use BBExtend\DbSelect;
  * 
  * 
  * | 影响因素类别        | 说明  |
-| -------- |:------|
-|  time       | 1 大赛报名前  |
-|  time       | 2 大赛报名中 |
-|  time       | 3 大赛报名结束后  |
-|  register   | 1 未报名  |
-|  register   | 2 报名成功  |
-|  record     | 1 视频未上传  |
-|  record     | 2 视频上传审核中  |
-|  record     | 3 视频上传审核成功  |
-|  record     | 4 视频上传审核失败  |
-|  upgrade     | 1  未比赛   |
-|  upgrade     | 2 比赛晋级  |
-|  upgrade     | 3 比赛淘汰  |
-|  register_repeat     | 1 允许重复报名  |
-|  register_repeat     | 2 不允许重复报名，或允许重复报名但没有其他赛区  |
+
  * 
  * 
  * @author xieye
@@ -36,6 +22,78 @@ use BBExtend\DbSelect;
 class RaceStatus
 {
     public $race=null;      
+    
+    
+    /**
+     * 大赛报名状态。
+     * @param unknown $uid
+     * @param unknown $ds_id
+     * @return number[]|string[]|number[]|number[][]|string[][]
+     */
+    public static function get_status_v5($uid,$ds_id)
+    {
+        // 先查主办方。
+        // 查手机绑定。
+        // 查大赛未开始前。
+        //下面是查表。
+        $time = time();
+        $race = \BBExtend\model\Race::find( $ds_id );
+        if (!$race) {
+            return ['code' =>0,'message' =>'大赛不存在' ];
+        }
+        $master_arr=[];
+        if ( $race->uid >0 ) {
+            $master_arr []= $race->uid;
+        }
+        $db = Sys::get_container_dbreadonly();
+        $sql = "select  uid from ds_sponsor where ds_id =?";
+        
+        $temp = $db->fetchCol($sql,[ $ds_id ]);
+        foreach ($temp as $v) {
+            $master_arr[]= $v;
+        }
+        // xieye,先做其他状态判断。然后最后做手机号绑定判断。！！！
+        $user = \BBExtend\model\User::find($uid);
+        if (!$user) {
+            return ['code' =>0,'message' =>'用户不存在' ];
+        }
+        
+        
+        // 谢烨，先单独做一个大赛报名前时间的判断。
+        if ( $time < $race->register_start_time ) {
+            return ['code'=>1,'data' => ['status'=>1,'describe'=>'1','is_count_down' =>1,  ]  ]; //
+        }
+        
+        // 如果已经参加。
+        $sql="select * from ds_register_log where zong_ds_id=? and uid=? order by id desc limit 1";
+        $result = $db->fetchRow($sql,[ $ds_id, $uid ]);
+        // 分几种情况。
+        if ( $result ) {
+            if ($result['has_pay']) {
+                // 已参加
+                return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,  ]  ]; //
+            }else { // 继续支付
+                return ['code'=>1,'data' => ['status'=>3,'describe'=>'','is_count_down' =>0,  ]  ]; //
+            }
+        }else {
+            // 如果 未参加。
+            
+            
+            // 如果报名结束
+            if ( $time > $race->register_end_time ) {
+                return ['code'=>1,'data' => ['status'=>6,'describe'=>'','is_count_down' =>0,  ]  ]; //
+            }
+            // 查该用户是否手机绑定
+            if ( !$user->is_bind_phone() ) {
+                return ['code'=>1,'data' => ['status'=>-204,'describe'=>'','is_count_down' =>0,  ]  ]; //
+            }
+            
+            // 我要报名，终于出现！！
+            return ['code'=>1,'data' => ['status'=>2, 'describe'=>'','is_count_down' =>0,  ]  ]; //
+            
+        }
+    }
+    
     
     
     /**

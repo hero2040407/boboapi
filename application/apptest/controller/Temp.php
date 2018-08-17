@@ -29,10 +29,14 @@ class Temp
        
    }
     
+   public function index2(){
+       echo input("param.aa");
+   }
     
-   public function index()
+   public function index($aa=1)
    {
-       return ['code'=>1];
+       $this->index2();
+       //return ['code'=>1];
    }
    
     
