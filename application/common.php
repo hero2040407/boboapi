@@ -138,10 +138,10 @@ if (IS_CLI === false && ( !in_array($ip,  Config::get( 'bb_request_white_list_ip
     }
 }
 
-if ( !\BBExtend\Sys::is_product_server() ) {
+//if ( !\BBExtend\Sys::is_product_server() ) {
     $obj = new \BBExtend\Secure();
     $obj->check();
-}
+//}
 
 
 
