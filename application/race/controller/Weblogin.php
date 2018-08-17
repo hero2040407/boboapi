@@ -242,14 +242,56 @@ class Weblogin extends Controller
         
     }
     
-    
+    /**
+     * 孙函予指定逻辑：
+     * 1、假如 在已有报名信息，但未支付时，覆盖上次信息
+     * 2、假如已支付，即报名成功，则  拒绝。
+     * 
+     * @return number[]|NULL[]|string[]|number[]|number[][]|string[][]|mixed[][]
+     */
+    public function register_new_v5()
+    {
+        $uid= input("param.uid/d");
+        $phone = input("param.phone/s");
+        $name  = input("param.name/s");
+        $sex = input("param.sex/d");
+        $birthday = input("param.birthday/s");
+        $ds_id = input("param.ds_id/d");
+        $qudao_id = input("param.qudao_id/d");
+        $pic = input("param.pic/s");
+        
+        $record_url = input("param.record_url/s");
+        $pic_list = input("param.pic_list/s");
+        $addi_info = input("param.addi_info/s");
+        
+        
+        
+        $reg = new \BBExtend\video\RaceNew(  );
+        $result = $reg->register_v5($ds_id, $qudao_id,
+                $uid,$phone,$name,$sex,$birthday,
+                $pic, $record_url, $pic_list,$addi_info );
+        
+        if ( $result['code']!=1 ) {
+            return $result;
+        }
+        
+       
+        
+        $arr= RaceStatus::get_status($uid, $ds_id);
+        return [ 'code'=>1,
+                'data'=>['status'=>  $arr['data']['status'],
+                        'money' => intval( $race->money * 100),  ] ];
+        
+    }
     
     
     // 微信报名。
-    public function register_new($phone='',$name='',$sex=1,$birthday='',$ds_id=0,$qudao_id=0,
+    public function register_new($v=1, $phone='',$name='',$sex=1,$birthday='',$ds_id=0,$qudao_id=0,
             $area1_name='',$area2_name='',$height=0,$weight=0,$pic='',$uid)
     {
-        
+        if ($v>=5) {
+            return $this->register_new_v5();
+        }
      //   Sys::debugxieye("pic:{$pic}");
         
         $reg = new \BBExtend\video\RaceNew(  );

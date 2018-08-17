@@ -1035,8 +1035,12 @@ html;
        return \BBExtend\video\Race::get_user_race_status_v2($uid, $ds_id);
    }
    
-   public function get_user_status_new($uid,$ds_id)
+   public function get_user_status_new($v=1, $uid, $ds_id)
    {
+       if ($v >= 5) {
+           return \BBExtend\video\RaceStatus::get_status_v5($uid, $ds_id);
+       }
+       
        return \BBExtend\video\RaceStatus::get_status($uid, $ds_id);
    }
    
