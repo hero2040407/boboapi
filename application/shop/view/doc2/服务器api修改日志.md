@@ -4,16 +4,18 @@
 
 | 大版本        | 内容  |
 | :--------: |:------|
-|2| 产品大改版，时间是2018-04 |
-|2.1| 小改版，时间是2018-04 |
 |5| 大赛大改，时间是2018-08 |
+|2.1| 小改版，时间是2018-04 |
+|2| 产品大改版，时间是2018-04 |
  
 
 | 版本        | 标签  | 修改日志  | 影响接口  | 日期  |
 | :--------: |:------|:------|:------|:------|
-| 2.0 | + | 音乐资源接口，供用户上传视频时选择，做为背景音乐 | [/api/resource/mp3](/shop/doc/index2/name/资源接口) | 2018-04-19 |
-| 2.0 |+  | 手机验证接口，可以单独调用 | [/user/login/check_phone_code](/shop/doc/index/name/用户手机号验证) | 2018-04-19 |
-| 2.0 |U  | 话题接口，加uid参数 | [/record/theme/index](/shop/doc/index/name/视频话题接口) | 2018-04-20 |
+| 5 |U  | 大赛报名| [/race/weblogin/register_new](/shop/doc/index2/name/大赛微信报名) | 2018-08-17 |
+| 5 |U  | 大赛报名状态| [/race/index/get_user_status_new](/shop/doc/index2/name/大赛报名状态新) | 2018-08-17 |
+| 5 |U  | 大赛赛区选择和个人信息| [/race/index_v2/select_field](/shop/doc/index2/name/大赛赛区选择和个人信息) | 2018-08-17 |
+| 3.0 |+  | 新版用户消息推送配置，设置 | [/api/pushconfig/set_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
+| 3.0 |+  | 新版用户消息推送配置 ，获取| [/api/pushconfig/get_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
 | 2.1 |+  | 动图接口 | [/api/resource/gif](/shop/doc/index2/name/资源接口) | 2018-04-27 |
 | 2.1 |U  | 回播评论，绑定手机校验 | /push/comments/comments | 2018-05-07 |
 | 2.1 |U  | 短视频评论，绑定手机校验 | /record/comments/comments | 2018-05-07 |
@@ -42,11 +44,9 @@
 | 2.1 |+  | 品牌馆通告分页，状态文字修改 | [/show/brandshop/schedule_list_v2](/shop/doc/index/name/品牌馆通告分页新) | 2018-06-01 |
 | 2.1 |U  | 活动列表，加describe描述参赛状态字段 | [/task/taskactivityapi_v2/newlist](/shop/doc/index2/name/邀约活动列表201704) | 2018-06-12 |
 | 2.1 |+  | 邀约的视频列表，统一加排名字段， | [/task/taskactivityapi_v2/get_user_list](/shop/doc/index2/name/邀约活动内视频列表) | 2018-06-12 |
-| 3.0 |+  | 新版用户消息推送配置，设置 | [/api/pushconfig/set_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
-| 3.0 |+  | 新版用户消息推送配置 ，获取| [/api/pushconfig/get_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
-| 5 |U  | 大赛报名| [/race/weblogin/register_new](/shop/doc/index2/name/大赛微信报名) | 2018-08-17 |
-| 5 |U  | 大赛报名状态| [/race/index/get_user_status_new](/shop/doc/index2/name/大赛报名状态新) | 2018-08-17 |
-| 5 |U  | 大赛赛区选择和个人信息| [/race/index_v2/select_field](/shop/doc/index2/name/大赛赛区选择和个人信息) | 2018-08-17 |
+| 2.0 | + | 音乐资源接口，供用户上传视频时选择，做为背景音乐 | [/api/resource/mp3](/shop/doc/index2/name/资源接口) | 2018-04-19 |
+| 2.0 |+  | 手机验证接口，可以单独调用 | [/user/login/check_phone_code](/shop/doc/index/name/用户手机号验证) | 2018-04-19 |
+| 2.0 |U  | 话题接口，加uid参数 | [/record/theme/index](/shop/doc/index/name/视频话题接口) | 2018-04-20 |
 
 
 
