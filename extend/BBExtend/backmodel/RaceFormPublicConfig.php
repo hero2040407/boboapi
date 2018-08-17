@@ -7,9 +7,11 @@
  */
 namespace BBExtend\backmodel;
 
-use \Illuminate\Database\Eloquent\Model;
+use think\Model;
 
-class CommonSelection extends Model
+class RaceFormPublicConfig extends Model
 {
+    protected $autoWriteTimestamp = true;
+    protected $updateTime = false;
     protected $table = 'ds_public_config';
 }

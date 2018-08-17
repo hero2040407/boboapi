@@ -443,10 +443,10 @@ class App
             }
 
             // 加载公共文件
-//            if (is_file($path . 'common' . EXT)) {
-//                include $path . 'common' . EXT;
-//            }
-            
+            if (is_file($path . 'common' . EXT)) {
+                include $path . 'common' . EXT;
+            }
+
 
             // 加载当前模块语言包
             if ($config['lang_switch_on'] && $module) {
