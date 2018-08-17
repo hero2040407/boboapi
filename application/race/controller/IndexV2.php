@@ -33,7 +33,7 @@ class IndexV2 extends Controller
      * @param unknown $ds_id
      * @return number[]|number[][]|string[][]|mixed[][]|number[]|array[][]|number[]|array[][]
      */
-    public function select_field($uid, $ds_id)
+    public function select_field($v=1, $uid, $ds_id)
     {
     //    Sys::display_all_error();
         $result = \BBExtend\video\RaceStatus::get_status($uid, $ds_id);

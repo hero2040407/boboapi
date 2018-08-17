@@ -72,6 +72,7 @@
 | bb_vip_application_log | admin_name | status=4or5时是导师名称,或stats=6时是管理员名称  |  
 | bb_vip_application_log | admin_time |  status=4or5时是导师审核时间,或stats=6时是管理员审核时间 |  
 | bb_record_invite_starmaker | new_status | 1、发起群发邀请，星推官字段为0<br>2、发起单个的邀请，已经指定了一个人。或者群发邀请，某一导师抢单成功。状态2还未点评内容。星推官字段有值了。<br>3、导师点评了。但未审核。内容字段有值了。<br>4、审核成功。<br>5、审核失败-转群发邀请。审核失败后，按产品说法，应该回到最初的状态。<br>6、审核失败-转单个邀请。审核失败后，按产品说法，应该回到最初的状态。<br>  |  
+| ds_dangan_config | type |  1单行文本，2多行文本，3复选，4单选，5下拉，6上传图片，7城市选择  |
 | ds_race_field | status |  0等待中，1报名，2比赛，3结束  |  
 | ds_race_message | target_type | 限制条件：  0全部， 1成功者，2失败者  | 
 | ds_race_message | field_id |  赛区id，可以为0，表示给大赛所有人发送消息  |

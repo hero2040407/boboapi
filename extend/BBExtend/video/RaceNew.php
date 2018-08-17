@@ -440,7 +440,7 @@ class RaceNew
                     'is_web_baoming' =>1,
                     'pic' =>$pic,
                     'record_url' =>$record_url,
-                    
+                    'age' => date("Y") - substr( $birthday,0,4 ),
             ]);
             $last_id = $db->lastInsertId();
             
@@ -547,28 +547,20 @@ class RaceNew
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
             $area1_name='',$area2_name='',$height=0,$weight=0,$pic='' )
     {
-        
-        
-        
         $result = $this->check_param($phone,$name,$sex,$birthday,
                 $area1_name,$area2_name,$height,$weight);
         if (!$result) {
-      //      Sys::debugxieye(111);
-            
             return ['code'=>0,'message' => $this->err_msg ];
         }
         
         $result = $this->check_race( $ds_id, $qudao_id );
         if (!$result) {
-     //       Sys::debugxieye(1112);
-            
             return ['code'=>0,'message' => $this->err_msg ];
         }
         
         // 检查用户
         $result = $this->check_user($uid,$ds_id, $qudao_id);
         if (!$result) {
-     //       Sys::debugxieye(1113);
             
             return ['code'=>$this->code, 'message' => $this->err_msg ];
         }

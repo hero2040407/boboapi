@@ -45,6 +45,8 @@
 | 3.0 |+  | 新版用户消息推送配置，设置 | [/api/pushconfig/set_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
 | 3.0 |+  | 新版用户消息推送配置 ，获取| [/api/pushconfig/get_config](/shop/doc/index2/name/新版用户消息推送配置) | 2018-06-26 |
 | 5 |U  | 大赛报名| [/race/weblogin/register_new](/shop/doc/index2/name/大赛微信报名) | 2018-08-17 |
+| 5 |U  | 大赛报名状态| [/race/index/get_user_status_new](/shop/doc/index2/name/大赛报名状态新) | 2018-08-17 |
+| 5 |U  | 大赛赛区选择和个人信息| [/race/index_v2/select_field](/shop/doc/index2/name/大赛赛区选择和个人信息) | 2018-08-17 |
 
 
 
