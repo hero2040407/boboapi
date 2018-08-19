@@ -88,37 +88,40 @@ class RaceNew
     }
     
     
-    private function check_param_v5($ds_id, $phone='',$name='',$sex=1,$birthday='', $record_url, $pic_list  )
+    private function check_param_v5($ds_id, $phone='',$name='',$sex=1,$birthday='', $record_url, $pic_list ,$is_upload )
     {
-        if ( $height < 200 && $height>0 ) {
-            //$new['height'] = $height;
-        }else {
-            $this->err_msg = '身高不正确';
+        if ($is_upload==0) {
+            if ( $height < 200 && $height>0 ) {
+                //$new['height'] = $height;
+            }else {
+                $this->err_msg = '身高不正确';
+            }
+            if ( $weight < 100 && $weight>5 ) {
+                //$new['weight'] = $weight;
+            }else {
+                $this->err_msg = '体重不正确';
+            }
+            if (!$name) {
+                $this->err_msg='姓名错误';
+            }
+            if (!Str::is_valid_phone($phone)) {
+                $this->err_msg='电话错误';
+            }
+            if (!Str::is_valid_birthday_month($birthday)) { // 必须 2018-01
+                $this->err_msg='生日错误';
+            }
         }
-        if ( $weight < 100 && $weight>5 ) {
-            //$new['weight'] = $weight;
-        }else {
-            $this->err_msg = '体重不正确';
-        }
-        if (!$name) {
-            $this->err_msg='姓名错误';
-        }
-        if (!Str::is_valid_phone($phone)) {
-            $this->err_msg='电话错误';
-        }
-        if (!Str::is_valid_birthday_month($birthday)) { // 必须 2018-01
-            $this->err_msg='生日错误';
-        }
+        if ($is_upload) {
         
-        $race = $this->race;
-        if ( $race->upload_type==1 && empty( $record_url ) ) {
-            $this->err_msg='请上传短视频';
+            $race = $this->race;
+            if ( $race->upload_type==1 && empty( $record_url ) ) {
+                $this->err_msg='请上传短视频';
+            }
+            
+            if ( $race->upload_type==2 && empty( $pic_list ) ) {
+                $this->err_msg='请上传多张照片';
+            }
         }
-        
-        if ( $race->upload_type==2 && empty( $pic_list ) ) {
-            $this->err_msg='请上传多张照片';
-        }
-        
         
         
         if ($this->has_err()) {
@@ -265,7 +268,7 @@ class RaceNew
     
     
     // 谢烨，不可公开，因为使用了私有变量。
-    private function check_user($uid,$ds_id, $qudao_id)
+    private function check_user($uid,$ds_id, $qudao_id,$is_upload)
     {
         $user = \BBExtend\model\User::find( $uid );
         if (!$user) {
@@ -286,28 +289,20 @@ class RaceNew
         $db = Sys::get_container_db_eloquent();
         // 查是否以前已经报过名
         $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1 and has_dangan=1";
-        $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
-        if ( $row ) {
-            $this->has_register=1;
-            // 首先，线上大赛绝对不允许重复报名。
-            if ( $this->online_type==1 ) {
-                $this->err_msg='重复报名';
-                $this->code=0;
-                return false;
-            }else {
-                // 对于线下的大赛，如果
-                if ( $row['is_finish']!=2 ) {
-                    $this->err_msg='不可重复报名';
-                    $this->code=0;
-                    return false;
-                }
-                
-            }
-            
-            
+        $register_log = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+        if ($is_upload)
+            $result = $this->condition_is_upload_1($register_log) ;
+        else {
+            $result = $this->condition_is_upload_0($register_log) ;
         }
         
-        return true;
+        if ($result) {
+            return true;
+        }
+        
+        $this->err_msg='大赛报名条件错误';
+        $this->code =0;
+        return false;
     }
     
     /***
@@ -395,7 +390,7 @@ class RaceNew
     
     private function insert_v5($ds_id=0, $qudao_id=0,
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
-            $pic,$record_url, $pic_list, $addi_info)
+            $pic,$record_url, $pic_list, $addi_info,$is_upload)
     {
         if ($this->has_err() ) {
             return false;
@@ -413,16 +408,9 @@ class RaceNew
         //  if ( $this->has_register ) {
         
 //             if ($qudao_id==0) {// 说明是线上，
-                
-                $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
-                $db->query( $sql,[ $uid,$ds_id ] );
-//             }else {// 否则是线下。
-//                 $sql="delete from ds_register_log where uid=? and ds_id=?";
-//                 $db->query( $sql,[ $uid, $qudao_id ] );
-//             }
-            
-            
-            //  }
+        if ($is_upload==0) {
+           $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
+           $db->query( $sql,[ $uid,$ds_id ] );
             
             $db->insert("ds_register_log", [
                     'ds_id' =>$qudao_id,
@@ -439,33 +427,48 @@ class RaceNew
                   
                     'is_web_baoming' =>1,
                     'pic' =>$pic,
-                    'record_url' =>$record_url,
+                    //'record_url' =>$record_url,
                     'age' => date("Y") - substr( $birthday,0,4 ),
             ]);
             $last_id = $db->lastInsertId();
+            return $last_id;
+        }else {
+            // 查是否以前已经报过名
+            $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
+            $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+           $last_id = $row['id'];
             
-            if ( $pic_list  ) {
-                $id_arr=[];
-              $pic_list_arr = explode(',', $pic_list);
-              foreach ($pic_list_arr  as $pic) {
-                  $pic = trim($pic);
-                  $bind=[
-                          'url'=>$pic,
-                          'type'=>1,
-                          'uid'=>$uid,
-                          'act_id'=>$last_id,
-                          'create_time'=>time(),
-                          
-                  ];
-                  $db->insert("bb_pic", $bind);
-                  $id_arr[]= $db->lastInsertId();
-              }
-              $db->update( 'ds_register_log',['pic_list' => implode(",", $id_arr )  ], 'id='.$last_id );
-              
+            // 谢烨，找到原来的记录，补充。
+            if ( $race->upload_type==1  ) {
+                $sql="update ds_register_log set record_url=? where id = ? ";
+                $db->query( $sql,[$record_url, $last_id  ] );
+            }else {
+                if ( $pic_list  ) {
+                    $id_arr=[];
+                    $pic_list_arr = explode(',', $pic_list);
+                    foreach ($pic_list_arr  as $pic) {
+                        $pic = trim($pic);
+                        $bind=[
+                                'url'=>$pic,
+                                'type'=>1,
+                                'uid'=>$uid,
+                                'act_id'=>$last_id,
+                                'create_time'=>time(),
+                                
+                        ];
+                        $db->insert("bb_pic", $bind);
+                        $id_arr[]= $db->lastInsertId();
+                    }
+                    $db->update( 'ds_register_log',['pic_list' => implode(",", $id_arr )  ], 'id='.$last_id );
+                    
+                }
             }
             
+        }
             
-            return $last_id;
+            
+            
+            
     }
     
     
@@ -495,12 +498,64 @@ class RaceNew
         return true;
     }
    
+    private function condition_is_upload_0($register_log )
+    {
+//         当is_upload=0
+//         * 要求记录存在，且未支付。
+//         * 或者 记录不存在。
+        if ( !$register_log ) {
+            return true;
+        }
+        if ( $this->condition_is_upload_1($register_log) ) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private function condition_is_upload_1($register_log )
+    {
+       // 要求 记录必须存在，且未支付。
+        if ( $register_log && $register_log['has_pay']==0 ) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
     
     
     // 大赛报名注册。
+    /**
+     * 怎么检查参数呢？当已报名成功，不允许再次调用此接口。
+     * 当未报名成功，可以调用此接口。
+     * 
+     * 当is_upload=0
+     * 要求记录存在，且未支付。
+     * 或者 记录不存在。
+     * 
+     * 当is_upload = 1
+     * 要求 记录必须存在，且未支付。
+     * 
+     * 
+     * @param number $ds_id
+     * @param number $qudao_id
+     * @param number $uid
+     * @param string $phone
+     * @param string $name
+     * @param number $sex
+     * @param string $birthday
+     * @param string $pic
+     * @param unknown $record_url
+     * @param unknown $pic_list
+     * @param unknown $addi_info
+     * @param unknown $is_upload
+     * @return number[]|string[]|number[]
+     */
     public  function register_v5($ds_id=0, $qudao_id=0,
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
-            $pic='',$record_url, $pic_list , $addi_info)
+            $pic='',$record_url, $pic_list , $addi_info,$is_upload)
     {
         
         // 必须先验 大赛存在，
@@ -510,20 +565,20 @@ class RaceNew
         }
         
         // 再验参数正确。
-        $result = $this->check_param_v5($ds_id,$phone, $name, $sex, $birthday, $record_url, $pic_list );
+        $result = $this->check_param_v5($ds_id,$phone, $name, $sex, $birthday, $record_url, $pic_list,$is_upload );
         if (!$result) {
             return ['code'=>0,'message' => $this->err_msg ];
         }
         
         // 检查用户
-        $result = $this->check_user_v5( $uid,$ds_id, $qudao_id );
+        $result = $this->check_user_v5( $uid,$ds_id, $qudao_id ,$is_upload);
         if ( !$result ) {
             return ['code'=>$this->code, 'message' => $this->err_msg ];
         }
         
         $this->insert_v5($ds_id, $qudao_id,
                 $uid,$phone,$name,$sex,$birthday,
-                $pic, $record_url, $pic_list , $addi_info );
+                $pic, $record_url, $pic_list , $addi_info ,$is_upload);
         
         // 报名成功 的后续操作。
         if ( $this->register_success  ) {

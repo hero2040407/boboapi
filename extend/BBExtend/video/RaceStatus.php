@@ -73,7 +73,14 @@ class RaceStatus
                 // 已参加
                 return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,  ]  ]; //
             }else { // 继续支付
-                return ['code'=>1,'data' => ['status'=>3,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                
+                if ( $result['has_upload'] ) {//继续支付
+                    return ['code'=>1,'data' => ['status'=>3,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                }else { // 继续上传。
+                    return ['code'=>1,'data' => ['status'=>4,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                }
+                
+                
             }
         }else {
             // 如果 未参加。

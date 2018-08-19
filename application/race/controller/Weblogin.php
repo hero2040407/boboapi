@@ -263,13 +263,13 @@ class Weblogin extends Controller
         $record_url = input("param.record_url/s");
         $pic_list = input("param.pic_list/s");
         $addi_info = input("param.addi_info/s");
-        
+        $is_upload = input("param.is_upload/d");
         
         
         $reg = new \BBExtend\video\RaceNew(  );
         $result = $reg->register_v5($ds_id, $qudao_id,
                 $uid,$phone,$name,$sex,$birthday,
-                $pic, $record_url, $pic_list,$addi_info );
+                $pic, $record_url, $pic_list,$addi_info,$is_upload );
         
         if ( $result['code']!=1 ) {
             return $result;
