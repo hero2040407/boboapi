@@ -602,6 +602,7 @@ class Dochtml
                 self::get_href('大赛报名').
                 self::get_href('大赛个人分享页面').
                 self::get_href('大赛个人分享投票').
+                self::get_href('大赛人气榜单').
                 
                 
                 self::get_href('大赛微信报名').

@@ -12,8 +12,9 @@
 | 版本        | 标签  | 修改日志  | 影响接口  | 日期  |
 | :--------: |:------|:------|:------|:------|
 | 5 |U  | 大赛单个详情| [/race/index_v2/ds_one_new](/shop/doc/index2/name/大赛单个详情新) | 2018-08-19 |
+| 5 |U  | 大赛人气榜单 | [/race/share/rank](/shop/doc/index2/name/大赛人气榜单) | 2018-08-20 |
 | 5 |U  | 大赛个人分享页面| [/api/share/race](/shop/doc/index2/name/大赛个人分享页面) | 2018-08-19 |
-| 5 |U  | 大赛个人分享投票| [/api/share/like(/shop/doc/index2/name/大赛个人分享页面) | 2018-08-19 |
+| 5 |U  | 大赛个人分享投票| [/api/share/like](/shop/doc/index2/name/大赛个人分享页面) | 2018-08-19 |
 | 5 |U  | 大赛报名| [/race/weblogin/register_new](/shop/doc/index2/name/大赛微信报名) | 2018-08-17 |
 | 5 |U  | 大赛报名状态| [/race/index/get_user_status_new](/shop/doc/index2/name/大赛报名状态新) | 2018-08-17 |
 | 5 |U  | 大赛赛区选择和个人信息| [/race/index_v2/select_field](/shop/doc/index2/name/大赛赛区选择和个人信息) | 2018-08-17 |

@@ -3,7 +3,7 @@ namespace app\race\controller;
 
 use think\Controller;
 use think\Db;
-
+use BBExtend\Sys;
 
 class Share extends Controller
 {
@@ -32,4 +32,38 @@ class Share extends Controller
 //             echo $this->fetch('',['race_res'=>$race_res,'qd_id'=>$qd_id,'userpic'=>$user['pic'],'state'=>$state]);
         }
     }
+    
+    
+    public function rank($race_id,$startid=0, $length=10,$search='')
+    {
+        $db = Sys::get_container_dbreadonly();
+        if ($search) {
+            $sql="select uid,pic from ds_register_log 
+                   where zong_ds_id=? 
+                     and has_pay=1 
+                      and uid =? 
+                   order by ticket_count desc 
+                   limit ?,?";
+            
+            $user_arr = $db->fetchAll($sql,[ $race_id, $search, $startid, $length ]);
+        }else {
+            $sql="select uid,pic from ds_register_log
+                   where zong_ds_id=?
+                     and has_pay=1
+                   order by ticket_count desc
+                   limit ?,?";
+            
+            $user_arr = $db->fetchAll($sql,[ $race_id,$startid, $length ]);
+        }
+        
+        
+        foreach ( $user_arr as $user ) {
+            
+            
+        }
+        return ['code'=>1,'data' => [ 'list' =>$user_arr ] ];
+        
+    }
+    
+    
 }

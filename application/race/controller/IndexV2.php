@@ -29,22 +29,26 @@ class IndexV2 extends Controller
     
     public function select_field_v5($uid, $ds_id)
     {
+        
+        
         //    Sys::display_all_error();
         $result = \BBExtend\video\RaceStatus::get_status_v5($uid, $ds_id);
         if ($result['code'] == 0 ) {
             return $result;
         }
-        
+       
         $race = \BBExtend\model\Race::find($ds_id);
         //
         
         // 谢烨，查 个人参赛信息。
         $db = Sys::get_container_dbreadonly();
         
-        $sql="select * from ds_dangan_config order by sort desc where ds_id=?";
+        $sql="select * from ds_dangan_config where ds_id=?
+                order by sort desc 
+";
         $config = $db->fetchAll($sql,[ $ds_id ]);
         
-        
+        //echo 43;exit;
         $sql="select * from ds_register_log
 where uid= ? and phone !=''
 order by id desc limit 1";
