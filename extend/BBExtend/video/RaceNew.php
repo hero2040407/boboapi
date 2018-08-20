@@ -386,7 +386,15 @@ class RaceNew
     }
    
     
-    
+    private function set_history($uid, $addi_info){
+        $info = json_decode($json,1);
+        if ($info) {
+            foreach ($info as $k =>$v) {
+                \BBExtend\model\DsDanganUser::update_uid($uid, $k, $v);
+            }
+            
+        }
+    }
     
     private function insert_v5($ds_id=0, $qudao_id=0,
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
@@ -424,12 +432,17 @@ class RaceNew
                     'name' => $name,
                     'has_pay' => $has_pay,
                     'has_dangan' =>1, // xieye 20180416 ，这里固定填写为1
-                  
+                    'register_info' => $addi_info,
                     'is_web_baoming' =>1,
                     'pic' =>$pic,
                     //'record_url' =>$record_url,
                     'age' => date("Y") - substr( $birthday,0,4 ),
             ]);
+            
+            // 谢烨，保存到 历史表里。
+            $this->set_history($uid, $addi_info);
+            
+            
             $last_id = $db->lastInsertId();
             return $last_id;
         }else {

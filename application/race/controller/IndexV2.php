@@ -27,8 +27,44 @@ class IndexV2 extends Controller
     private  $is_bottom_ds;
     
     
+    private function fetch_user_addi_info($uid)
+    {
+        $db = \BBExtend\Sys::get_container_db();
+        $sql="
+select * from ds_dangan_config_user_history
+ where uid =? 
+   and exists (
+  select 1 from ds_public_config
+   where ds_public_config.title = ds_dangan_config_user_history.title 
+)
+
+";
+        $result = $db->fetchAll($sql,[ $uid ]);
+        if ($result) {
+            $new=[];
+            foreach ( $result as $v ) {
+                $new[$v['title']] = $v['content'];
+            }
+            return $new;
+        }
+        return [];
+    }
+    
+    
+    
     public function select_field_v5($uid, $ds_id)
     {
+        $ds_id = input('param.ds_id/d');
+        $uid =  input('param.uid/d');
+        $token = input('param.token');
+        
+        $user = \BBExtend\model\User::find( $uid );
+        if (!$user) {
+            return ['code'=>0];
+        }
+        if (!$user->check_token($token)) {
+            return ['code'=>0,'message' =>'uid err' ];
+        }
         
         
         //    Sys::display_all_error();
@@ -47,6 +83,13 @@ class IndexV2 extends Controller
                 order by sort desc 
 ";
         $config = $db->fetchAll($sql,[ $ds_id ]);
+        $new=[];
+        foreach ( $config as $one ) {
+            $temp = $one;
+            $temp['options'] = explode(',', $temp['options']);
+            $new[]= $temp;
+        }
+        $config = $new;
         
         //echo 43;exit;
         $sql="select * from ds_register_log
@@ -61,6 +104,7 @@ order by id desc limit 1";
                     'birthday'=>$row['birthday'],
                    
                     'pic'=>$row['pic'],
+                    'addi_info' =>$this->fetch_user_addi_info($uid),
             ];
         }else {
             $info=null;
@@ -109,7 +153,7 @@ order by id desc limit 1";
     public function select_field($v=1, $uid, $ds_id)
     {
         if ($v>=5) {
-            return $this->select_field_v5($uid, $ds_id);
+            return $this->select_field_v5();
         }
         
         
