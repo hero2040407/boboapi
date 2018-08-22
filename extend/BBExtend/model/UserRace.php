@@ -14,40 +14,103 @@ use BBExtend\DbSelect;
 class UserRace extends User 
 {
     public $err_msg='';
+    public $success_count =0;
     
-    public function like($self_uid, $log_id,$type){
+    public function like($self_uid, $log_id,$type)
+    {
         $db = Sys::get_container_db();
         $sql="select * from ds_register_log where id=?";
         $row = $db->fetchRow($sql,[ $log_id ]);
         $uid = $row['uid'];
         $race_id = $row['zong_ds_id'];
-        
+        $datestr = date("Ymd");
 //         $race = Race::find( $row['zong_ds_id'] );
 //         $user = User::find( $uid );
-        $datestr = date("Ymd");
-        $sql="select * ds_like where self_uid=? and type=1 and register_log_id=? and date=?";
-        $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
-        if ($row) {
-            $this->err_msg='您今日已投过票，请明天再来';
-            return false;
+
+        if ($type==1) {
+        
+            
+            $sql="select * ds_like where self_uid=? and type=1 and register_log_id=? and datestr=?";
+            $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
+            if ($row) {
+                $this->err_msg='您今日已投过票，请明天再来';
+                return false;
+            }
+            $bind=[
+                    'register_log_id' =>$log_id,
+                    'create_time' =>time(),
+                    'self_uid' =>$self_uid,
+                    'target_uid' =>$uid,
+                    'race_id' => $race_id,
+                    'count' =>1,
+                    'datestr' =>$datestr,
+                    'type' =>1,
+                    
+            ];
+            $db->insert("ds_like",$bind);
+            $this->success_count=1;
+            $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
+            $db->query($sql,[ $log_id ]);
+            return true;
         }
-        $bind=[
-                'register_log_id' =>$log_id,
-                'create_time' =>time(),
-                'self_uid' =>$self_uid,
-                'target_uid' =>$uid,
-                'race_id' => $race_id,
-                'count' =>1,
-                'datestr' =>$datestr,
-                'type' =>1,
+        if ($type==2) {
+            $sql="select * ds_like where self_uid=? and type=2 and register_log_id=? ";
+            $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
+            if ($row) {
+//                 $this->err_msg='您今日已投过票，请明天再来';
+//                 return false;
+                $this->success_count=0;
+                return true;
+            }
+            $bind=[
+                    'register_log_id' =>$log_id,
+                    'create_time' =>time(),
+                    'self_uid' =>$self_uid,
+                    'target_uid' =>$uid,
+                    'race_id' => $race_id,
+                    'count' =>1,
+                    'datestr' =>$datestr,
+                    'type' =>2,
+                    
+            ];
+            $db->insert("ds_like",$bind);
+            $this->success_count=1;
+            $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
+            $db->query($sql,[ $log_id ]);
+            return true;
+            
+            
+        }
+        
+        if ($type==3) {
+            $result = \BBExtend\Currency::add_bobi($self_uid,
+                    -100, '声援大赛好友');
+            if ($result!==false ) {
+                $bind=[
+                        'register_log_id' =>$log_id,
+                        'create_time' =>time(),
+                        'self_uid' =>$self_uid,
+                        'target_uid' =>$uid,
+                        'race_id' => $race_id,
+                        'count' =>1,
+                        'datestr' =>$datestr,
+                        'type' =>2,
+                        
+                ];
+                $db->insert("ds_like",$bind);
+                $this->success_count=1;
+                $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
+                $db->query($sql,[ $log_id ]);
+                return true;
                 
-        ];
-        $db->insert("ds_like",$bind);
-        $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
-        $db->query($sql,[ $log_id ]);
+            }else {
+                $this->err_msg='您的波币余额不足，不可以投票，请充值';
+                return false;
+                
+            }
+        }
         
-        
-        return true;
+        return false;
         
     }
     
@@ -96,13 +159,25 @@ class UserRace extends User
             if ( $row['pic_id_list'] ) {
                 
                 
-                $sql="select url from bb_pic where type=1 and uid=?  and act_id=?";
-                $url_arr = $db->fetchCol($sql,[ $uid, $race_id ]);
+                $sql="select * from bb_pic where type=1 and uid=?  and act_id=?";
+                $url_arr = $db->fetchAll($sql,[ $uid, $race_id ]);
                 
                 if ( $url_arr  ) {
                     $upload['type']='photo';
-                    $upload['photo_url_list']=$url_arr ;
+                    
+                    $new=[];
+                    foreach ( $url_arr as $v ) {
+                        $new[]= [
+                                'url' =>$v['url'],
+                                'pic_width' =>$v['width'],
+                                'pic_height' =>$v['height'],
+                                
+                        ];
+                    }
+                    
+                    $upload['photo_url_list']=$new ;
                 }
+                
                 
                 
             }

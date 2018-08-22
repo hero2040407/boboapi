@@ -494,7 +494,7 @@ class RaceNew
                                 'url'=>$pic2,
                                 'type'=>1,
                                 'uid'=>$uid,
-                                'act_id'=>$last_id,
+                                'act_id'=>$race->id,
                                 'create_time'=>time(),
                                 'height' =>$height_width['height'],
                                 'width'  =>$height_width['width'],

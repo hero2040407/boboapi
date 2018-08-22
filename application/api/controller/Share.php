@@ -56,7 +56,7 @@ class Share
         $info2 = new \BBExtend\model\UserRace();
         $result = $info2->like($self_uid, $row['id'], $type);
         if ($result) {
-            return ['code'=>1];
+            return ['code'=>1,['data' =>['count' =>$info2->success_count ] ]];
         }else {
             return ['code'=>0, 'message' =>$info2->err_msg  ];
         }

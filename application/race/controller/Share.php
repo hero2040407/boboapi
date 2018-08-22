@@ -34,11 +34,11 @@ class Share extends Controller
     }
     
     
-    public function rank($race_id,$startid=0, $length=10,$search='')
+    public function rank($race_id,$startid=0, $length=10,$search='',$self_uid=0)
     {
         $db = Sys::get_container_dbreadonly();
         if ($search) {
-            $sql="select uid,pic,name,ticket_count from ds_register_log 
+            $sql="select id, uid,pic,name,ticket_count from ds_register_log 
                    where zong_ds_id=? 
                      and has_pay=1 
                       and uid =? 
@@ -47,7 +47,7 @@ class Share extends Controller
             
             $user_arr = $db->fetchAll($sql,[ $race_id, $search, $startid, $length ]);
         }else {
-            $sql="select uid,pic,name,ticket_count from ds_register_log
+            $sql="select id, uid,pic,name,ticket_count from ds_register_log
                    where zong_ds_id=?
                      and has_pay=1
                    order by ticket_count desc
@@ -57,9 +57,20 @@ class Share extends Controller
         }
         
         
-        foreach ( $user_arr as $user ) {
+        foreach ( $user_arr as $k=>$v ) {
+            if (!$self_uid) {
+                $user_arr[$k]['my_ticket_count']=0;
+            }else {
             
-            
+            $sql="
+select count(*) from ds_like 
+where self_uid=?
+and register_log_id=?
+and type=1
+and datestr=?
+";
+            $user_arr[$k]['my_ticket_count_today']=$db->fetchOne($sql,[ $self_uid, $v['id'],date("Ymd") ]);
+            }
         }
         return ['code'=>1,'data' => [ 'list' =>$user_arr ] ];
         
