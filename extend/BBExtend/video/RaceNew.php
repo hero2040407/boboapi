@@ -91,16 +91,7 @@ class RaceNew
     private function check_param_v5($ds_id, $phone='',$name='',$sex=1,$birthday='', $record_url, $pic_list ,$is_upload )
     {
         if ($is_upload==0) {
-            if ( $height < 200 && $height>0 ) {
-                //$new['height'] = $height;
-            }else {
-                $this->err_msg = '身高不正确';
-            }
-            if ( $weight < 100 && $weight>5 ) {
-                //$new['weight'] = $weight;
-            }else {
-                $this->err_msg = '体重不正确';
-            }
+           
             if (!$name) {
                 $this->err_msg='姓名错误';
             }
@@ -135,7 +126,7 @@ class RaceNew
     
     
     
-    private function check_race_v5( $ds_id, $qudao_id )
+    private function check_race_v5( $ds_id, $qudao_id,$is_upload )
     {
         $race = $this->race = \BBExtend\backmodel\Race::find( $ds_id );
         if (!$race) {
@@ -151,33 +142,35 @@ class RaceNew
         
         $online_type = $this->online_type = $race->online_type;// 1线上， 2线下。
         
-        if ( $online_type == 1  && $qudao_id != 0 ) {
-            $this->err_msg='大赛和渠道参数配置错误';
-            return false;
-        }
-        if ( $online_type == 2  && $qudao_id ==0 ) {// 线下必须有赛区。
-            $this->err_msg='大赛和渠道参数配置错误';
-            return false;
-        }
-        $time=time();
-        if ( $time > $race->register_start_time && $time < $race->register_end_time ) {
-            
-        }else {
-            $this->err_msg='现在不在大赛报名时间内，无法报名';
-            return false;
-        }
-        
-        
-        if ( $online_type==2 ) {
-            // 验证 赛区id是否真实准确。
-            $db = Sys::get_container_db_eloquent();
-            $sql="select count(*) from ds_race_field where race_id=? and id=?";
-            $result = DbSelect::fetchOne($db, $sql,[ $ds_id, $qudao_id ]);
-            if (!$result) {
+        if ( $is_upload==0 ) {
+            if ( $online_type == 1  && $qudao_id != 0 ) {
                 $this->err_msg='大赛和渠道参数配置错误';
                 return false;
             }
+            if ( $online_type == 2  && $qudao_id ==0 ) {// 线下必须有赛区。
+                $this->err_msg='大赛和渠道参数配置错误';
+                return false;
+            }
+            $time=time();
+            if ( $time > $race->register_start_time && $time < $race->register_end_time ) {
+                
+            }else {
+                $this->err_msg='现在不在大赛报名时间内，无法报名';
+                return false;
+            }
             
+            
+            if ( $online_type==2 ) {
+                // 验证 赛区id是否真实准确。
+                $db = Sys::get_container_db_eloquent();
+                $sql="select count(*) from ds_race_field where race_id=? and id=?";
+                $result = DbSelect::fetchOne($db, $sql,[ $ds_id, $qudao_id ]);
+                if (!$result) {
+                    $this->err_msg='大赛和渠道参数配置错误';
+                    return false;
+                }
+                
+            }
         }
         return true;
         
@@ -398,7 +391,7 @@ class RaceNew
     
     private function insert_v5($ds_id=0, $qudao_id=0,
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
-            $pic,$record_url, $pic_list, $addi_info,$is_upload)
+            $pic,$record_url, $pic_list, $addi_info,$is_upload, $record_pic)
     {
         if ($this->has_err() ) {
             return false;
@@ -406,17 +399,31 @@ class RaceNew
         
         $race = $this->race;
         
-        if ($race->money >= 0.001) { // 如果表中为1，则表示需要付钱。
-            $has_pay = 0;
-        } else {
-            $has_pay = 1;
-        }
+       
         $db = Sys::get_container_db();
         // 先删除过去
         //  if ( $this->has_register ) {
         
 //             if ($qudao_id==0) {// 说明是线上，
         if ($is_upload==0) {
+            
+            if ($race->money >= 0.001) { // 如果表中为1，则表示需要付钱。
+                $has_pay = 0;
+            } else {
+                // 谢烨，这里检查一下。
+                if ($race->upload_type==1 || $race->upload_type==2 ) {
+                    $has_pay==0;
+                }else {
+                
+                
+                  $has_pay = 1;
+                }
+            }
+            $has_upload=1;
+            if ( $race->upload_type==1 || $race->upload_type==2 ) {
+                $has_upload=0;
+            }
+            
            $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
            $db->query( $sql,[ $uid,$ds_id ] );
             
@@ -431,6 +438,7 @@ class RaceNew
                     'birthday' => $birthday,
                     'name' => $name,
                     'has_pay' => $has_pay,
+                    'has_upload' =>$has_upload,
                     'has_dangan' =>1, // xieye 20180416 ，这里固定填写为1
                     'register_info' => $addi_info,
                     'is_web_baoming' =>1,
@@ -446,33 +454,59 @@ class RaceNew
             $last_id = $db->lastInsertId();
             return $last_id;
         }else {
+            
+            
+            
+            
+            if ($race->money >= 0.001) { // 如果表中为1，则表示需要付钱。
+                $has_pay = 0;
+            } else {
+                // 谢烨，这里检查一下。
+                
+                    
+                    
+                    $has_pay = 1;
+                
+            }
+            $has_upload=1;
+           
+            
             // 查是否以前已经报过名
             $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
             $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
            $last_id = $row['id'];
             
             // 谢烨，找到原来的记录，补充。
-            if ( $race->upload_type==1  ) {
-                $sql="update ds_register_log set record_url=? where id = ? ";
-                $db->query( $sql,[$record_url, $last_id  ] );
+            if ( $race->upload_type==1  ) {// 1表示必传视频。
+                $sql="update ds_register_log set 
+                  has_pay=?,has_upload=?,
+                 record_url=?, record_pic=? where id = ? ";
+                $db->query( $sql,[ $has_pay, $has_upload, $record_url,$record_pic, $last_id  ] );
             }else {
                 if ( $pic_list  ) {
                     $id_arr=[];
                     $pic_list_arr = explode(',', $pic_list);
                     foreach ($pic_list_arr  as $pic) {
                         $pic = trim($pic);
+                        $height_width = \BBExtend\common\Image::get_aliyun_pic_width_height($pic);
                         $bind=[
                                 'url'=>$pic,
                                 'type'=>1,
                                 'uid'=>$uid,
                                 'act_id'=>$last_id,
                                 'create_time'=>time(),
-                                
+                                'height' =>$height_width['height'],
+                                'width'  =>$height_width['width'],
                         ];
                         $db->insert("bb_pic", $bind);
                         $id_arr[]= $db->lastInsertId();
                     }
-                    $db->update( 'ds_register_log',['pic_list' => implode(",", $id_arr )  ], 'id='.$last_id );
+                    $db->update( 'ds_register_log',['pic_list' => implode(",", $id_arr ) , 
+                            'has_pay' =>$has_pay,
+                            'has_upload' =>$has_upload,
+                            
+                            
+                    ], 'id='.$last_id );
                     
                 }
             }
@@ -568,11 +602,11 @@ class RaceNew
      */
     public  function register_v5($ds_id=0, $qudao_id=0,
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
-            $pic='',$record_url, $pic_list , $addi_info,$is_upload)
+            $pic='',$record_url, $pic_list , $addi_info,$is_upload,$record_pic)
     {
         
         // 必须先验 大赛存在，
-        $result = $this->check_race_v5( $ds_id, $qudao_id );
+        $result = $this->check_race_v5( $ds_id, $qudao_id,$is_upload );
         if (!$result) {
             return ['code'=>0,'message' => $this->err_msg ];
         }
@@ -591,7 +625,7 @@ class RaceNew
         
         $this->insert_v5($ds_id, $qudao_id,
                 $uid,$phone,$name,$sex,$birthday,
-                $pic, $record_url, $pic_list , $addi_info ,$is_upload);
+                $pic, $record_url, $pic_list , $addi_info ,$is_upload,$record_pic);
         
         // 报名成功 的后续操作。
         if ( $this->register_success  ) {

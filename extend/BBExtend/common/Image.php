@@ -22,6 +22,23 @@ namespace BBExtend\common;
         
     }
     
+    
+    /**
+     * 返回一个阿里云图片 的宽度和高度。
+     * @param unknown $url
+     * @return unknown[]|mixed[]|number[]
+     */
+    public static function get_aliyun_pic_width_height($url){
+        $url = $url . "?x-oss-process=image/info";
+        $json = file_get_contents($filename);
+        $json = json_decode($json,true);
+        if ($json && isset( $json['ImageHeight'] ) &&   isset ( $json['ImageWidth'] ) ) {
+            return ['height' => $json['ImageHeight']['value'],'width' =>  $json['ImageWidth']['value'] ];
+        }
+        return ['width'=>0, 'height' =>0 ];
+    }
+    
+    
     /**
      * 把一个图片生成一个灰色图片，且文件名自动加_gray，原文件不动。
      * 如果返回false，则表示处理失败，一般是文件不存在。

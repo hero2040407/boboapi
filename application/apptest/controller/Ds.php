@@ -7,6 +7,29 @@ use BBExtend\common\Image;
 class Ds
 {
    
+    public function delete($uid= 8000002){
+        if (Sys::is_product_server()) {
+            exit ('123');
+        }
+        
+        
+        $db = Sys::get_container_db();
+     //   $uid = 8000002;
+        $sql="delete from bb_pic where uid= ?";
+        $db->query($sql,[$uid]);
+        $sql="delete from ds_register_log where uid= ?";
+        $db->query($sql,[$uid]);
+        return ['code'=>1];
+//         $sql="delete from ds_register_log where uid= ?";
+//         $db->query($sql,[$uid]);
+        
+        
+        
+        
+    }
+    
+    
+    
    /**
     * 这是demo页面，同时包括了get和处理post的逻辑
     * 

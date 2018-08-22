@@ -52,7 +52,7 @@ select * from ds_dangan_config_user_history
     
     
     
-    public function select_field_v5($uid, $ds_id)
+    public function select_field_v5()
     {
         $ds_id = input('param.ds_id/d');
         $uid =  input('param.uid/d');
@@ -135,9 +135,13 @@ order by id desc limit 1";
             }
             
             
-            return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config , 'online_type'=> $race->online_type  ]  ];
+            return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config , 
+                    'upload_type'=> $race->upload_type,
+                    'online_type'=> $race->online_type  ]  ];
         } else {
-            return ['code'=>1, 'data'=> ['list' => [],'info'=>$info,'config'=>$config ,'online_type'=> $race->online_type  ]  ];
+            return ['code'=>1, 'data'=> ['list' => [],'info'=>$info,'config'=>$config ,
+                    'upload_type'=> $race->upload_type,
+                    'online_type'=> $race->online_type  ]  ];
         }
         
         

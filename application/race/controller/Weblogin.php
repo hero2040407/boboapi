@@ -261,15 +261,23 @@ class Weblogin extends Controller
         $pic = input("param.pic/s");
         
         $record_url = input("param.record_url/s");
+        $record_pic = input("param.record_pic/s");
+        
         $pic_list = input("param.pic_list/s");
         $addi_info = input("param.addi_info/s");
         $is_upload = input("param.is_upload/d");
+        
+        if ($uid==10023) {
+            Sys::debugxieye($pic_list);
+            return ['code'=>1];
+          //  exit;
+        }
         
         
         $reg = new \BBExtend\video\RaceNew(  );
         $result = $reg->register_v5($ds_id, $qudao_id,
                 $uid,$phone,$name,$sex,$birthday,
-                $pic, $record_url, $pic_list,$addi_info,$is_upload );
+                $pic, $record_url, $pic_list,$addi_info,$is_upload ,$record_pic);
         
         if ( $result['code']!=1 ) {
             return $result;
@@ -282,6 +290,49 @@ class Weblogin extends Controller
                 'data'=>['status'=>  $arr['data']['status'],
                         'money' => intval( $race->money * 100),  ] ];
         
+    }
+    
+    
+    // 微信报名。
+    public function register_new_test_upload($v=1, $ds_id=182,$pic='',$uid)
+    {
+        // 查是否以前已经报过名
+        $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
+        $row = \BBExtend\DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+        $last_id = $row['id'];
+        
+        // 谢烨，找到原来的记录，补充。
+//         if ( $race->upload_type==1  ) {
+//             $sql="update ds_register_log set record_url=? where id = ? ";
+//             $db->query( $sql,[$record_url, $last_id  ] );
+//         }else {
+         $pic_list = $pic;
+            if ( $pic_list  ) {
+                $id_arr=[];
+                $pic_list_arr = explode(',', $pic_list);
+                foreach ($pic_list_arr  as $pic) {
+                    $pic = trim($pic);
+                    $height_width = \BBExtend\common\Image::get_aliyun_pic_width_height($pic);
+                    $bind=[
+                            'url'=>$pic,
+                            'type'=>1,
+                            'uid'=>$uid,
+                            'act_id'=>$last_id,
+                            'create_time'=>time(),
+                            'height' =>$height_width['height'],
+                            'width'  =>$height_width['width'],
+                    ];
+                    $db->insert("bb_pic", $bind);
+                    $id_arr[]= $db->lastInsertId();
+                }
+              //  $db->update( 'ds_register_log',['pic_list' => implode(",", $id_arr )  ], 'id='.$last_id );
+                
+            }
+//         }
+        
+      
+        return [ 'code'=>1,
+                 ];
     }
     
     
