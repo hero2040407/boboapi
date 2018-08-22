@@ -50,7 +50,7 @@ class Share extends Controller
             $sql="select id, uid,pic,name,ticket_count from ds_register_log
                    where zong_ds_id=?
                      and has_pay=1
-                   order by ticket_count desc
+                   order by ticket_count desc,id asc
                    limit ?,?";
             
             $user_arr = $db->fetchAll($sql,[ $race_id,$startid, $length ]);
@@ -59,9 +59,13 @@ class Share extends Controller
         
         foreach ( $user_arr as $k=>$v ) {
             if (!$self_uid) {
+                // 未登录。
+                
                 $user_arr[$k]['my_ticket_count']=0;
             }else {
             
+                // 已登录。
+                
             $sql="
 select count(*) from ds_like 
 where self_uid=?
@@ -72,7 +76,54 @@ and datestr=?
             $user_arr[$k]['my_ticket_count_today']=$db->fetchOne($sql,[ $self_uid, $v['id'],date("Ymd") ]);
             }
         }
-        return ['code'=>1,'data' => [ 'list' =>$user_arr ] ];
+        
+        $myinfo=null;
+        if ($self_uid) {
+            $sql="select * from ds_register_log where zong_ds_id = ? and has_pay=1 and uid=?";
+            $my = $db->fetchRow($sql,[ $race_id, $self_uid ]);
+            if ($my) {
+                $sql="
+select uid   from ds_register_log
+                   where zong_ds_id=?
+                     and has_pay=1
+                   order by ticket_count desc,id asc
+
+";
+                $join_id_arr = $db->fetchCol($sql,[ $race_id ]);
+                $rank=0;
+                foreach ( $join_id_arr as $id ) {
+                    $rank++;
+                    if ( $id == $self_uid ) {
+                        $myinfo=[
+                                'rank' =>$rank,
+                                'uid' =>$self_uid,
+                                'pic' => $my['pic'],
+                                'name' =>$my['name'],
+                                'ticket_count'=>$my['ticket_count'],
+                                
+                        ];
+                        
+                        $sql="
+select count(*) from ds_like
+where self_uid=?
+and target_uid=?
+and race_id=?
+and type=1
+and datestr=?
+";
+                        $myinfo['my_ticket_count_today']=
+                          $db->fetchOne($sql,[ $self_uid, $self_uid, $race_id ,date("Ymd") ]);
+                        
+                        
+                    }
+                }
+                
+            }
+            
+        }
+        
+        
+        return ['code'=>1,'data' => [ 'list' =>$user_arr,'myinfo' =>$myinfo ] ];
         
     }
     

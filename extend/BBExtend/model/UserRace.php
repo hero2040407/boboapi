@@ -30,7 +30,7 @@ class UserRace extends User
         if ($type==1) {
         
             
-            $sql="select * ds_like where self_uid=? and type=1 and register_log_id=? and datestr=?";
+            $sql="select * from  ds_like where self_uid=? and type=1 and register_log_id=? and datestr=?";
             $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
             if ($row) {
                 $this->err_msg='您今日已投过票，请明天再来';
@@ -49,12 +49,12 @@ class UserRace extends User
             ];
             $db->insert("ds_like",$bind);
             $this->success_count=1;
-            $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
+            $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
             $db->query($sql,[ $log_id ]);
             return true;
         }
         if ($type==2) {
-            $sql="select * ds_like where self_uid=? and type=2 and register_log_id=? ";
+            $sql="select *  from ds_like where self_uid=? and type=2 and register_log_id=? ";
             $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
             if ($row) {
 //                 $this->err_msg='您今日已投过票，请明天再来';
@@ -75,7 +75,7 @@ class UserRace extends User
             ];
             $db->insert("ds_like",$bind);
             $this->success_count=1;
-            $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
+            $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
             $db->query($sql,[ $log_id ]);
             return true;
             
