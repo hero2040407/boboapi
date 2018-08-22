@@ -20,7 +20,7 @@ class Share
         $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
         $row = $db->fetchRow($sql,[ $uid,$race_id  ]);
         if (!$row) {
-            return ['code'=>0, 'message' =>'参数错误' ];
+            return ['code'=>0, 'message' =>'未报名错误' ];
         }
         
         // 谢烨，现在获取此人的个人信息。

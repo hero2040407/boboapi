@@ -30,7 +30,7 @@ namespace BBExtend\common;
      */
     public static function get_aliyun_pic_width_height($url){
         $url = $url . "?x-oss-process=image/info";
-        $json = file_get_contents($filename);
+        $json = file_get_contents($url);
         $json = json_decode($json,true);
         if ($json && isset( $json['ImageHeight'] ) &&   isset ( $json['ImageWidth'] ) ) {
             return ['height' => $json['ImageHeight']['value'],'width' =>  $json['ImageWidth']['value'] ];

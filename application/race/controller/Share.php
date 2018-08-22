@@ -38,7 +38,7 @@ class Share extends Controller
     {
         $db = Sys::get_container_dbreadonly();
         if ($search) {
-            $sql="select uid,pic from ds_register_log 
+            $sql="select uid,pic,name,ticket_count from ds_register_log 
                    where zong_ds_id=? 
                      and has_pay=1 
                       and uid =? 
@@ -47,7 +47,7 @@ class Share extends Controller
             
             $user_arr = $db->fetchAll($sql,[ $race_id, $search, $startid, $length ]);
         }else {
-            $sql="select uid,pic from ds_register_log
+            $sql="select uid,pic,name,ticket_count from ds_register_log
                    where zong_ds_id=?
                      and has_pay=1
                    order by ticket_count desc

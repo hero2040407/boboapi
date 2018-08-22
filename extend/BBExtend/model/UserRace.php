@@ -72,7 +72,7 @@ class UserRace extends User
         $race_info['field_name'] = $this->get_field_name($row['ds_id']  );
         $race_info['age'] = $row['age'];
         $race_info['race_name'] = $race->title;
-        $race_info['ticket_count'] = $row['ticket'];
+        $race_info['ticket_count'] = $row['ticket_count'];
         
         
         $result['race_info'] =$race_info ;
@@ -87,6 +87,8 @@ class UserRace extends User
                 
                 $upload['type']='video';
                 $upload['record_url']=$row['record_url'] ;
+                $upload['record_cover']=$row['record_cover'] ;
+                
             }
             
         }else {

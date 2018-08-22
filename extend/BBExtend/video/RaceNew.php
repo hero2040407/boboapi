@@ -380,7 +380,7 @@ class RaceNew
    
     
     private function set_history($uid, $addi_info){
-        $info = json_decode($json,1);
+        $info = json_decode($addi_info,1);
         if ($info) {
             foreach ($info as $k =>$v) {
                 \BBExtend\model\DsDanganUser::update_uid($uid, $k, $v);
@@ -412,7 +412,7 @@ class RaceNew
             } else {
                 // 谢烨，这里检查一下。
                 if ($race->upload_type==1 || $race->upload_type==2 ) {
-                    $has_pay==0;
+                    $has_pay=0;
                 }else {
                 
                 
@@ -470,27 +470,28 @@ class RaceNew
             }
             $has_upload=1;
            
-            
+            $db2 = Sys::get_container_db_eloquent();
             // 查是否以前已经报过名
-            $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
-            $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+            $sql="select * from ds_register_log where uid=? and zong_ds_id=? ";
+            $row = DbSelect::fetchRow($db2, $sql,[ $uid, $ds_id ]);
            $last_id = $row['id'];
             
             // 谢烨，找到原来的记录，补充。
             if ( $race->upload_type==1  ) {// 1表示必传视频。
                 $sql="update ds_register_log set 
                   has_pay=?,has_upload=?,
-                 record_url=?, record_pic=? where id = ? ";
+                 record_url=?, record_cover=? where id = ? ";
                 $db->query( $sql,[ $has_pay, $has_upload, $record_url,$record_pic, $last_id  ] );
             }else {
                 if ( $pic_list  ) {
                     $id_arr=[];
                     $pic_list_arr = explode(',', $pic_list);
-                    foreach ($pic_list_arr  as $pic) {
-                        $pic = trim($pic);
-                        $height_width = \BBExtend\common\Image::get_aliyun_pic_width_height($pic);
+                    //$temp_id_arr=[];
+                    foreach ($pic_list_arr  as $pic2) {
+                        $pic2 = trim($pic2);
+                        $height_width = \BBExtend\common\Image::get_aliyun_pic_width_height($pic2);
                         $bind=[
-                                'url'=>$pic,
+                                'url'=>$pic2,
                                 'type'=>1,
                                 'uid'=>$uid,
                                 'act_id'=>$last_id,
@@ -501,7 +502,7 @@ class RaceNew
                         $db->insert("bb_pic", $bind);
                         $id_arr[]= $db->lastInsertId();
                     }
-                    $db->update( 'ds_register_log',['pic_list' => implode(",", $id_arr ) , 
+                    $db->update( 'ds_register_log',['pic_id_list' => implode(",", $id_arr ) , 
                             'has_pay' =>$has_pay,
                             'has_upload' =>$has_upload,
                             
