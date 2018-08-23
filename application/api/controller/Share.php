@@ -13,8 +13,11 @@ use BBExtend\DbSelect;
  */
 class Share
 {
-    public function race($uid,$race_id   )
+    public function race($uid,$race_id,$self_uid=0   )
     {
+        $self_uid=intval($self_uid);
+        $uid = intval($uid);
+        $race_id = intval($race_id);
         
         $db = Sys::get_container_dbreadonly();
         $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
@@ -28,7 +31,7 @@ class Share
         
         
         
-        return ['code'=>1, 'data' =>$info2->info( $row['id'] )  ];
+        return ['code'=>1, 'data' =>$info2->info( $row['id'], $self_uid )  ];
         
     }
     

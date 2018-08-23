@@ -41,7 +41,7 @@ class Share extends Controller
             $sql="select id, uid,pic,name,ticket_count from ds_register_log 
                    where zong_ds_id=? 
                      and has_pay=1 
-                      and uid =? 
+                      and name =? 
                    order by ticket_count desc 
                    limit ?,?";
             

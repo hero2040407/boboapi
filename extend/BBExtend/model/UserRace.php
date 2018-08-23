@@ -116,8 +116,13 @@ class UserRace extends User
     
     
     
-    
-    public function info($log_id)
+    /**
+     * 分享页面
+     * @param unknown $log_id
+     * @param unknown $self_uid
+     * @return NULL[][]|unknown[][]|mixed[][]|NULL[]|mixed[]|unknown[][][]
+     */
+    public function info($log_id,$self_uid)
     {
         $db = Sys::get_container_db();
         $sql="select * from ds_register_log where id=?";
@@ -212,6 +217,14 @@ class UserRace extends User
             
         }
         $result['updates_list'] = $updates_list;
+        $count=0;
+        if ( $self_uid) {
+            $sql="select count(*) from ds_like where self_uid=? and race_id=? and target_uid=? 
+                 and datestr=?";
+            $count = $db->fetchOne($sql,[ $self_uid, $race_id, $uid, date("Ymd") ]);
+            
+        }
+        $result['my_ticket_count_today'] = $count;
         return $result;
         
     }
