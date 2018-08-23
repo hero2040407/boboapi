@@ -14,6 +14,18 @@ class Oss
     const accessKeySecret = 'QSvRUGKeEOgEPDCfcK7VnQmVuA6bYD';
     const bucket = 'bobo-upload';
     
+    
+    public static function alihuidiao_mov_to_mp4( $input ){
+        $db = \BBExtend\Sys::get_container_db();
+        $sql="select target_path from bb_aliyun_record where video_path=?";
+        $target = $db->fetchOne($sql,[ $input ]);
+        if ($target) {
+            return $target;
+        }
+        return $input;
+    }
+    
+    
     /**
      * 根据Config配置，得到一个OssClient实例
      *

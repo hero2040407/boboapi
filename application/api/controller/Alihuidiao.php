@@ -22,6 +22,7 @@ class Alihuidiao extends  Controller
         $json = json_decode($json,1);
 //         Sys::debugxieye(11);
         if ( isset($json['RunId']) && isset($json['Type']  ) && isset($json['State']   )     ) {
+            Sys::debugxieye('阿里云视频转换回调'. $json['MediaWorkflowExecution']['Input']['InputFile']['Object']);
             $this->process($json);
             
             
@@ -35,7 +36,11 @@ class Alihuidiao extends  Controller
     
     /**
      * http://upload.guaishoubobo.com/mov_mp4_convert/8055938/qSplzn33gXk1.qt
-     * 改成
+     * 改成有两种可能：
+1、 转换很快，转换时，对方还没有调用我的接口。于是，大赛参赛纪录未生成，我应该记录到临时表里。
+2、 转换很慢，转换时，已经调用我的接口。      于是  大赛参赛纪录已经生成，此时我应该直接修改参赛记录表。
+
+
      * 
      * @param unknown $json
      */
@@ -43,30 +48,21 @@ class Alihuidiao extends  Controller
     private function process($json)
     {
         $runid = $json['RunId'];
-//         Sys::debugxieye('input22:');
         if ( $json['Type']=='Report' && $json['State']=='Success' ) {
-//             Sys::debugxieye('input33:');
             $input_file= self::input_domain . $json['MediaWorkflowExecution']['Input']['InputFile']['Object'];
             $target = "http://convert.guaishoubobo.com/mov_mp4_convert/{$runid}.mp4";
             $db = Sys::get_container_db();
-            $sql="select * from bb_record where video_path =?";
-          //  $video_path = 
-            $result = $db->fetchRow($sql,[ $input_file ]);
-//             Sys::debugxieye('input44:');
-//             Sys::debugxieye('input:'.$input_file);
             
-            // 谢烨注意：这是自动转码特别慢，先有record表，然后转码的情况。
+            $result = $this->pro1($input_file, $target);
             if ($result) {
-//                 Sys::debugxieye('input55:');
-                
-                $sql="update bb_record set video_path=?,transcoding_complete=1  where id=?";
-                $db->query( $sql,[ $target,  $result['id'] ] );
-               
-//                 Sys::debugxieye('out:'. $target );
-                
-              //  $db->update('bb_record', ['video_path' =>$target ],""  );
-                
-            }else {
+                return ;
+            }
+            $result = $this->pro2($input_file, $target);
+            if ($result) {
+                return ;
+            }
+            
+            
                 // 谢烨注意，这是用户操作太慢，先转码，然后最后存record表的情况，此时必须先存暂存表
                 $db->insert('bb_aliyun_record',[
                         'create_time' => time(),
@@ -75,9 +71,37 @@ class Alihuidiao extends  Controller
                 ]);
                 
                 
-            }
+            
         }
         
+    }
+    
+    // 普通视频
+    private function pro1($input_file, $target){
+        $db = Sys::get_container_db();
+        $sql="select * from bb_record where video_path =?";
+        $result = $db->fetchRow($sql,[ $input_file ]);
+        if ($result ) {
+            $sql="update bb_record set video_path=?,transcoding_complete=1  where id=?";
+            $db->query( $sql,[ $target,  $result['id'] ] );
+            
+            return true;
+        }
+        return false;
+    }
+    
+    // 大赛视频
+    private function pro2($input_file, $target){
+        $db = Sys::get_container_db();
+        $sql="select * from ds_register_log where record_url =?";
+        $result = $db->fetchRow($sql,[ $input_file ]);
+        if ($result ) {
+            $sql="update bb_record set record_url=? where id=?";
+            $db->query( $sql,[ $target,  $result['id'] ] );
+            
+            return true;
+        }
+        return false;
     }
     
    

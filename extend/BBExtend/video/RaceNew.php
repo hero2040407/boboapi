@@ -456,7 +456,7 @@ class RaceNew
         }else {
             
             
-            
+            $record_url = \BBExtend\common\Oss::alihuidiao_mov_to_mp4( $record_url );
             
             if ($race->money >= 0.001) { // 如果表中为1，则表示需要付钱。
                 $has_pay = 0;

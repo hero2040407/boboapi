@@ -159,6 +159,7 @@ class Boboapi
                         'user_updates_pic_upload_dir'=> 'uploads/user_updates_date/'.date("Ymd"),
                         'make_card_pic_upload_dir'=> 'uploads/card_updates_date/'.date("Ymd"),
                         'race_register_pic_dir'=> 'uploads/race_register_pic_date/'.date("Ymd"),
+                        'race_register_video_dir'=> 'uploads/race_register_video_date/'.date("Ymd"),
                 ],
                 
         ];
