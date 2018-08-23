@@ -35,7 +35,15 @@ class Temp
     
    public function index($aa=1)
    {
-       $this->index2();
+       $redis = Sys::get_container_redis();
+//        $redis->hSet("key1","key2",'value');
+//        echo $redis->hget('key1','key2');
+       
+       
+       $redis->hMset('key1', ['name'=>'xieye','age'=>20]);
+       dump( $redis->hMget('key1',['name','age']) );
+       
+       //$this->index2();
        //return ['code'=>1];
    }
    

@@ -8,6 +8,11 @@ class Index extends \think\Controller
 {
     public function index()
     {
+        if (!\BBExtend\Sys::is_product_server()) {
+            echo "";
+            exit;
+        }
+        
         
         header("location:http://www.guaishoubobo.com/");
         exit;
