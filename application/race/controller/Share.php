@@ -104,7 +104,15 @@ class Share extends Controller
             $reward = "排行榜前5名的用户，可获得". $race->reward;
         }
         
-        return ['code'=>1,'data' => [ 'list' =>$user_arr,'myinfo' =>$myinfo ,'reward' =>$reward] ];
+        $sql="select count(*) from  ds_register_log 
+                   where zong_ds_id=? 
+                     and has_pay=1 ";
+        $all_join_count = $db->fetchOne($sql,[ $race_id ]);
+        
+        
+        return ['code'=>1,'data' => [ 'list' =>$user_arr,'myinfo' =>$myinfo ,
+                'all_join_count' =>$all_join_count,
+                'reward' =>$reward] ];
         
     }
     

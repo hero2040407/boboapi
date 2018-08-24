@@ -57,11 +57,11 @@ class RaceStatus
         if (!$user) {
             return ['code' =>0,'message' =>'用户不存在' ];
         }
-        
+        $money_fen = intval( $race->money * 100 );
         
         // 谢烨，先单独做一个大赛报名前时间的判断。
         if ( $time < $race->register_start_time ) {
-            return ['code'=>1,'data' => ['status'=>1,'describe'=>'1','is_count_down' =>1,  ]  ]; //
+            return ['code'=>1,'data' => ['status'=>1,'describe'=>'1','is_count_down' =>1, 'money_fen'=>$money_fen, ]  ]; //
         }
         
         // 如果已经参加。
@@ -71,13 +71,13 @@ class RaceStatus
         if ( $result ) {
             if ($result['has_pay']) {
                 // 已参加
-                return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
             }else { // 继续支付
                 
                 if ( $result['has_upload'] ) {//继续支付
-                    return ['code'=>1,'data' => ['status'=>3,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                    return ['code'=>1,'data' => ['status'=>3,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
                 }else { // 继续上传。
-                    return ['code'=>1,'data' => ['status'=>4,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                    return ['code'=>1,'data' => ['status'=>4,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
                 }
                 
                 
@@ -88,15 +88,15 @@ class RaceStatus
             
             // 如果报名结束
             if ( $time > $race->register_end_time ) {
-                return ['code'=>1,'data' => ['status'=>6,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                return ['code'=>1,'data' => ['status'=>6,'describe'=>'','is_count_down' =>0, 'money_fen'=>$money_fen, ]  ]; //
             }
             // 查该用户是否手机绑定
             if ( !$user->is_bind_phone() ) {
-                return ['code'=>1,'data' => ['status'=>-204,'describe'=>'','is_count_down' =>0,  ]  ]; //
+                return ['code'=>1,'data' => ['status'=>-204,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
             }
             
             // 我要报名，终于出现！！
-            return ['code'=>1,'data' => ['status'=>2, 'describe'=>'','is_count_down' =>0,  ]  ]; //
+            return ['code'=>1,'data' => ['status'=>2, 'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
             
         }
     }

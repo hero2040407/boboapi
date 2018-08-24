@@ -102,11 +102,15 @@ class Raceapi extends Controller
         
        
         // 谢烨，现在判断这个人付钱是否合适
-        $status_arr = \BBExtend\video\Race::get_user_race_status($uid, $ds_id);
+//         $status_arr = \BBExtend\video\Race::get_user_race_status($uid, $ds_id);
+        
+        
+        $arr =  \BBExtend\video\RaceStatus::get_status_v5($uid, $ds_id);
+        
         if ($status_arr['code']==0) {
             return ['code'=>0, 'message'=>$status_arr['message']];
         }
-        if ($status_arr['data'] != 18 ) {
+        if ($status_arr['data'] != 3 ) {
             return ['code'=>0, 'message'=>'请先完成报名流程'];
         }
         

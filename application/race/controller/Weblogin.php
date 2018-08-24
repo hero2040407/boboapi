@@ -284,11 +284,11 @@ class Weblogin extends Controller
         }
         
        
-        
+        $race = \BBExtend\model\Race::find( $ds_id );
         $arr= RaceStatus::get_status_v5($uid, $ds_id);
         return [ 'code'=>1,
                 'data'=>['status'=>  $arr['data']['status'],
-                        'money' => intval( $race->money * 100),  ] ];
+                        'money_fen' => intval( $race->money * 100),  ] ];
         
     }
     

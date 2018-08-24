@@ -229,7 +229,7 @@ class RaceNew
     
     
     // 谢烨，不可公开，因为使用了私有变量。
-    private function check_user_v5($uid,$ds_id, $qudao_id)
+    private function check_user_v5($uid,$ds_id, $qudao_id,$is_upload)
     {
         $user = \BBExtend\model\User::find( $uid );
         if (!$user) {
@@ -246,15 +246,26 @@ class RaceNew
         
         $db = Sys::get_container_db_eloquent();
         // 查是否以前已经报过名
-        $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
-        $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
-        if ( $row ) {
-            $this->code = 0;
-            $this->err_msg = '不可重复报名';
-            return false;
+        if ($is_upload==0) {
+            $sql="select * from ds_register_log where uid=? and zong_ds_id=? ";
+            $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+            if ( $row ) {
+                $this->code = 0;
+                $this->err_msg = '您已填写过信息，请上传视频或图片';
+                return false;
+                
+            }
+        }else {
+            $sql="select * from ds_register_log where uid=? and zong_ds_id=? ";
+            $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+            if ( !$row ) {
+                $this->code = 0;
+                $this->err_msg = '上传之前请先填写报名信息';
+                return false;
+                
+            }
             
         }
-        
         return true;
     
     }
