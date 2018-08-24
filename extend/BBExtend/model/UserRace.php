@@ -55,7 +55,7 @@ class UserRace extends User
         }
         if ($type==2) {
             $sql="select *  from ds_like where self_uid=? and type=2 and register_log_id=? ";
-            $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
+            $row = $db->fetchRow($sql,[ $self_uid, $log_id,  ]);
             if ($row) {
 //                 $this->err_msg='您今日已投过票，请明天再来';
 //                 return false;
@@ -104,7 +104,7 @@ class UserRace extends User
                 return true;
                 
             }else {
-                $this->err_msg='您的波币余额不足，不可以投票，请充值';
+                $this->err_msg='您的BO币余额不足，不可以投票，请充值';
                 return false;
                 
             }

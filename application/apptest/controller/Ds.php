@@ -9,7 +9,7 @@ class Ds
    
     public function delete($uid= 8000002){
         if (Sys::is_product_server()) {
-            exit ('123');
+            exit ('');
         }
         
         

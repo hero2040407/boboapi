@@ -35,6 +35,7 @@ class Temp
     
    public function index($aa=1)
    {
+       echo 1;
        $redis = Sys::get_container_redis();
 //        $redis->hSet("key1","key2",'value');
 //        echo $redis->hget('key1','key2');

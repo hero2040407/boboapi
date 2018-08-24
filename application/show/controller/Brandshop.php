@@ -558,7 +558,7 @@ where brandshop_id=?
         $t['current_time'] = time();
         
         $t['has_live_video'] =true; // 写死，是因为这是大赛专用。
-        
+        $t['upload_type'] =1;
         return $t;
     }
     
@@ -619,6 +619,8 @@ where brandshop_id=?
         $t['join_people'] =0;// 该字段因为是活动专用。
         $ds  = \BBExtend\model\Race::find($t['id']);
         $t['has_live_video'] = $ds->has_live_video();
+        $t['upload_type'] = $race['upload_type'];
+        
         return $t;
     }
     

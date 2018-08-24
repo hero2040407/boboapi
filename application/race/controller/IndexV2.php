@@ -426,6 +426,8 @@ order by id desc limit 1";
             $ds  = \BBExtend\model\Race::find($v['id']);
             $t['has_live_video'] = $ds->has_live_video();
             
+            $t['upload_type'] = $v['upload_type'];
+            
             $temp[]= $t;
         }
         
@@ -793,6 +795,8 @@ order by id desc limit 1";
         $result = $db->fetchAll($sql,[ $ds_id ]);
         
         $t['recent_list'] = $result;
+        
+        $t['upload_type'] = $v['upload_type'];
         
 //         // 谢烨，这里多了一个动态列表。
 //         $t['dynamic_list'] =[];
