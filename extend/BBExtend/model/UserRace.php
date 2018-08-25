@@ -99,7 +99,7 @@ class UserRace extends User
                 ];
                 $db->insert("ds_like",$bind);
                 $this->success_count=1;
-                $sql="update ds_register_log where ticket_count = ticket_count+1 where id=?";
+                $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
                 $db->query($sql,[ $log_id ]);
                 return true;
                 
@@ -141,6 +141,7 @@ class UserRace extends User
         $race_info['age'] = $row['age'];
         $race_info['race_name'] = $race->title;
         $race_info['ticket_count'] = $row['ticket_count'];
+        $race_info['upload_type'] = $race->upload_type;
         
         
         $result['race_info'] =$race_info ;
@@ -225,6 +226,17 @@ class UserRace extends User
             
         }
         $result['my_ticket_count_today'] = $count;
+        
+        // 当前用户参加大赛的状态。
+        if ($self_uid) {
+          $join_arr = \BBExtend\video\RaceStatus::get_status_v5($self_uid, $race_id);
+          $result['self_join_status'] = $join_arr['status'] ;
+          $result['self_role'] = 1;
+        }else {
+            $result['self_join_status'] = 0 ;
+            $self_user = \BBExtend\model\User::find( $self_uid );
+            $result['self_role'] = $self_user->role;
+        }
         return $result;
         
     }

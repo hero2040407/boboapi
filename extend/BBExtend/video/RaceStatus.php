@@ -71,7 +71,15 @@ class RaceStatus
         if ( $result ) {
             if ($result['has_pay']) {
                 // 已参加
+                
+                if ((!$result['pic_id_list']) &&  (!$result['record_url'])  ) {
+                    return ['code'=>1,'data' => ['status'=>7,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
+                }
+                
                 return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
+                
+                
+                
             }else { // 继续支付
                 
                 if ( $result['has_upload'] ) {//继续支付
