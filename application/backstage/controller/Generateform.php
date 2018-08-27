@@ -26,7 +26,7 @@ class Generateform extends Common Implements CommonInterface
     {
         if (empty($ds_id))
             $this->error('ds_id必须');
-        $list = (new RaceFormConfig())->where('ds_id',$ds_id)->get();
+        $list = (new RaceFormConfig())->where('ds_id',$ds_id)->select();
         $this->success('','',$list);
         // TODO: Implement index() method.
     }
@@ -43,6 +43,7 @@ class Generateform extends Common Implements CommonInterface
         if (empty($ds_id))
             $this->error('ds_id必须');
         $list = (new RaceFormConfig())->where('ds_id',$ds_id)->select();
+
         $this->success('','',$list);
         // TODO: Implement read() method.
     }
@@ -88,13 +89,12 @@ class Generateform extends Common Implements CommonInterface
             }
             else $data_without_id[] = $item;
         }
-        $diff_ids = array_diff($ids,$exist_id);
 
+        $diff_ids = array_diff($ids,$exist_id);
         if($diff_ids)
             (new RaceFormConfig())->where(['id' => ['in',$diff_ids]])->delete();
 
         $model->saveAll($data_without_id);
-
         $this->success('处理成功');
     }
 }

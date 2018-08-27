@@ -21,13 +21,11 @@ class Admin  extends Common
         \BBExtend\Session::clean_up_my_id();
         
     }
-    
-    
+
     public function getid(){
         return ['code'=>1,'data'=> \BBExtend\Session::get_my_id() ];
     }
-    
-    
+
     public function logout(){
         $this->clean_up_session();
         return ['code'=>1, ];
@@ -50,7 +48,6 @@ class Admin  extends Common
             if ($count) {
                 return true;
             }
-            
         }
         if ($row['level']==2) {
             // 这使得渠道。
@@ -59,11 +56,8 @@ class Admin  extends Common
             if ($count) {
                 return true;
             }
-            
-            
         }
         return false;
-        
     }
     
     
@@ -97,7 +91,6 @@ class Admin  extends Common
                 return ['code'=>400,'message'=>'该账户的对应大赛已经被禁止，您无法登陆。'];
             }
             
-            
             $this->set_session($row );
             
             // 下面是查渠道的大赛id和赛区id。 
@@ -117,8 +110,7 @@ class Admin  extends Common
             }else {
                 $race_id_list =[];
             }
-            
-            
+
             return ['code'=>1,'data'=>['role' => $auth,
                     'field_race_id' =>$race_id,
                     'field_id' => $field_id,

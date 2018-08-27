@@ -44,7 +44,11 @@ class Registration extends Common Implements CommonInterface
         if (empty($id))
         $this->error('id必须');
         $list = RaceRegistration::get($id);
-        $list->items = (new Images())->all($list->pic_id_list);
+        if ($list)
+        {
+            $list->items = (new Images())->all($list->pic_id_list);
+        }
+        else $list = [];
         $this->success('','',$list);
         // TODO: Implement read() method.
     }
@@ -74,25 +78,5 @@ class Registration extends Common Implements CommonInterface
         // TODO: Implement delete() method.
     }
 
-    function categoryCreate($ds_id = '', $age = '')
-    {
-        if (empty($ds_id))
-            $this->error('ds_id必须');
-        if (empty($age))
-            $this->error('age必须');
 
-        $res = (new File())->set($ds_id, $age);
-        if ($res) $this->success('设置成功');
-        $this->error('设置失败');
-
-    }
-
-    function categoryIndex($ds_id = '')
-    {
-        if (empty($ds_id))
-            $this->error('ds_id必须');
-
-        $list = (new File())->get($ds_id);
-        $this->success('','',$list);
-    }
 }

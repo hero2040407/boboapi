@@ -267,11 +267,7 @@ class Weblogin extends Controller
         $addi_info = input("param.addi_info/s");
         $is_upload = input("param.is_upload/d");
         
-        if ($uid==10023) {
-            Sys::debugxieye($pic_list);
-            return ['code'=>1];
-          //  exit;
-        }
+       
         
         
         $reg = new \BBExtend\video\RaceNew(  );

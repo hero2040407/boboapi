@@ -117,14 +117,14 @@ order by like_count desc
                 'uid'=>$this->uid,
                 'money'=>$this->money,
                 
-             
+
                 'summary' => $this->summary,
                 'detail' => $this->detail,
                 'slide_show' => $result,
                 'current_time' => $time,
                 'min_age' =>$this->min_age,
                 'max_age' =>$this->max_age,
-                
+                'upload_type' => $this->upload_type,
         ];
     }
     

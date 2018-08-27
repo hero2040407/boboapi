@@ -16,4 +16,16 @@ class RaceRegistration extends Model
     ];
     protected $table = 'ds_register_log';
 
+    /**
+     * Notes:
+     * Date: 2018/8/22 0022
+     * Time: 下午 5:12
+     * @param $map
+     * @throws
+     */
+    public function mobileMessageList($map)
+    {
+        $data = self::where($map)->field('name,uid,phone,age')->select();
+        return json_decode(json_encode($data), true);
+    }
 }

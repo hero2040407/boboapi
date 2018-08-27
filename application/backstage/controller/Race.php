@@ -18,7 +18,6 @@ class Race  extends Common
         }
         
         return ['code' =>1,'data'=>$race->detail() ];
-        
     }
     
     
@@ -141,7 +140,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1,$money=0
+            $group_or_person=1,$money=0,$upload_type=1
             )
     {
         
@@ -162,9 +161,8 @@ class Race  extends Common
         }
        
         
-        
-        $race =new \BBExtend\backmodel\Race();
-        $race->title = $title;
+       $race =new \BBExtend\backmodel\Race();
+       $race->title = $title;
        $race->is_active=0;
        $race->proxy_id = $proxy_id;
        $race->register_start_time = intval( $register_start_time );
@@ -180,7 +178,8 @@ class Race  extends Common
        $race->reward = strval( $reward );
        $race->online_type = $online_type;
        $race->money = floatval( $money );
-        $race->save();
+       $race->upload_type = $upload_type;
+       $race->save();
         
         
         $group_id=0;
@@ -212,7 +211,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1 , $money=0
+            $group_or_person=1 , $money=0,$upload_type=1
             
             )
     {
@@ -265,7 +264,7 @@ class Race  extends Common
         $race->reward = strval( $reward );
         $race->online_type = $online_type;
         $race->money = floatval( $money );
-        
+        $race->upload_type = $upload_type;
         
         
         $race->save();
@@ -322,10 +321,8 @@ class Race  extends Common
         
         return ['code'=>1];
     }
-    
-    
-    
-    
+
+
 }
 
 

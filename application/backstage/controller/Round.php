@@ -3,7 +3,6 @@ namespace app\backstage\controller;
 
 use BBExtend\Sys;
 use BBExtend\DbSelect;
-
 use BBExtend\fix\MessageType;
 
 /**
@@ -25,7 +24,7 @@ use BBExtend\fix\MessageType;
  * @author Administrator
  *
  */
-class Round  extends Common
+class Round extends Common
 {
     /**
      * redis 的到期时间，暂定为一个星期。
@@ -170,7 +169,6 @@ class Round  extends Common
         }
         
         return intval($score);
-        
     }
     
     /**
@@ -185,7 +183,6 @@ class Round  extends Common
         $key = $this->get_key_round($field_id);
         $result = $redis->get($key);
         return intval( $result );
-        
     }
     
     
@@ -245,7 +242,6 @@ class Round  extends Common
 //         $fail_key    = $this->get_key_calling_fail_list($field_id, $round);
          $arr = $redis->lrange( $success_key ,0,-1 );
          return in_array($uid, $arr);
-         
     }
     private function check_in_fail_list($uid,$field_id,$round)
     {
@@ -379,8 +375,7 @@ class Round  extends Common
         if ( $success_list ) {// 晋级列表需倒序。
             $success_list = array_reverse($success_list);
         }
-        
-        
+
         $current = $redis->get( $key_current );
      //   Sys::debugxieye($waiting_list);
         $temp1 = $this->arr_convert($field_id, $waiting_list);
@@ -389,9 +384,9 @@ class Round  extends Common
         $temp4 = $this->arr_convert($field_id, $current);
         
         return [
-                'waiting_list' => $temp1 ,
+                'waiting_list' => $temp1,
                 'ignore_list'  => $temp2,
-                'success_list'  => $temp3 ,
+                'success_list'  => $temp3,
                 'current'  => $temp4,
                 'round'    => $this->get_round($field_id),
         ];
@@ -525,7 +520,7 @@ class Round  extends Common
                                     'field_id'   => $field_id,
                                     'round'   => $round,
                             ],
-                            time()  )
+                            time())
                     );  
             // 记录日志
             $client->add(
@@ -683,7 +678,6 @@ class Round  extends Common
         }else {
             return ['code'=>400,'message'=>'被叫号码不存在' ];
         }
-        
     }
     
    
@@ -750,7 +744,7 @@ class Round  extends Common
      * @param int $status 1成功， 2失败
      * @return 
      */
-    public function comment( $field_id, $status )
+    public function comment( $field_id, $score )
     {
         $db = Sys::get_container_db_eloquent();
         $redis = Sys::get_container_redis();
@@ -780,15 +774,14 @@ class Round  extends Common
         
         $round = $this->get_round($field_id);
         $key_score = $this->get_key_score_hash($field_id, $round);
+
         if ($status==1) {
             
             $redis->hSet($key_score, $uid, 1);
             $redis->setTimeout( $key_score, $this->get_expire() );
             $redis->rPush( $success_key, $uid );
             $redis->setTimeout( $success_key, $this->get_expire() );
-            
-            
-            
+
         }else {
             $redis->hSet($key_score, $uid, 2);
             $redis->setTimeout( $key_score, $this->get_expire() );
@@ -913,12 +906,7 @@ class Round  extends Common
         return ['code'=>1,];
         
     }
-    
-    
-   
-  
-    
-        
+
 }
 
 

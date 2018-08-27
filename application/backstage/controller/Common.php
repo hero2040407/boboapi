@@ -24,7 +24,6 @@ class Common extends Controller
             return DbSelect::fetchRow($db, $sql,[ $id ]);
         }
         return null;
-        
     }
     
     
@@ -118,7 +117,7 @@ class Common extends Controller
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS' );
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, authKey, sessionId" );
         
-        $request = Request::instance( );
+        $request = Request::instance();
         $controller = $request->controller();
         $this->param = $request->param();
 
@@ -127,11 +126,10 @@ class Common extends Controller
 
         
         
-        if ($action != 'login' && $action != 'logout' ) { // login是个例外
+        if ($action != 'login' && $action != 'logout') { // login是个例外
 
             $my_id = \BBExtend\Session::get_my_id();
-
-
+//            $my_id = -1;
             if ($my_id !== false) { // 已登录
 //                 Sys::debugxieye(213);
 
@@ -145,7 +143,7 @@ class Common extends Controller
                 
         //        Sys::debugxieye(33341);
                 
-                $result = \app\backstage\model\Auth::check_route($role,  strtolower( $controller), strtolower(  $action ) );
+                $result = \app\backstage\model\Auth::check_route($role, strtolower( $controller), strtolower(  $action ) );
                 if ($result ===false ) {
 //                     Sys::debugxieye(214);
             //        Sys::debugxieye(33342);
@@ -156,7 +154,7 @@ class Common extends Controller
            //     Sys::debugxieye(33343);
                 
                 // 第2步，请求参数注入。
-                $result = \app\backstage\model\Auth::check_param($role, $my_id,  strtolower( $controller), strtolower(  $action ) );
+                $result = \app\backstage\model\Auth::check_param($role, $my_id, strtolower( $controller), strtolower(  $action ) );
                 if ($result ===false ) {
                     //                     Sys::debugxieye(214);
              //       Sys::debugxieye(33344);
@@ -171,9 +169,6 @@ class Common extends Controller
 //                     Sys::debugxieye(input('param.uid' ));
 //                     Sys::debugxieye(input('get.uid' ));
 //                     Sys::debugxieye(input('post.uid' ));
-                    
-                    
-                    
                 }
                 
                 
@@ -183,9 +178,14 @@ class Common extends Controller
                 $arr = array('code'=>402,'message'=>'未登录错误');
                 exit(json_encode($arr));
             }
-        
+//            $GLOBALS['userInfo'] = $this->get_userinfo();
         }
     
+    }
+
+    public function _empty()
+    {
+        $this->error('此路由不存在');
     }
 
 }

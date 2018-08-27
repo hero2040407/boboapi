@@ -202,7 +202,13 @@ and exists(
                     'user/index',
                     'user/detail',
                     'user/export_list',
-                    
+                    'generateform/index',
+                    'generateform/save',
+
+                    'group/index',
+                    'group/save',
+                    'registration/index',
+                    'registration/read',
                     'race/detail',
                     'field/edit',
                     'field/add',
@@ -231,7 +237,22 @@ and exists(
                     'user/index',
                     'user/detail',
                     'user/export_list',
-                    
+
+                    'match/index',
+                    'match/signin',
+                    'match/read',
+                    'match/late',
+                    'match/marking',
+                    'match/advance',
+                    'match/finishround',
+                    'match/finisharea',
+
+                    'mobilemessage/sendtoadvance',
+                    'mobilemessage/index',
+                    'mobilemessage/notified',
+
+                    'group/index',
+                    'registration/read',
                     'field/edit',
                     'field/index',
                     'race/detail',

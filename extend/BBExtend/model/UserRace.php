@@ -24,6 +24,14 @@ class UserRace extends User
         $uid = $row['uid'];
         $race_id = $row['zong_ds_id'];
         $datestr = date("Ymd");
+        $race  = \BBExtend\model\Race::find( $race_id );
+        
+        if ( time() > $race->end_time  ) {
+            $this->success_count=0;
+            return true;
+        }
+        
+        
 //         $race = Race::find( $row['zong_ds_id'] );
 //         $user = User::find( $uid );
 
