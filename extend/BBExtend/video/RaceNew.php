@@ -488,7 +488,7 @@ class RaceNew
            $last_id = $row['id'];
             
             // 谢烨，找到原来的记录，补充。
-            if ( $race->upload_type==1  ) {// 1表示必传视频。
+           if ( $race->upload_type==1 || $race->upload_type==3  ) {// 1表示必传视频。
                 $sql="update ds_register_log set 
                   has_pay=?,has_upload=?,
                  record_url=?, record_cover=? where id = ? ";

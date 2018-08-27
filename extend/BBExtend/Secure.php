@@ -37,6 +37,16 @@ class Secure
     public $message;
     public $flush_token;
     
+    private function is_debug(){
+        if ( !Sys::is_product_server()  ) {
+            return 0;
+        }
+            
+            
+            return false;
+    }
+    
+    
     // token生存时间，暂定半小时。
     private function get_token_live(){
         return 60 * 30;
@@ -370,6 +380,9 @@ class Secure
             }
             // 如果他请求关键接口。
             if ( $this->is_secure_api($url ) ) {
+                if ($this->is_debug()) {
+                  Sys::debugxieye("没有token");
+                }
                 $this->set_http_header_code(self::code_token_need_login);
                 $this->output(['code' =>self::code_token_need_login, 'message'=> '需要登录'  ]);
             }
@@ -390,6 +403,9 @@ class Secure
                 
                 if (   !$this->is_login_api($url) ) {
                     // 假如redis里没有，则说明 传来的是错的。重新登录。
+                    if ($this->is_debug()) {
+                      Sys::debugxieye(" 有token，但错误。 ");
+                    }
                     $this->set_http_header_code(self::code_token_need_login);
                     $this->output(['code' =>self::code_token_need_login , 'message'=> '校验错误'  ]);
                 }
@@ -452,7 +468,9 @@ class Secure
                 
                 if ( $this->is_secure_api($url ) ) {
                     if ( $uid <=0 ) {
-                    
+                        if ($this->is_debug()) {
+                          Sys::debugxieye("uid <0,但是token正确。");
+                        }
                         $this->set_http_header_code(self::code_token_need_login);
                         $this->output(['code' =>self::code_token_need_login, 'message'=> '需要登录'  ]);
                     }
