@@ -422,7 +422,7 @@ class RaceNew
                 $has_pay = 0;
             } else {
                 // 谢烨，这里检查一下。
-                if ($race->upload_type==1 || $race->upload_type==2 ) {
+                if ($race->upload_type==1 || $race->upload_type==2 ) {// 填基本信息，且必传视频，当然has_pay=0
                     $has_pay=0;
                 }else {
                 

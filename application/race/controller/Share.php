@@ -101,7 +101,7 @@ class Share extends Controller
         }
         $reward='';
         if ( $race->reward ) {
-            $reward = "排行榜前5名的用户，可获得". $race->reward;
+            $reward =  $race->reward;
         }
         
         $sql="select count(*) from  ds_register_log 

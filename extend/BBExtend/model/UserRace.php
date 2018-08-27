@@ -230,7 +230,7 @@ class UserRace extends User
         // 当前用户参加大赛的状态。
         if ($self_uid) {
           $join_arr = \BBExtend\video\RaceStatus::get_status_v5($self_uid, $race_id);
-          $result['self_join_status'] = $join_arr['status'] ;
+          $result['self_join_status'] = $join_arr['data']['status'] ;
           $result['self_role'] = 1;
         }else {
             $result['self_join_status'] = 0 ;
