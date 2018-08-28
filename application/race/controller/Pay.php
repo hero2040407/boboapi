@@ -21,6 +21,29 @@ class Pay  extends Controller
        echo $this->fetch();
    }
    
+   
+   public function order_for_like($ds_id ,$self_uid, $target_uid,$openid)
+   {
+       
+       
+       //Sys::display_all_error();
+       //①、获取用户openid
+       $tools = new \JsApiPay();
+       //  $openId = $tools->GetOpenid();
+       
+       $help = new HelpWeb();
+       $order = $help->tongyi_xiadan_for_race_like($ds_id,  $self_uid, $target_uid,   $openid);
+       if ($order['code']==1) {
+           $jsApiParameters = $tools->GetJsApiParameters($order['data']);
+           
+           $temp = json_decode($jsApiParameters  ,1  );
+           
+           return  ['code' =>1,'data' =>  $temp ] ;
+       }else {
+           return  ['code' =>0,'message' =>  $order['message'] ] ;
+       }
+   }
+   
    public function create_html_v5($uid, $ds_id,$openid)
    {
        

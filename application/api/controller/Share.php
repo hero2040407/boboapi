@@ -40,6 +40,11 @@ class Share
     // type=1 普通，type=2 分享投票，type=3 波币购买投票。
     public function like($uid,$race_id ,$self_uid, $token,$type=1  )
     {
+        if ( in_array($type, [1,2, 3]) ) {
+            return ['code'=>0,'message' => 'type error' ];
+        }
+        
+        
         $db = Sys::get_container_dbreadonly();
         $selfuser = \BBExtend\model\User::find($self_uid );
         if (!$selfuser) {

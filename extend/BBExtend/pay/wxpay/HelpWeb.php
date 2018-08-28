@@ -102,10 +102,61 @@ class HelpWeb
             // 大赛。
               return $this->pay($result['out_trade_no'], $result['transaction_id'], $result['total_fee']);
             }
+            
+            if (preg_match('#^DL#', $result['out_trade_no'])) {
+                // 大赛。
+                return $this->pay_like($result['out_trade_no'], $result['transaction_id'], $result['total_fee']);
+            }
+            
         }
         
          return $this->success;
     }
+    
+    
+    
+    
+    
+    
+    /**
+     * 201808，给大赛报名者点赞。付钱点赞。
+     * @param unknown $out_trade_no 我们自己的订单号，bb_buy
+     */
+    public function pay_like($out_trade_no, $trade_no, $money_fen)
+    {
+        
+        $order = \BBExtend\model\DsMoneyPrepare::where( 'order_no' , $out_trade_no )->first();
+        
+//         $order = DashangPrepare::where('order_no' , $out_trade_no)->first()  ;
+        if (!$order) {
+            exit();
+        }
+        //要点：查重复，如果已经处理过，则直接返回成功
+        if ($order->has_success == 1) {
+            return $this->success;
+        }
+        //否则，应该把订单表中置为成功！
+        $order->has_success= 1 ;
+        $order->third_name= 'wx';
+        $order->third_serial= $trade_no ;
+        $order->money_fen= $money_fen ;
+        $order->save();
+        
+        // 下面怎办，调用一个类的方法，设置最终结局。
+        $json = $order->json_info;
+        $json = json_decode($json,1);
+        
+        // 谢烨，现在获取此人的个人信息。
+        $info2 = new \BBExtend\model\UserRace();
+        $result = $info2->like ($json['self_uid'] , $json['log_id'] , 4);
+        
+        
+        return $this->success;
+    }
+    
+    
+    
+    
     
     /**
      * 打赏付钱 的异步回调。
@@ -364,6 +415,134 @@ class HelpWeb
         }
     
     }
+    
+    
+    
+    
+    
+    
+    /**
+     *
+     * 大赛报名-统一下单，
+     *  注意：另外还有一个打赏。
+     *
+     * app支付统一下单，目的是获得prepay_id
+     *
+     * uid,phone,ds_id，openid
+     * 谢烨，应该防止用户重复报名交钱，这个功能最后再做！
+     *
+     *
+     */
+    public function tongyi_xiadan_for_race_like($ds_id=0,  $self_uid=0, $target_uid=0,  $openid='')
+    {
+        //  Sys::debugxieye("wx:1");
+        $trade = $this->get_order_no_for_race_like();
+        $uid =  $self_uid= intval($self_uid);
+        $phone = '';
+        $openid = strval($openid);
+        
+        $ds_id = intval($ds_id);
+        $db = Sys::get_container_db();
+        $sql ="select * from ds_race where is_active=1 and id = {$ds_id}";
+        $ds  = $db->fetchRow($sql);
+        if (!$ds) {
+            return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];
+        }
+        
+        $sql ="select id from ds_register_log where zong_ds_id=? and uid=?";
+        $log_id  = $db->fetchOne($sql,[ $ds_id, $target_uid ] );
+        if (!$log_id) {
+            return ['code'=> -1 , 'message' => '大赛未报名，不可打赏' ];
+        }
+        
+        
+        
+        $price = 1;
+        $price_fen = strval( intval( $price * 100 )); //转成分。
+        if ( in_array($uid, get_test_userid_arr() ) ){
+            $price = 0.01;
+            $price_fen = strval( intval( $price * 100 )); //转成分。
+        }
+        
+        
+        $time = time();
+        //         if ($time < $ds['register_start_time'] || $time > $ds['register_end_time'] ) {
+        //             return ['code'=> -3 , 'message' => '报名时间错误，当前不可报名' ];
+        //         }
+        // 这里暂未做防止重复报名的代码。
+        // 。。。。。。。。。。 请勿删除此行
+        // 。。。。。。。。。。 请勿删除此行
+        // 。。。。。。。。。。 请勿删除此行
+        
+        $input = new \WxPayUnifiedOrder();
+        $input->SetBody("怪兽bobo大赛打赏");// 谢烨，这是显示在用户个人的微信支付流水里的title，很重要。
+        $input->SetAttach("怪兽bobo");     //作用未知
+        $input->SetOut_trade_no( $trade );
+        $input->SetTotal_fee( $price_fen  ); // 付款金额，注意是分！！
+        $input->SetTime_start(date("YmdHis"));
+        $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetGoods_tag("test");
+        $input->SetNotify_url("https://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
+        $input->SetTrade_type("JSAPI");
+        $input->SetOpenid($openid); //必须设置，否则无法支付。
+        $return_arr = \WxPayApi::unifiedOrder($input);
+        //  Sys::debugxieye("wx:2，统一下单openid：{$openid}");
+        //        appid    appid
+        //        mch_id  商户号
+        //        nonce_str  随机字符串
+        //        prepay_id 预生成订单号
+        //        result_code SUCCESS
+        //        return_code SUCCESS
+        //        return_msg  OK
+        //        sign  1...................
+        //        trade_type JSAPI
+        try{
+            if ($return_arr['return_code'] =='SUCCESS') {
+                if ($return_arr['result_code']  =='SUCCESS' ) {
+                    //    Sys::debugxieye("wx:success");
+                    $prepare = new DsMoneyPrepare();
+                    $prepare->data('uid',$uid  );
+                    $prepare->data('phone',$phone  );
+                    $prepare->data('order_no',$trade  );
+                    $prepare->data('ds_id',$ds_id  );
+                    $prepare->data('create_time',time()  );
+                    $prepare->data('has_success',0  );
+                    
+                    $prepare->data('openid',$openid  );
+                    
+                    $temp = [
+                        'open_id'=>$openid,
+                            'ds_id' =>$ds_id,
+                            'self_uid' =>$self_uid,
+                            'target_uid' =>$target_uid,
+                            'log_id' =>$log_id,
+                    ];
+                    $prepare->data( 'json_info', json_encode($temp)   );
+                    
+                    // $prepare->data('third_serial',$return_arr['prepay_id']  );
+                    $prepare->save();
+                    
+                    
+                    return ['code'=>1, 'data'=> $return_arr ];
+                }else {
+                    //      Sys::debugxieye("wx:4");
+                    return ['code'=>-6, 'message'=> $return_arr['err_code_des']];
+                }
+                
+            }else {
+                //    Sys::debugxieye("wx:5");
+                return ['code'=>-5, 'message'=> $return_arr['return_msg']];
+            }
+        }catch(\Exception $s) {
+            //  Sys::debugxieye("wx:6");
+            return ['code'=>-4, 'message'=> '未知的错误异常。'];
+        }
+        
+    }
+    
+    
+    
+    
     
     
     
@@ -696,7 +875,13 @@ class HelpWeb
         return $orderSn;
     }
     
-    
+    public static function get_order_no_for_race_like()
+    {
+        $orderSn = "DL"  .date("Ymd") .
+        strtoupper(dechex(date('m'))) . date('d') . substr(time(), -5) .
+        substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
+        return $orderSn;
+    }
    
     
 }

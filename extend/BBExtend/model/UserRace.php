@@ -118,6 +118,35 @@ class UserRace extends User
             }
         }
         
+        
+        
+        
+        if ($type==4) {
+            
+                $bind=[
+                        'register_log_id' =>$log_id,
+                        'create_time' =>time(),
+                        'self_uid' =>$self_uid,
+                        'target_uid' =>$uid,
+                        'race_id' => $race_id,
+                        'count' =>1,
+                        'datestr' =>$datestr,
+                        'type' =>4,
+                        
+                ];
+                $db->insert("ds_like",$bind);
+                $this->success_count=1;
+                $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
+                $db->query($sql,[ $log_id ]);
+                return true;
+                
+           
+        }
+        
+        
+        
+        
+        
         return false;
         
     }

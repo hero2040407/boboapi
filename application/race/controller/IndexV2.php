@@ -13,7 +13,7 @@ use BBExtend\BBRecord;
 use BBExtend\common\User;
 use BBExtend\common\Image;
 use BBExtend\common\PicPrefixUrl;
-
+use BBExtend\video\RaceStatus;
 /**
  * 大赛首页 app
  * 
@@ -110,6 +110,9 @@ order by id desc limit 1";
             $info=null;
         }
         
+        $arr= RaceStatus::get_status_v5($uid, $ds_id);
+        $status = $arr['data']['status'];
+        
         if ($result['data']['status']==2  ) {
             $db = Sys::get_container_dbreadonly();
             $sql="select id,address,title,status from ds_race_field where race_id = ? and is_valid=1 ";
@@ -138,11 +141,13 @@ order by id desc limit 1";
             return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config , 
                     'upload_type'=> $race->upload_type,
                     'money' => $race->money,
+                    'status' =>$status,
                     'online_type'=> $race->online_type  ]  ];
         } else {
             return ['code'=>1, 'data'=> ['list' => [],'info'=>$info,'config'=>$config ,
                     'upload_type'=> $race->upload_type,
                     'money' => $race->money,
+                    'status' =>$status,
                     'online_type'=> $race->online_type  ]  ];
         }
         
