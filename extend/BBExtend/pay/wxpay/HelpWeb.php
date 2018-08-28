@@ -420,11 +420,11 @@ class HelpWeb
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetGoods_tag("test");
-        $input->SetNotify_url("https://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
+        $input->SetNotify_url("http://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openid); //必须设置，否则无法支付。
         $return_arr = \WxPayApi::unifiedOrder($input);
-        Sys::debugxieye("wx:2");
+        Sys::debugxieye("wx:2，统一下单openid：{$openid}");
         //        appid    appid
         //        mch_id  商户号
         //        nonce_str  随机字符串

@@ -150,6 +150,8 @@ class UserRace extends User
         $race_info['race_name'] = $race->title;
         $race_info['ticket_count'] = $row['ticket_count'];
         $race_info['upload_type'] = $race->upload_type;
+        $race_info['badge'] = $user->get_badge();
+        
         
         
         $result['race_info'] =$race_info ;

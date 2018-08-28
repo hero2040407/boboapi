@@ -43,11 +43,11 @@ class Pay  extends Controller
        //②、统一下单
        $uid=1;
        $phone='1';
-       $ds_id=1;
+       $ds_id=202;
     //   Sys::debugxieye("wx:00");
        $help = new HelpWeb();
     //   Sys::debugxieye("wx:01");
-       $order = $help->tongyi_xiadan_demo($ds_id, $uid, $phone, $openId);
+       $order = $help->tongyi_xiadan_v5($ds_id, $uid, $phone, $openId);
     //   Sys::debugxieye("wx:02");
        if ($order['code']==1) {
       //     Sys::debugxieye("wx:03");
