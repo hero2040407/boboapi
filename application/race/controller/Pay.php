@@ -21,9 +21,37 @@ class Pay  extends Controller
        echo $this->fetch();
    }
    
-   
-  public function create_html($uid, $ds_id,$openid)
+   public function create_html_v5($uid, $ds_id,$openid)
    {
+       
+      
+       //Sys::display_all_error();
+       //①、获取用户openid
+       $tools = new \JsApiPay();
+       //  $openId = $tools->GetOpenid();
+       
+       $help = new HelpWeb();
+       $order = $help->tongyi_xiadan_v5($ds_id, $uid, '', $openid);
+       if ($order['code']==1) {
+           $jsApiParameters = $tools->GetJsApiParameters($order['data']);
+           
+           $temp = json_decode($jsApiParameters  ,1  );
+           
+           return  ['code' =>1,'data' =>  $temp ] ;
+       }else {
+           return  ['code' =>0,'message' =>  $order['message'] ] ;
+       }
+   }
+   
+   
+   
+  public function create_html($uid, $ds_id,$openid,$v=1)
+   {
+      
+       if ($v>=5) {
+           return $this->create_html($uid, $ds_id, $openid);
+       }
+       return  ['code' =>0,'message' =>  '方法不存在'] ;
       //Sys::display_all_error();
        //①、获取用户openid
        $tools = new \JsApiPay();

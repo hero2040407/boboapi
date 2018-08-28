@@ -194,6 +194,7 @@ class HelpWeb
     {
         $order = DsMoneyPrepare::get(['order_no' => $out_trade_no]);
         if (!$order) {
+            Sys::debugxieye('回调，订单不存在');
             exit();
         }
         //要点：查重复，如果已经处理过，则直接返回成功
@@ -365,6 +366,117 @@ class HelpWeb
     }
     
     
+    
+    /**
+     *
+     * 大赛报名-统一下单，
+     *  注意：另外还有一个打赏。
+     *
+     * app支付统一下单，目的是获得prepay_id
+     *
+     * uid,phone,ds_id，openid
+     * 谢烨，应该防止用户重复报名交钱，这个功能最后再做！
+     *
+     *
+     */
+    public function tongyi_xiadan_v5($ds_id=0,  $uid=0, $phone='', $openid='')
+    {
+        //  Sys::debugxieye("wx:1");
+        $trade = $this->get_order_no();
+        $uid = intval($uid);
+        $phone = strval($phone);
+        $openid = strval($openid);
+        
+        $ds_id = intval($ds_id);
+        $db = Sys::get_container_db();
+        $sql ="select * from ds_race where is_active=1 and id = {$ds_id}";
+        $ds  = $db->fetchRow($sql);
+        if (!$ds) {
+            //     return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];
+        }
+        
+        $price = $ds['money'];
+        $price_fen = strval( intval( $price * 100 )); //转成分。
+        if ( in_array($uid, get_test_userid_arr() ) ){
+            $price = 0.01;
+            $price_fen = strval( intval( $price * 100 )); //转成分。
+        }
+        
+        
+        $time = time();
+        //         if ($time < $ds['register_start_time'] || $time > $ds['register_end_time'] ) {
+        //             return ['code'=> -3 , 'message' => '报名时间错误，当前不可报名' ];
+        //         }
+        // 这里暂未做防止重复报名的代码。
+        // 。。。。。。。。。。 请勿删除此行
+        // 。。。。。。。。。。 请勿删除此行
+        // 。。。。。。。。。。 请勿删除此行
+        
+        $input = new \WxPayUnifiedOrder();
+        $input->SetBody("怪兽bobo大赛报名");// 谢烨，这是显示在用户个人的微信支付流水里的title，很重要。
+        $input->SetAttach("怪兽bobo");     //作用未知
+        $input->SetOut_trade_no( $trade );
+        $input->SetTotal_fee( $price_fen  ); // 付款金额，注意是分！！
+        $input->SetTime_start(date("YmdHis"));
+        $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetGoods_tag("test");
+        $input->SetNotify_url("https://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
+        $input->SetTrade_type("JSAPI");
+        $input->SetOpenid($openid); //必须设置，否则无法支付。
+        $return_arr = \WxPayApi::unifiedOrder($input);
+        Sys::debugxieye("wx:2");
+        //        appid    appid
+        //        mch_id  商户号
+        //        nonce_str  随机字符串
+        //        prepay_id 预生成订单号
+        //        result_code SUCCESS
+        //        return_code SUCCESS
+        //        return_msg  OK
+        //        sign  1...................
+        //        trade_type JSAPI
+        try{
+            if ($return_arr['return_code'] =='SUCCESS') {
+                if ($return_arr['result_code']  =='SUCCESS' ) {
+                    Sys::debugxieye("wx:success");
+                    $prepare = new DsMoneyPrepare();
+                    $prepare->data('uid',$uid  );
+                    $prepare->data('phone',$phone  );
+                    $prepare->data('order_no',$trade  );
+                    $prepare->data('ds_id',$ds_id  );
+                    $prepare->data('create_time',time()  );
+                    $prepare->data('has_success',0  );
+                    
+                    $prepare->data('openid',$openid  );
+                    // $prepare->data('third_serial',$return_arr['prepay_id']  );
+                    $prepare->save();
+                    
+                    
+                    return ['code'=>1, 'data'=> $return_arr ];
+                }else {
+                    Sys::debugxieye("wx:4");
+                    return ['code'=>-6, 'message'=> $return_arr['err_code_des']];
+                }
+                
+            }else {
+                Sys::debugxieye("wx:5");
+                return ['code'=>-5, 'message'=> $return_arr['return_msg']];
+            }
+        }catch(\Exception $s) {
+            Sys::debugxieye("wx:6");
+            return ['code'=>-4, 'message'=> '未知的错误异常。'];
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      *
      * 大赛报名-统一下单，
@@ -379,7 +491,7 @@ class HelpWeb
      */
     public function tongyi_xiadan_demo($ds_id=0,  $uid=0, $phone='', $openid='')
     {
-        Sys::debugxieye("wx:1");
+      //  Sys::debugxieye("wx:1");
         $trade = $this->get_order_no();
         $uid = intval($uid);
         $phone = strval($phone);
