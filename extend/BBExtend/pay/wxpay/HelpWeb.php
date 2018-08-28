@@ -274,7 +274,7 @@ class HelpWeb
         $uid = $order->getData('uid');
         $ds_id = $order->getData('ds_id');
         $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
-        Sys::debugxieye("支付回调大赛报名：uid：{$uid},ds_id:{$ds_id}"  );
+    //    Sys::debugxieye("支付回调大赛报名：uid：{$uid},ds_id:{$ds_id}"  );
         
         if ($row) {
             
@@ -499,6 +499,7 @@ class HelpWeb
                     $prepare->data('zong_ds_id',$ds_id  );
                     $prepare->data('create_time',time()  );
                     $prepare->data('has_success',0  );
+                    $prepare->data('type',2  );
                     
                     $prepare->data('openid',$openid  );
                     
@@ -611,6 +612,8 @@ class HelpWeb
                     $prepare->data('order_no',$trade  );
                     $prepare->data('ds_id',$ds_id  );
                     $prepare->data('zong_ds_id',$ds_id  );
+                    $prepare->data('type',1  );
+                    
                     $prepare->data('create_time',time()  );
                     $prepare->data('has_success',0  );
                     
