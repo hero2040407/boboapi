@@ -44,6 +44,7 @@ class Api extends Controller
      */
     public function wxpay_notify()
     {
+      //  Sys::debugxieye("传统微信支付回调");
         $help = new \BBExtend\pay\wxpay\Help();
         $result = $help->receive_post();
         echo $result;

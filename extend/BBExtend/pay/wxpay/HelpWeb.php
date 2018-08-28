@@ -420,11 +420,11 @@ class HelpWeb
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetGoods_tag("test");
-        $input->SetNotify_url("http://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
+        $input->SetNotify_url("https://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openid); //必须设置，否则无法支付。
         $return_arr = \WxPayApi::unifiedOrder($input);
-        Sys::debugxieye("wx:2，统一下单openid：{$openid}");
+      //  Sys::debugxieye("wx:2，统一下单openid：{$openid}");
         //        appid    appid
         //        mch_id  商户号
         //        nonce_str  随机字符串
@@ -437,7 +437,7 @@ class HelpWeb
         try{
             if ($return_arr['return_code'] =='SUCCESS') {
                 if ($return_arr['result_code']  =='SUCCESS' ) {
-                    Sys::debugxieye("wx:success");
+                //    Sys::debugxieye("wx:success");
                     $prepare = new DsMoneyPrepare();
                     $prepare->data('uid',$uid  );
                     $prepare->data('phone',$phone  );
@@ -453,16 +453,16 @@ class HelpWeb
                     
                     return ['code'=>1, 'data'=> $return_arr ];
                 }else {
-                    Sys::debugxieye("wx:4");
+              //      Sys::debugxieye("wx:4");
                     return ['code'=>-6, 'message'=> $return_arr['err_code_des']];
                 }
                 
             }else {
-                Sys::debugxieye("wx:5");
+            //    Sys::debugxieye("wx:5");
                 return ['code'=>-5, 'message'=> $return_arr['return_msg']];
             }
         }catch(\Exception $s) {
-            Sys::debugxieye("wx:6");
+          //  Sys::debugxieye("wx:6");
             return ['code'=>-4, 'message'=> '未知的错误异常。'];
         }
         
