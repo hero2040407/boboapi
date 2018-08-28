@@ -392,7 +392,7 @@ class HelpWeb
         $sql ="select * from ds_race where is_active=1 and id = {$ds_id}";
         $ds  = $db->fetchRow($sql);
         if (!$ds) {
-            //     return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];
+                 return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];
         }
         
         $price = $ds['money'];

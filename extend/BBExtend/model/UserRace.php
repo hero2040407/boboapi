@@ -155,7 +155,7 @@ class UserRace extends User
         $result['race_info'] =$race_info ;
         
         
-        $upload=null;
+        $upload=[];
         
         // 下面 是上传内容。
         if ( $race->upload_type == 1 || $race->upload_type == 3) {

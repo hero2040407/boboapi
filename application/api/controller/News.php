@@ -121,6 +121,7 @@ class News
         $sql ="
                 select * from ds_race
                 where is_active=1 and parent=0
+and id not between 198 and 203
                 order by has_end asc, sort desc , start_time desc
                 limit {$page},1
                 ";

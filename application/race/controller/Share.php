@@ -128,10 +128,11 @@ select count(*)   from ds_like
                      and type=1
                      and self_uid=?
                      and target_uid=?
+                     and datestr=?
                 
 ";
         //$this->list = $join_id_arr = $db->fetchCol($sql,[ $race_id ]);
-        return $db->fetchOne($sql,[ $race_id, $self_uid, $target_uid ]);
+        return $db->fetchOne($sql,[ $race_id, $self_uid, $target_uid,date("Ymd") ]);
     }
     
     

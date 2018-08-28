@@ -25,6 +25,7 @@ class Secure
     const key_token_all='limit:ip:all:token'; // 所有token，但我会修剪。无限时。
     const key_prefix_uid_set='limit:ip:uid:token'; // 所有token，但我会修剪。2小时。
     
+    const key_prefix_uid_str ='limit:ip:uid:token:uid_str';// 为测试方便，uid包含一个token，有实效时间。不准确，因为未记录失效
     
     // 谢烨，我要记录uid 在一小时内的token次数。
     
@@ -204,6 +205,10 @@ class Secure
         $redis->setEx( $key,$this->get_token_live() , $uid  );
         $key = self::key_prefix_token_short . $temptoken;
         $redis->setEx( $key, $this->get_token_live( ) - $this->get_short_token_live() , '1'  );
+        
+        // xieye 201809 记录uid
+        $redis->setEx( self::key_prefix_uid_str.$uid, 60* 60 , $temptoken );
+        
         
         $this->set_http_header_temptoken($temptoken);
         return $temptoken;

@@ -49,7 +49,7 @@ class Pay  extends Controller
    {
       
        if ($v>=5) {
-           return $this->create_html($uid, $ds_id, $openid);
+           return $this->create_html_v5($uid, $ds_id, $openid);
        }
        return  ['code' =>0,'message' =>  '方法不存在'] ;
       //Sys::display_all_error();

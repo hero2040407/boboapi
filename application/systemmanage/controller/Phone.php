@@ -23,7 +23,10 @@ class Phone
        echo $uid." token : " . $token;
        
           
-       
+       $redis = Sys::getredis2();
+        $key = 'limit:ip:uid:token:uid_str'.$uid;
+        echo "<br>";
+        echo "临时token： ". $redis->get($key);
            
    }
        

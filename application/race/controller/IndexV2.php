@@ -137,10 +137,12 @@ order by id desc limit 1";
             
             return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config , 
                     'upload_type'=> $race->upload_type,
+                    'money' => $race->money,
                     'online_type'=> $race->online_type  ]  ];
         } else {
             return ['code'=>1, 'data'=> ['list' => [],'info'=>$info,'config'=>$config ,
                     'upload_type'=> $race->upload_type,
+                    'money' => $race->money,
                     'online_type'=> $race->online_type  ]  ];
         }
         
@@ -285,17 +287,35 @@ order by id desc limit 1";
         $uid = intval($uid);
         $range = intval($range);
         
+        
+        
         $db = Sys::get_container_db();
         $sql ="
                 select * from ds_race
                 where is_active=1 and parent=0
+                and id not between 198 and 203
                 order by has_end asc, sort desc , start_time desc
                 limit {$startid},{$length}
                 ";
+        if ($uid &&  \BBExtend\model\User::is_test( $uid ) ) {
+            //\BBExtend\model\User::is_test( $uid );
+            $sql ="
+                select * from ds_race
+                where is_active=1 and parent=0
+                
+                order by has_end asc, sort desc , start_time desc
+                limit {$startid},{$length}
+                ";
+            
+        }
+        
+        
         if ($range==3) { // 已参加,视频上传未审核和已通过审核
             $sql ="
             select * from ds_race
             where is_active=1 and level=1
+and id not between 198 and 203
+
               and exists(select 1 from ds_register_log where
                  ds_register_log.uid = {$uid}
                  and ds_register_log.zong_ds_id =  ds_race.id
@@ -310,6 +330,8 @@ order by id desc limit 1";
             $sql ="
             select * from ds_race
             where is_active=1 and parent=0
+and id not between 198 and 203
+
             and register_start_time < {$time}
             and register_end_time > {$time}
             and not exists(select 1 from ds_register_log where
