@@ -115,6 +115,9 @@ class Secure
     
     public function white_list_url($url){
        // if (preg_match( '#^#' ))
+       if ( preg_match("#^/race/notify#", $url )  ) {
+           return true;
+       }
         return false;
     }
     

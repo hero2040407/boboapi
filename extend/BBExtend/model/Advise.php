@@ -38,18 +38,18 @@ class Advise extends Model
     public static function pay_process($out_trade_no, $paytype, $transaction_id, $total_fee)
     {
         //注意，这里查的是临时表
-        Sys::debugxieye("hui diao :1");
+     //   Sys::debugxieye("hui diao :1");
         $prepare = BaomingOrderPrepare::where( 'serial', $out_trade_no )->first();
         
         if (!$prepare) {
             exit();
         }
-        Sys::debugxieye("hui diao :12");
+       // Sys::debugxieye("hui diao :12");
         //要点：查重复，如果已经处理过，则直接返回成功
         if ($prepare->is_success == 1) {
             return self::success_by_third($paytype);
         }
-        Sys::debugxieye("hui diao :13");
+       // Sys::debugxieye("hui diao :13");
         //否则，应该把订单表中置为成功！
         $prepare->is_success=1;
         $prepare->third_name= $paytype;
@@ -60,7 +60,7 @@ class Advise extends Model
         $prepare->update_time = time();
         
         $prepare->save();
-        Sys::debugxieye("hui diao :14");
+       // Sys::debugxieye("hui diao :14");
         $order = new BaomingOrder();
         $order->uid = $prepare->uid;
         $order->ds_id = $prepare->ds_id;
@@ -79,7 +79,7 @@ class Advise extends Model
         $advise_id = $prepare->ds_id;
         $advise = \BBExtend\model\Advise::find($advise_id);
         
-        Sys::debugxieye("hui diao :15");
+       // Sys::debugxieye("hui diao :15");
         // xieye，现在要绑定一张试镜卡。
         $db = Sys::get_container_db();
         
@@ -109,12 +109,12 @@ and online_type=1
                 'bind_time'=>time(),
                 
             ], $where);
-            Sys::debugxieye("hui diao :xunhuan");
+        //    Sys::debugxieye("hui diao :xunhuan");
             if ($rows_affected) {
               break;
             }
         }
-        Sys::debugxieye("hui diao :16");
+      //  Sys::debugxieye("hui diao :16");
       
         
         // 现在，插入到报名表当中。
@@ -130,7 +130,7 @@ and online_type=1
         
         // 调用通用的接口。
         self::public_advise_join($advise_id, $role_id, $uid, $card_id);
-        Sys::debugxieye("hui diao :17");
+      //  Sys::debugxieye("hui diao :17");
         // 返回阿里和微信支付 各自的回复。
         return self::success_by_third($paytype);
         
@@ -389,6 +389,7 @@ select count(*) from bb_advise_join
         $audition_card_type=0;
         
         $card_name='';
+        $card_name_for_index='';
         if ($this->audition_card_type) {
             $sql="select name,bigtype from  bb_audition_card_type where id=?";
             $row = $db->fetchRow($sql,[ $this->audition_card_type ]);

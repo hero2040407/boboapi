@@ -487,6 +487,11 @@ class RaceNew
             $row = DbSelect::fetchRow($db2, $sql,[ $uid, $ds_id ]);
            $last_id = $row['id'];
             
+           // 谢烨修bug，201808，已支付成功的情况
+           if ( $row['has_pay'] ==1 ) {
+               $has_pay=1;
+           }
+           
             // 谢烨，找到原来的记录，补充。
            if ( $race->upload_type==1 || $race->upload_type==3  ) {// 1表示必传视频。
                 $sql="update ds_register_log set 

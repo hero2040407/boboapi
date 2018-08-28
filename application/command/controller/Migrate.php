@@ -48,7 +48,7 @@ class Migrate
         flush();
         
         
-        $url = "http://bobot.yimwing.com/systemmanage/migrate/index";
+        $url = "https://bobot.yimwing.com/systemmanage/migrate/index";
         $result = file_get_contents($url);
         echo "\n\n---   ". $url."   ---\n" .  br2nl(  $result);
         echo "\n---------\n";

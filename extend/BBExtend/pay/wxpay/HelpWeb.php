@@ -64,6 +64,7 @@ class HelpWeb
         }catch (\Exception $e) {
             return '<xml><return_code><![CDATA[FAIL]]></return_code></xml>';
         }
+      //  Sys::debugxieye( json_encode($result ) );
         
 //         {"appid":"wx190ef9ba551856b0",
 //         "attach":"\u602a\u517dbobo",
@@ -139,7 +140,7 @@ class HelpWeb
         $order->has_success= 1 ;
         $order->third_name= 'wx';
         $order->third_serial= $trade_no ;
-        $order->money_fen= $money_fen ;
+        $order->money= $money_fen /100;
         $order->save();
         
         // 下面怎办，调用一个类的方法，设置最终结局。
@@ -273,6 +274,8 @@ class HelpWeb
         $uid = $order->getData('uid');
         $ds_id = $order->getData('ds_id');
         $row = DbSelect::fetchRow($db, $sql,[ $uid, $ds_id ]);
+        Sys::debugxieye("支付回调大赛报名：uid：{$uid},ds_id:{$ds_id}"  );
+        
         if ($row) {
             
             $db::table('ds_register_log')->where('uid', $uid)->where('zong_ds_id', $ds_id)->update(
@@ -284,6 +287,8 @@ class HelpWeb
             $msg_help = new \BBExtend\video\RaceNew();
             $msg_help->insert_post($ds_id, $row['ds_id'], $uid);
             
+        }else {
+            Sys::debugxieye("不正常的情况，支付回调，没找到大赛的报名人。");
         }
         
         
@@ -464,15 +469,9 @@ class HelpWeb
             $price_fen = strval( intval( $price * 100 )); //转成分。
         }
         
-        
         $time = time();
         //         if ($time < $ds['register_start_time'] || $time > $ds['register_end_time'] ) {
         //             return ['code'=> -3 , 'message' => '报名时间错误，当前不可报名' ];
-        //         }
-        // 这里暂未做防止重复报名的代码。
-        // 。。。。。。。。。。 请勿删除此行
-        // 。。。。。。。。。。 请勿删除此行
-        // 。。。。。。。。。。 请勿删除此行
         
         $input = new \WxPayUnifiedOrder();
         $input->SetBody("怪兽bobo大赛打赏");// 谢烨，这是显示在用户个人的微信支付流水里的title，很重要。
@@ -487,15 +486,7 @@ class HelpWeb
         $input->SetOpenid($openid); //必须设置，否则无法支付。
         $return_arr = \WxPayApi::unifiedOrder($input);
         //  Sys::debugxieye("wx:2，统一下单openid：{$openid}");
-        //        appid    appid
-        //        mch_id  商户号
-        //        nonce_str  随机字符串
-        //        prepay_id 预生成订单号
-        //        result_code SUCCESS
-        //        return_code SUCCESS
-        //        return_msg  OK
-        //        sign  1...................
-        //        trade_type JSAPI
+    
         try{
             if ($return_arr['return_code'] =='SUCCESS') {
                 if ($return_arr['result_code']  =='SUCCESS' ) {
@@ -505,6 +496,7 @@ class HelpWeb
                     $prepare->data('phone',$phone  );
                     $prepare->data('order_no',$trade  );
                     $prepare->data('ds_id',$ds_id  );
+                    $prepare->data('zong_ds_id',$ds_id  );
                     $prepare->data('create_time',time()  );
                     $prepare->data('has_success',0  );
                     
@@ -539,10 +531,6 @@ class HelpWeb
         }
         
     }
-    
-    
-    
-    
     
     
     
@@ -622,6 +610,7 @@ class HelpWeb
                     $prepare->data('phone',$phone  );
                     $prepare->data('order_no',$trade  );
                     $prepare->data('ds_id',$ds_id  );
+                    $prepare->data('zong_ds_id',$ds_id  );
                     $prepare->data('create_time',time()  );
                     $prepare->data('has_success',0  );
                     
