@@ -767,7 +767,7 @@ and id not between 198 and 203
             $t['status_word_color'] =0x575757;
         }
         
-        $status_arr = \BBExtend\video\RaceStatus::get_status($uid, $v['id']);
+        $status_arr = \BBExtend\video\RaceStatus::get_status_v5($uid, $v['id']);
         $t['status'] = $status_arr['data']['status'];
         $t['describe'] = $status_arr['data']['describe'];
         
