@@ -70,14 +70,27 @@ class RaceStatus
         // 分几种情况。
         if ( $result ) {
             if ($result['has_pay']) {
-                // 已参加
+                // 已参加,未上传
                 
                 if ((!$result['pic_id_list']) &&  (!$result['record_url'])  ) {
                     return ['code'=>1,'data' => ['status'=>7,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
                 }
-                
-                return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
-                
+                // 下面3种情况都是，已上传，已参加，的各种情况，最好是5 ，全部完成。
+                    if ( $result['upload_checked']==2 ) {
+                        return ['code'=>1,'data' => ['status'=>8,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
+                    }
+                    
+                    // 
+                    if ( $result['upload_checked']==0 ) {
+                        return ['code'=>1,'data' => ['status'=>9,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
+                    }
+                    // 无论是否必传，只有这种情况，才是真正的已参加。status=5
+                    if ( $result['upload_checked']==1 ) {
+                      //return ['code'=>1,'data' => ['status'=>8,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
+                    //}
+                // 已参加。
+                         return ['code'=>1,'data' => ['status'=>5,'describe'=>'','is_count_down' =>0,'money_fen'=>$money_fen,  ]  ]; //
+                    }
                 
                 
             }else { // 继续支付

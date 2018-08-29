@@ -180,7 +180,7 @@ class UserRace extends User
         $race_info['ticket_count'] = $row['ticket_count'];
         $race_info['upload_type'] = $race->upload_type;
         $race_info['badge'] = $user->get_badge();
-        
+        $race_info['upload_checked'] = $row['upload_checked'];
         
         
         $result['race_info'] =$race_info ;

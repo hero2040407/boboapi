@@ -80,5 +80,6 @@
 | ds_register_log | ds_id |  <font color=red>注意，是赛区id</font>  |  
 | ds_register_log | qudao_id |  该字段废止。xieye2018 05  |  
 | ds_register_log | is_finish |  1最终晋级，2最终淘汰  |  
+| ds_register_log | upload_checked |  0:上传图片或视频未审核，1已审核,2审核未通过  |  
 
 
