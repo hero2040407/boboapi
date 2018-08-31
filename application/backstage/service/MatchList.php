@@ -8,9 +8,11 @@
 namespace app\backstage\service;
 
 use BBExtend\backmodel\RaceRecord;
+use BBExtend\Sys;
+use think\cache\driver\File;
 
-// 1等待状态 2评分状态 3过号状态
-// update_time > 0过号 ,delete_time > 0评分 ,都为空 等待
+// 0 等待 1过号 2打分 3晋级 4淘汰
+// update_time > 0 过号状态 ,delete_time > 0 评分状态 ,都为空 等待状态
 class MatchList
 {
     private $area_id;
@@ -19,6 +21,7 @@ class MatchList
     private $age;
     private $sex;
     private $list;
+    private $lost_uids;
     private static $instance;
 
     public static function getInstance()
@@ -62,12 +65,9 @@ class MatchList
     }
 
     /**
-     * Notes:
-     * Date: 2018/8/20 0020
-     * Time: 上午 9:32
-     * @throws
+     * @param mixed $map
      */
-    public function setMatchList()
+    public function setMap()
     {
         if (!empty($this->round))
             $map['round'] = $this->round;
@@ -81,10 +81,40 @@ class MatchList
         }
         if ($this->sex !== null)
             $map['sex'] = $this->sex;
+        if ($this->lost_uids)
+            $map['uid'] = ['in',$this->lost_uids];
 
+        return $map;
+    }
+
+    /**
+     * Notes: 获取年龄组
+     * Date: 2018/8/30 0030
+     * Time: 下午 4:51
+     * @throws
+     * @return mixed
+     */
+    public function getAgeGroup()
+    {
+        return (new File())->get($this->race_id.'age_group');
+    }
+
+    /**
+     * Notes:
+     * Date: 2018/8/20 0020
+     * Time: 上午 9:32
+     * @throws
+     */
+    public function setMatchList()
+    {
+
+        $map = $this->setMap();
         $record_model = new RaceRecord();
-        $data = $record_model->where($map)->order('id')->select();
+
+        $data = $record_model->where($map)->order('sort')->select();
+
         $this->list = json_decode(json_encode($data),true);
+
         return $this->list;
     }
 
@@ -139,15 +169,44 @@ class MatchList
      */
     public function scoreIndex()
     {
-        $array = (array)$this->list;
-        $data = [];
-        $list = array_filter($array, function($map){
-            return $map['delete_time'] > 0;
-        });
-        array_multisort(array_column($list,'score'), SORT_DESC, $list);
-        foreach ($list as $item){
-            $data[] = $item;
+//        $array = (array)$this->list;
+//        $data = [];
+//        $list = array_filter($array, function($map){
+//            return $map['delete_time'] > 0;
+//        });
+//        array_multisort(array_column($list,'score'), SORT_DESC, $list);
+//        foreach ($list as $item){
+//            $data[] = $item;
+//        }
+        $map = $this->setMap();
+        $record_model = new RaceRecord();
+
+        $data = $record_model->field('*,max(id) as id,avg(score) as avg,sum(score) as sum')
+            ->where($map)->group('uid')->order('sum desc')->select();
+
+//        if ($this->age){
+//            $type = Sys::get_container_redis()->get($this->area_id.$this->age.'finish');
+//            if ($type == 1) $data['type'] = 1;
+//        }
+        $ids = [];
+        foreach ($data as $item){
+            $ids[] = $item['id'];
         }
+        if ($ids){
+            $list = $record_model->where([
+                'id' => ['in',$ids],
+                'delete_time' => ['>',0]
+            ])->select();
+
+            foreach ($data as &$item){
+                foreach ($list as $value){
+                    if ($item['uid'] == $value['uid']){
+                        $item['score'] = $value['score'];
+                    }
+                }
+            }
+        }
+
         return $data;
     }
 
@@ -186,17 +245,56 @@ class MatchList
      * Time: 上午 10:07
      * @throws
      */
-    public function setRound()
+    public function setRound($round = '')
     {
         $record_model = new RaceRecord();
-
-        $map['area_id'] = $this->area_id;
-        if (!empty($this->race_id)){
-            $map['race_id'] = $this->race_id;
-            $map['area_id'] = 0;
-        }
-        $map['age'] = ['between',$this->age];
+        $map = $this->setMap();
         $this->round = $record_model->where($map)->order('round desc')->value('round');
+        if ($round){
+            $advance_uids = $record_model->where([
+                'area_id' => $this->area_id,
+                'round' => $this->round
+            ])->group('uid')->column('uid');
+
+            $this->round = $round;
+
+            $last_round_uids = $record_model->where([
+                'area_id' => $this->area_id,
+                'round' => $round
+            ])->group('uid')->column('uid');
+
+            $this->lost_uids = array_diff($advance_uids, $last_round_uids);
+        }
         return $this->round;
+    }
+
+    /**
+     * Notes: 获取区域淘汰uids
+     * Date: 2018/8/20 0020
+     * Time: 下午 4:55
+     */
+    public function lostIndex()
+    {
+        $model = new RaceRecord();
+        $data = [];
+        $map = $this->setMap();
+        $advance_uids = $model->where([
+            'area_id' => $this->area_id,
+            'round' => $this->round
+        ])->group('uid')->column('uid');
+
+        $all_uids = $model->where([
+            'area_id' => $this->area_id,
+            'round' => 1
+        ])->group('uid')->column('uid');
+
+        $diff_uids = array_diff($advance_uids, $all_uids);
+
+        if ($diff_uids){
+            $map['uid'] = ['in', $diff_uids];
+            $data = $model->field('*,avg(score) as avg,sum(score) as sum')
+                ->where($map)->group('uid,round')->order('avg desc')->select();
+        }
+        return $data;
     }
 }

@@ -140,7 +140,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1,$money=0,$upload_type=1
+            $group_or_person=1,$money=0,$upload_type=1,$reward=''
             )
     {
         
@@ -179,6 +179,7 @@ class Race  extends Common
        $race->online_type = $online_type;
        $race->money = floatval( $money );
        $race->upload_type = $upload_type;
+       $race->reward = $reward;
        $race->save();
         
         
@@ -211,8 +212,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1 , $money=0,$upload_type=1
-            
+            $group_or_person=1 , $money=0,$upload_type=1,$reward=''
             )
     {
   //      Sys::display_all_error();
@@ -265,7 +265,7 @@ class Race  extends Common
         $race->online_type = $online_type;
         $race->money = floatval( $money );
         $race->upload_type = $upload_type;
-        
+        $race->reward = $reward;
         
         $race->save();
         

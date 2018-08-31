@@ -9,20 +9,19 @@ use BBExtend\DbSelect;
 class User   extends Common
 {
     
-    public function export_list($ds_id=null, $field_id=null,$proxy_id=null)
+    public function export_list($ds_id = null, $field_id = null, $proxy_id = null,
+                                $match_status = '', $sex = '')
     {
-        
-        
         $per_page=10000;
         $page=1;
-        
-        
-        $time = time();
-        
+
+        $map = ['has_dangan' => 1, 'has_pay' => 1];
+        if ($sex !== '') $map['sex'] = $sex;
+        if ($match_status) $map['race_status'] = $match_status;
+
         $db = Sys::get_container_db_eloquent();
         $paginator = $db::table('ds_register_log')
-        ->where('has_pay',1)
-        ->where('has_dangan',1)
+        ->where($map)
         ->whereExists(function ($query) {
             $db = Sys::get_container_db_eloquent();
             $query->select($db::raw(1))
@@ -166,32 +165,35 @@ exists(
      * 
      * @return number[]|string[]|number[]
      */
-    public function index($per_page=10,$page=1,$ds_id=null, $field_id=null,$proxy_id=null) 
+    public function index($per_page=10,$page=1,$ds_id=null, $field_id=null,$proxy_id=null,
+                            $uid = '', $phone = '', $name = '', $match_status = '')
     {
-        $time = time();
-        
+        $map = ['has_dangan' => 1, 'has_pay' => 1];
+
+        if (!empty($uid)) $map['uid'] = $uid;
+        if (!empty($phone)) $map['phone'] = $phone;
+        if (!empty($name)) $map['name'] = $name;
+//        不传为全部 11为签到 12为晋级 13为淘汰
+        if ($match_status) $map['race_status'] = $match_status;
+
         $db = Sys::get_container_db_eloquent();
         $paginator = $db::table('ds_register_log')
-        ->where('has_pay',1)
-        ->where('has_dangan',1)
+        ->where($map)
         ->whereExists(function ($query) {
             $db = Sys::get_container_db_eloquent();
             $query->select($db::raw(1))
             ->from('ds_race')
             ->whereRaw('ds_race.level=1')
             ->whereRaw('ds_race.id = ds_register_log.zong_ds_id')
-            ->whereRaw('ds_race.online_type=2')
-            ;
-        })
-        ->select(['id',]);
+            ->whereRaw('ds_race.online_type=2');
+        })->select(['id',]);
 //         $paginator =  $paginator->where( "parent",0 );// 确保只查大赛
         
         if ($ds_id != null ) {
             $paginator =  $paginator->where( "zong_ds_id", $ds_id );
 //             $paginator =  $paginator->where( "end_time",">", time() );
         }
-       
-        
+
         if ($field_id != null ) {
             $paginator =  $paginator->where( "ds_id", $field_id );
         }
@@ -224,10 +226,7 @@ exists(
         return ['code'=>1, 'data'=>['list' => $new, 
                 'pageinfo' =>$this->get_pageinfo($paginator, $per_page) ] ];
     }
-    
-  
-    
-        
+
 }
 
 

@@ -245,7 +245,9 @@ and exists(
                     'match/marking',
                     'match/advance',
                     'match/finishround',
+                    'match/finishfield',
                     'match/finisharea',
+                    'match/scoreindex',
 
                     'mobilemessage/sendtoadvance',
                     'mobilemessage/index',

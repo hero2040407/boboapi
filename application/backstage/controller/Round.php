@@ -744,7 +744,7 @@ class Round extends Common
      * @param int $status 1成功， 2失败
      * @return 
      */
-    public function comment( $field_id, $score )
+    public function comment( $field_id, $status )
     {
         $db = Sys::get_container_db_eloquent();
         $redis = Sys::get_container_redis();

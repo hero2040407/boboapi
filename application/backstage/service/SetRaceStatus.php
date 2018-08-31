@@ -7,10 +7,13 @@
  */
 namespace app\backstage\service;
 
+use BBExtend\backmodel\RaceField;
 use BBExtend\backmodel\RaceRecord;
+use BBExtend\backmodel\RaceRecordHistory;
 use BBExtend\backmodel\RaceRegistration;
-
-
+use think\cache\driver\File;
+use BBExtend\Sys;
+use think\Exception;
 
 // 设置ds_register_log 中的 race_status
 class SetRaceStatus
@@ -21,6 +24,7 @@ class SetRaceStatus
     const ADVANCE = 12;
 // 淘汰
     const LOST = 13;
+
     private $advanceUids;
     private $race_id;
     private $area_id;
@@ -42,22 +46,54 @@ class SetRaceStatus
 
     public function setRaceId($race_id)
     {
-        $this->area_id = $race_id;
+        $this->race_id = $race_id;
         return $this;
     }
 
+    public function getGroup($race_id, $age)
+    {
+        $groups = (new File())->get($race_id.'age_group');
+
+        foreach($groups as $item){
+            $ages = explode(',',$item['age']);
+            if ($age >= $ages[0] && $age <= $ages[1]){
+                return $item;
+            }
+        }
+        return false;
+    }
     /**
      * Notes: 签到设置
      * Date: 2018/8/20 0020
      * Time: 下午 4:06
      * @param $id
+     * @throws
      */
-    public function signIn($id)
+    public function signIn($id, $user_info)
     {
+
+        $redis = Sys::get_container_redis();
+
+        $group = $this->getGroup($user_info['zong_ds_id'], $user_info['age']);
+
+        if (!$group) return false;
+
+        $redis->incr($user_info['ds_id'].$group['age'].'sign');
+
+        $sort = $redis->get($user_info['ds_id'].$group['age'].'sign');
+
         $this->log_model->save(
             ['race_status' => self::SING_IN, 'signin_time' =>time()],
             ['id' => $id]
         );
+
+//        $max_sort =  (new RaceRecord())->where([
+//            'area_id' => $user_info['ds_id'],
+//            'age' => ['between',$age_group]
+//        ])->order('sort desc')->value('sort');
+//        if ($max_sort) return $max_sort;
+
+        return $group['key'].$sort;
     }
 
     /**
@@ -102,7 +138,7 @@ class SetRaceStatus
     public function lost()
     {
         $this->log_model->where([
-            'race_status' => self::SING_IN,
+            'race_status' => ['<',self::ADVANCE],
             'ds_id' => $this->area_id
         ])->update([
             'race_status' => self::LOST
@@ -160,5 +196,56 @@ class SetRaceStatus
                 'is_finish' => 0
             ]
         );
+    }
+
+    /**
+     * Notes: 清楚所有redis数据
+     * Date: 2018/8/29 0029
+     * Time: 下午 2:14
+     * @throws
+     */
+    public function clearAllRedis()
+    {
+        $groups = (new File())->get($this->race_id.'age_group');
+        if ($groups){
+            foreach ($groups as $item){
+                Sys::get_container_redis()->del($this->race_id.$item['age'].'sign');
+            }
+        }
+    }
+
+    /**
+     * Notes: 把数据移动到历史数据中
+     * Date: 2018/8/29 0029
+     * Time: 下午 6:46
+     * @param $type //类型 0 同一场比赛 1 新的比赛
+     * @throws
+     */
+    public function moveToRecordHistory($type = 0)
+    {
+        $history_model = new RaceRecordHistory();
+        $model = new RaceRecord();
+
+        $data = $model->field('*,avg(score) as score')->where([
+            'area_id' => $this->area_id,
+            'delete_time' => ['>',0]
+        ])->group('uid,round')->select();
+
+        $list = json_decode(json_encode($data),true);
+
+        $time = $history_model->where('area_id',$this->area_id)->order('time desc')->value('time');
+
+        if ($type){
+            if(!$time) $time = 1;
+            else $time = $time + 1;
+        }
+
+        foreach ($list as &$item){
+            $item['time'] = $time;
+        }
+
+        $res = $history_model->insertAll($list);
+
+        if ($res) $model->where('area_id',$this->area_id)->delete();
     }
 }

@@ -124,6 +124,7 @@ order by like_count desc
                 'current_time' => $time,
                 'min_age' =>$this->min_age,
                 'max_age' =>$this->max_age,
+                'reward' =>$this->reward,
                 'upload_type' => $this->upload_type,
         ];
     }

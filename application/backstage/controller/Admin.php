@@ -10,16 +10,16 @@ use think\Controller;
 
 class Admin  extends Common
 {
-   
+
     private function set_session($row){
-        
+
         \BBExtend\Session::set_my_id($row['id']);
-        
+
     }
-    
+
     private function clean_up_session(){
         \BBExtend\Session::clean_up_my_id();
-        
+
     }
 
     public function getid(){
@@ -30,10 +30,10 @@ class Admin  extends Common
         $this->clean_up_session();
         return ['code'=>1, ];
     }
-    
+
     /**
      * 辅助用，查某个账号是否有有效的大赛，或赛区，
-     * 
+     *
      * @param unknown $admin_row
      * @return boolean
      */
@@ -59,22 +59,22 @@ class Admin  extends Common
         }
         return false;
     }
-    
-    
+
+
     public function login($account, $pwd)
     {
         if (empty($account) || empty( $pwd )  ) {
             return ['code'=>400,'message'=>'账号和密码都不能为空'];
         }
-        
+
         // 谢烨，查出对应的前端权限列表。
-        
+
         if ($account=='admin' && $pwd=='7lxpkdd' ) {
             $this->set_session(['id' => -1 ]);
             return ['code'=>1,'data'=>['role'=> 'admin','auth_list'=> $this->get_auths('admin')  ] ];
-            
+
         }
-        
+
         $db = Sys::get_container_db_eloquent();
         $sql="select * from backstage_admin where is_valid=1 and account=? and pwd=?";
         $row = DbSelect::fetchRow($db, $sql,[ $account, md5( $pwd ) ]);
@@ -84,15 +84,15 @@ class Admin  extends Common
             }else {
                 $auth = 'channel';
             }
-            
+
             // 谢烨，检查是否有有效的赛区。
             $temp = $this->has_valid_field($row);
             if (!$temp) {
                 return ['code'=>400,'message'=>'该账户的对应大赛已经被禁止，您无法登陆。'];
             }
-            
+
             $this->set_session($row );
-            
+
             // 下面是查渠道的大赛id和赛区id。 
             $sql="select * from backstage_admin_race where account_id=?";
             $admin_race = DbSelect::fetchRow($db, $sql,[$row['id']]  );
@@ -101,9 +101,9 @@ class Admin  extends Common
                 $field_id = $admin_race['field_id'];
             }else {
                 $race_id= $field_id = 0;
-                
+
             }
-            
+
             if ($auth=='proxy') {
                 $sql="select id from ds_race where proxy_id=?";
                 $race_id_list = DbSelect::fetchCol($db, $sql,[ $row['id'] ]);
@@ -115,29 +115,29 @@ class Admin  extends Common
                     'field_race_id' =>$race_id,
                     'field_id' => $field_id,
                     'race_id_list' => $race_id_list,// 大赛id数组
-                    'auth_list' =>$this->get_auths($auth),  
-                    
+                    'auth_list' =>$this->get_auths($auth),
+
             ] ];
-            
+
         }else {
             return ['code'=>400,'message'=>'没有找到匹配的账号，请检查账号和密码'];
         }
     }
-    
-    
+
+
     /**
      * 账号列表
-     * 
+     *
      * 权限：
      * admin / index
 index：代理通过parent字段。渠道通过field_id字段。
-     * 
+     *
      * @return number[]|unknown[][][][]
      */
     public function index ($level=null, $is_valid=null,$per_page=10,$page=1,$parent=null,
             $id=null,$field_id=null)
     {
-        
+
        // $db = Sys::get_container_dbreadonly();
          $db = Sys::get_container_db_eloquent();
          // 这里请自己先手动插入一条数据，表结构见前面的文章。
@@ -149,19 +149,19 @@ index：代理通过parent字段。渠道通过field_id字段。
              $paginator =  $paginator->where( "is_valid",$is_valid );
          }
          if ($parent != null ) {
-             $paginator =  $paginator->where( 
+             $paginator =  $paginator->where(
                      function ($query) use ($parent) {
                          $query->where('id', '=', $parent)
                          ->orwhere('parent', '=', $parent);
-                         
+
                      }
-                     
+
                      );
          }
          if ($id != null ) {
              $paginator =  $paginator->where( "id",$id );
          }
-         
+
          if ($field_id != null ) {
              $paginator = $paginator->whereExists(function ($query) use ($db, $field_id) {
                  $query->select($db::raw(1))
@@ -171,19 +171,17 @@ index：代理通过parent字段。渠道通过field_id字段。
                  ;
              });
          }
-         
-         
-         
-         
+
+
          $paginator = $paginator->orderBy('id', 'asc')
            ->paginate($per_page, ['*'],'page',$page);
          $result=[];
          foreach ($paginator as $v) {
-             
+
              $result[]= $v->id;
-             
-         }  
-        
+
+         }
+
         $new=[];
         foreach ( $result as $v ){
             $temp = \BBExtend\model\BackstageAdmin::find( $v );
@@ -191,37 +189,37 @@ index：代理通过parent字段。渠道通过field_id字段。
         }
         return ['code'=>1,'data'=>[ 'list' => $new,
                 'pageinfo' =>$this->get_pageinfo($paginator, $per_page) ]];
-        
+
     }
-   
-    
+
+
     public function add ($account,$realname,$phone, $level,$parent,$field_id=null,$proxy_id=null)
     {
-        
-        if ( !$this->check_add_auth($id,$field_id,$proxy_id )) {
+
+        if ( !$this->check_add_auth($field_id,$proxy_id )) {
             return ['code'=>400,'message'=>'您无权操作'];
         }
-        
-        
+
+
         $parent = intval($parent);
-        
-        if (empty( $account ) || empty( $realname ) || empty( $phone ) || empty( $level )  
+
+        if (empty( $account ) || empty( $realname ) || empty( $phone ) || empty( $level )
                    ) {
             return ['code'=>400,'message'=>'参数不能为空'];
         }
         if ( !in_array( $level,[1,2] ) ) {
             return ['code'=>400,'message'=>'level错误'];
         }
-       
+
         // 账号检查，只允许 字母，数字，下划线。
         if (preg_match('/[^_0-9a-zA-Z]/', $account)      ) {
             return ['code'=>400,'message'=>'账号只能是数字字母下划线组成。'];
         }
-        
+
         if (strlen( $account ) <6 || strlen( $account ) >20 ) {
             return ['code'=>400,'message'=>'账号长度必须6到20位'];
         }
-        
+
         // 账号重复
         $db = Sys::get_container_db_eloquent();
         $sql="select count(*) from backstage_admin where account=?";
@@ -229,41 +227,41 @@ index：代理通过parent字段。渠道通过field_id字段。
         if ($result) {
             return ['code'=>400,'message'=>'不可以重复已有账号'];
         }
-        
+
 //         $check_result = \BBExtend\common\Pwd::check_amdin($pwd);
-     
+
 //         if ( $check_result['code']==0 ) {
 //             return ['code'=>400,'message'=>$check_result['message']];
 //         }
-        
-        
-        
+
+
+
         // realname 只能是汉字。
         if ( !\BBExtend\common\Str::is_all_chinese($realname)     ) {
             return ['code'=>400,'message'=>'真实姓名必须全部汉字'];
         }
-        
+
         if ( !\BBExtend\common\Str::is_valid_phone($phone)  ) {
             return ['code'=>400,'message'=>'手机格式错误'];
         }
-        
+
         if ( $level==1 && $parent>0 ) {
             return ['code'=>400,'message'=>'级别错误'];
         }
-        
+
         if ($level==2 && $parent==0 ) {
             return ['code'=>400,'message'=>'级别错误'];
         }
-        
+
         if ($parent) {
             $sql="select count(*) from backstage_admin where is_valid=1 and id=?";
             $result = DbSelect::fetchOne($db, $sql,[ $parent ]);
             if (!$result) {
                 return ['code'=>400,'message'=>'新建渠道账号的代理商id设置错误'];
             }
-            
+
         }
-        
+
         $pwd = \BBExtend\common\Pwd::create_full_pass();
         $id =  $db::table('backstage_admin')->insertGetId([
              'account'=>$account,
@@ -276,13 +274,13 @@ index：代理通过parent字段。渠道通过field_id字段。
                 'parent' => $parent,
                 'pwd_original' => $pwd,
         ]);
-        
+
         return ['code'=>1,'data'=>['insert_id'=>$id,'pwd'=>$pwd,  ]];
     }
-    
+
     /**
      * 查添加权限。
-     * 
+     *
      * @param unknown $field_id
      * @param unknown $proxy_id
      * @return boolean
@@ -292,7 +290,7 @@ index：代理通过parent字段。渠道通过field_id字段。
         if ($role=='admin') {
             return true;
         }
-        
+
         if ($role=='proxy') {
             return true;
         }
@@ -300,7 +298,7 @@ index：代理通过parent字段。渠道通过field_id字段。
        // $admin = \BBExtend\model\BackstageAdmin::find( $id );
        // return $admin->check_edit_auth($field_id, $proxy_id);
     }
-    
+
     /**
      * 查编辑权限。
      * @param unknown $id
@@ -314,41 +312,41 @@ index：代理通过parent字段。渠道通过field_id字段。
             return true;
         }
         $admin = \BBExtend\model\BackstageAdmin::find( $id );
-        return $admin->check_edit_auth($field_id, $proxy_id);  
+        return $admin->check_edit_auth($field_id, $proxy_id);
     }
-    
-    
-    public function edit ($id, $realname,$phone, $pwd='',$field_id=null,$proxy_id=null )
+
+
+        public function edit ($id, $realname,$phone, $pwd='',$field_id=null,$proxy_id=null )
     {
-        
-        
+
+
         $admin = \BBExtend\model\BackstageAdmin::find( $id );
         if (!$admin) {
             return ['code'=>400,'message'=>'id错误'];
         }
-        
-        
+
+
         if ( !$this->check_edit_auth($id,$field_id,$proxy_id )) {
             return ['code'=>400,'message'=>'您无权操作'];
         }
-        
+
         $admin->realname = $realname;
         $admin->phone = $phone;
-        
-        
+
+
         $result = $admin->edit($pwd);
         if ($result) {
-        
+
            return ['code'=>1,];
         }else {
             return ['code'=>400, 'message' =>$admin->message ];
         }
     }
-    
-    
+
+
     /**
      * 单独设置某个账号有效无效的接口
-     * 
+     *
      * @param number $id
      * @param unknown $is_valid
      * @param unknown $field_id
@@ -356,9 +354,9 @@ index：代理通过parent字段。渠道通过field_id字段。
      * @return number[]|string[]|number[]
      */
     public function edit_valid($id=0, $is_valid,$field_id=null,$proxy_id=null) {
-        
-      
-        
+
+
+
         $db = Sys::get_container_db_eloquent();
         $is_valid = $is_valid ? 1 : 0 ;
         $sql="select count(*) from backstage_admin where id = ? ";
@@ -366,21 +364,21 @@ index：代理通过parent字段。渠道通过field_id字段。
         if (!$result) {
             return ['code'=>400,'message'=>'id错误'];
         }
-        
-        
+
+
         if ( !$this->check_edit_auth($id,$field_id,$proxy_id )) {
             return ['code'=>400,'message'=>'您无权操作'];
         }
-        
-        
+
+
         $db::table('backstage_admin')->where('id' , $id )->update(['is_valid'=>$is_valid]);
         return ['code'=>1, ];
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 }
 
 
