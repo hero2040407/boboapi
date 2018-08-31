@@ -142,7 +142,8 @@ return [
     // 显示错误信息
     'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
-    'exception_handle'       => '',
+    'exception_handle'       => 'app\api\controller\Ex',
+        
         'http_exception_template'    =>  [
                 // 定义404错误的重定向页面地址
              //   404 =>  APP_PATH.'404.html',
@@ -153,12 +154,14 @@ return [
     // | 日志设置
     // +----------------------------------------------------------------------
 
-    'log'                    => [
-        // 日志记录方式，支持 file socket
-        'type' => 'File',
-        // 日志保存目录
-        'path' => LOG_PATH,
-    ],
+        'log'                    => [
+                // 日志记录方式，支持 file socket
+                'type' => 'File',
+                // 日志保存目录
+                'path' => LOG_PATH,
+                'level' =>['error'],
+        ],
+        
 
     // +----------------------------------------------------------------------
     // | Trace设置

@@ -36,8 +36,8 @@ class AuditionHelp
         return [
                 'info_arr' =>$info_arr,
                 'record' =>[
-                        'video_path' =>'http://bobo-sql.oss-cn-beijing.aliyuncs.com/shijing/shijing_liucheng02.mp4',
-                        'pic' =>'http://bobo-sql.oss-cn-beijing.aliyuncs.com/shijing/999c414afdde1de6cf2ed19dd93e65f.png',
+                        'video_path' =>'http://bobo-sql.oss-cn-beijing.aliyuncs.com/shijing/20180831.mp4',
+                        'pic' =>'http://bobo-sql.oss-cn-beijing.aliyuncs.com/shijing/20180831.png',
                         
                 ],
         ];

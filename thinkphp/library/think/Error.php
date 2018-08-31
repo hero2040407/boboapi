@@ -25,13 +25,9 @@ class Error
     public static function register()
     {
         error_reporting(E_ALL);
-        
-        if (PHP_OS != "Linux" ) {
-        
-            set_error_handler([__CLASS__, 'appError']);
-            set_exception_handler([__CLASS__, 'appException']);
-            register_shutdown_function([__CLASS__, 'appShutdown']);
-        }
+        set_error_handler([__CLASS__, 'appError']);
+        set_exception_handler([__CLASS__, 'appException']);
+        register_shutdown_function([__CLASS__, 'appShutdown']);
     }
 
     /**
@@ -63,18 +59,11 @@ class Error
      */
     public static function appError($errno, $errstr, $errfile = '', $errline = 0, $errcontext = [])
     {
-        
-        //谢烨，必须禁止服务器错误。
         $exception = new ErrorException($errno, $errstr, $errfile, $errline, $errcontext);
         if (error_reporting() & $errno) {
             // 将错误信息托管至 think\exception\ErrorException
-            
-            if (PHP_OS=='Linux') {
-                
-            }else {
-              throw $exception;
-            }
-        } else {
+            throw $exception;
+        }else{
             self::getExceptionHandler()->report($exception);
         }
     }
@@ -109,20 +98,24 @@ class Error
     /**
      * Get an instance of the exception handler.
      *
-     * @return Handle
+     * @return \think\exception\Handle
      */
     public static function getExceptionHandler()
     {
         static $handle;
+
         if (!$handle) {
-            // 异常处理handle
-            $class = Config::get('exception_handle');
-            if ($class && class_exists($class) && is_subclass_of($class, "\\think\\exception\\Handle")) {
-                $handle = new $class;
-            } else {
-                $handle = new Handle;
+
+            if ($class = Config::get('exception_handle')) {
+                if (class_exists($class) && is_subclass_of($class, "\\think\\exception\\Handle")) {
+                    $handle = new $class;
+                }
+            }
+            if (!$handle) {
+                $handle = new Handle();
             }
         }
+
         return $handle;
     }
 }

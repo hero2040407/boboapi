@@ -29,23 +29,15 @@ class Temp
        
    }
     
-   public function index2(){
-       echo input("param.aa");
+   public function index2($aa){
+       
+//        throw new \Exception('999');
    }
     
-   public function index($aa=1)
+   public function index()
    {
-       echo 1;
-       $redis = Sys::get_container_redis();
-//        $redis->hSet("key1","key2",'value');
-//        echo $redis->hget('key1','key2');
-       
-       
-       $redis->hMset('key1', ['name'=>'xieye','age'=>20]);
-       dump( $redis->hMget('key1',['name','age']) );
-       
-       //$this->index2();
-       //return ['code'=>1];
+      //echo  get_cfg_var('guaishou.username');
+       return ['code'=>11];
    }
    
     
