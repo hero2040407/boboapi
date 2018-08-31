@@ -4,7 +4,7 @@ use \Illuminate\Database\Eloquent\Model;
 
 use BBExtend\Sys;
 use BBExtend\DbSelect;
-
+use BBExtend\video\RaceStatus;
 
 /**
  * 用户中心，与购买有关的类
@@ -180,8 +180,11 @@ class UserRace extends User
         $race_info['ticket_count'] = $row['ticket_count'];
         $race_info['upload_type'] = $race->upload_type;
         $race_info['badge'] = $user->get_badge();
-        $race_info['upload_checked'] = $row['upload_checked'];
+      //  $race_info['upload_checked'] = $row['upload_checked'];
         
+        $arr= RaceStatus::get_status_v5($uid, $race_id);
+        
+        $race_info['status']=  $arr['data']['status'];
         
         $result['race_info'] =$race_info ;
         

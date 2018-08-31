@@ -118,6 +118,10 @@ class Secure
        if ( preg_match("#^/race/notify#", $url )  ) {
            return true;
        }
+       if ( preg_match("#^/user/user/bind_umeng#", $url )  ) {
+           return true;
+       }
+       
         return false;
     }
     

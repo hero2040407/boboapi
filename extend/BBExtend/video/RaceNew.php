@@ -389,6 +389,22 @@ class RaceNew
         return $last_id;
     }
    
+    private function get_height($addi_info){
+        $info = json_decode($addi_info,1);
+        if ($info && isset( $info['身高'] ) ) {
+            return $info['身高'];
+        }
+        return '';
+    }
+    
+    private function get_weight($addi_info){
+        $info = json_decode($addi_info,1);
+        if ($info && isset( $info['体重'] ) ) {
+            return $info['体重'];
+        }
+        return '';
+    }
+    
     
     private function set_history($uid, $addi_info){
         $info = json_decode($addi_info,1);
@@ -438,25 +454,37 @@ class RaceNew
            $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
            $db->query( $sql,[ $uid,$ds_id ] );
             
-            $db->insert("ds_register_log", [
-                    'ds_id' =>$qudao_id,
-                    'zong_ds_id' => $ds_id,
-                    'uid' =>$uid,
-                    'create_time' => time(),
-                    'money' =>0,// 未支付过，固定0
-                    'phone' => $phone,
-                    'sex' => $sex,
-                    'birthday' => $birthday,
-                    'name' => $name,
-                    'has_pay' => $has_pay,
-                    'has_upload' =>$has_upload,
-                    'has_dangan' =>1, // xieye 20180416 ，这里固定填写为1
-                    'register_info' => $addi_info,
-                    'is_web_baoming' =>1,
-                    'pic' =>$pic,
-                    //'record_url' =>$record_url,
-                    'age' => date("Y") - substr( $birthday,0,4 ),
-            ]);
+           $val_arr = [
+                   'ds_id' =>$qudao_id,
+                   'zong_ds_id' => $ds_id,
+                   'uid' =>$uid,
+                   'create_time' => time(),
+                   'money' =>0,// 未支付过，固定0
+                   'phone' => $phone,
+                   'sex' => $sex,
+                   'birthday' => $birthday,
+                   'name' => $name,
+                   'has_pay' => $has_pay,
+                   'has_upload' =>$has_upload,
+                   'has_dangan' =>1, // xieye 20180416 ，这里固定填写为1
+                   'register_info' => $addi_info,
+                   'is_web_baoming' =>1,
+                   'pic' =>$pic,
+                   //'record_url' =>$record_url,
+                   'age' => date("Y") - substr( $birthday,0,4 ),
+                   
+           ];
+           $height = $this->get_height($addi_info);
+           if ($height) {
+               $val_arr['height'] = $height;
+           }
+           $weight = $this->get_weight($addi_info);
+           if ($weight) {
+               $val_arr['weight'] = $weight;
+           }
+           
+           
+            $db->insert("ds_register_log", $val_arr );
             
             // 谢烨，保存到 历史表里。
             $this->set_history($uid, $addi_info);
@@ -496,12 +524,16 @@ class RaceNew
            if ( $race->upload_type==1 || $race->upload_type==3  ) {// 1表示必传视频。
                 $sql="update ds_register_log set 
                   has_pay=?,has_upload=?,
-                 record_url=?, record_cover=? where id = ? ";
+                 record_url=?, record_cover=?,upload_checked=0 where id = ? ";
                 $db->query( $sql,[ $has_pay, $has_upload, $record_url,$record_pic, $last_id  ] );
             }else {
                 if ( $pic_list  ) {
                     $id_arr=[];
                     $pic_list_arr = explode(',', $pic_list);
+                    
+                    $db2::table('bb_pic')->where('type',1)->where('uid',$uid)
+                      ->where('act_id',$race->id )->delete();
+                    
                     //$temp_id_arr=[];
                     foreach ($pic_list_arr  as $pic2) {
                         $pic2 = trim($pic2);
@@ -521,7 +553,7 @@ class RaceNew
                     $db->update( 'ds_register_log',['pic_id_list' => implode(",", $id_arr ) , 
                             'has_pay' =>$has_pay,
                             'has_upload' =>$has_upload,
-                            
+                            'upload_checked'=>0,
                             
                     ], 'id='.$last_id );
                     

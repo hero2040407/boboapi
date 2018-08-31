@@ -142,6 +142,9 @@ class Login extends BBUser
     // 换token接口
     public function check($uid,$token   ){
         $user_self = \BBExtend\model\User::find( $uid);
+        if (!$user_self) {
+            return ['code'=>-201, 'message' => '' ];
+        }
             if (!$user_self->check_token($token)) {
                 
                 
