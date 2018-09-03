@@ -13,7 +13,7 @@ use think\Config;
 
 class Temp 
 {
-   
+   //
    public function area_list()
    {
        $db = Sys::get_container_db();
@@ -62,7 +62,7 @@ and has_pay=1
    public function index()
    {
       //echo  get_cfg_var('guaishou.username');
-       return ['code'=>11];
+       return ['code'=>11,'data'=>22,'data2'=>['a'=>'bb']];
    }
    
     
