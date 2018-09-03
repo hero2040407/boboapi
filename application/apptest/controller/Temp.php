@@ -13,7 +13,7 @@ use think\Config;
 
 class Temp 
 {
-   //
+   // 
    public function area_list()
    {
        $db = Sys::get_container_db();
