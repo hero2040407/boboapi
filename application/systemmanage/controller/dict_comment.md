@@ -81,5 +81,6 @@
 | ds_register_log | qudao_id |  该字段废止。xieye2018 05  |  
 | ds_register_log | is_finish |  1最终晋级，2最终淘汰  |  
 | ds_register_log | upload_checked |  0:上传图片或视频未审核，1已审核,2审核未通过  |  
+| ds_register_log | has_upload |  0:未上传，1已上传（无论是否审核过）  |  
 
 

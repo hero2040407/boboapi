@@ -446,10 +446,10 @@ class RaceNew
                   $has_pay = 1;
                 }
             }
-            $has_upload=1;
-            if ( $race->upload_type==1 || $race->upload_type==2 ) {
-                $has_upload=0;
-            }
+            $has_upload=0;
+//             if ( $race->upload_type==1 || $race->upload_type==2 ) {
+//                 $has_upload=0;
+//             }
             
            $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
            $db->query( $sql,[ $uid,$ds_id ] );
