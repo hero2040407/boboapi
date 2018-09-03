@@ -12,7 +12,20 @@ namespace app\api\controller;
  */
 use Exception;
 use think\exception\Handle;
+use think\exception\HttpException;
+use think\exception\ValidateException;
 use think\Log;
+
+
+// use Exception;
+use think\App;
+use think\Config;
+use think\Console;
+use think\console\Output;
+use think\Lang;
+// use think\Log;
+use think\Response;
+
 
 
 class Ex extends Handle
@@ -20,16 +33,82 @@ class Ex extends Handle
     
     
     
-    public function render(Exception $e)
+    
+    /**
+     * @param Exception $exception
+     * @return Response
+     */
+    protected function convertExceptionToResponse2(Exception $exception)
     {
+        // 收集异常数据
+        if (App::$debug) {
+            // 调试模式，获取详细的错误信息
+            $data = [
+                    'name'    => get_class($exception),
+                    'file'    => $exception->getFile(),
+                    'line'    => $exception->getLine(),
+                    'message' => $this->getMessage($exception),
+                    'trace'   => $exception->getTrace(),
+                    'code'    => $this->getCode($exception),
+                    'source'  => $this->getSourceCode($exception),
+                    'datas'   => $this->getExtendData($exception),
+                    'tables'  => [
+                            'GET Data'              => $_GET,
+                            'POST Data'             => $_POST,
+                            'Files'                 => $_FILES,
+                            'Cookies'               => $_COOKIE,
+                            'Session'               => isset($_SESSION) ? $_SESSION : [],
+                            'Server/Request Data'   => $_SERVER,
+                            'Environment Variables' => $_ENV,
+                            'ThinkPHP Constants'    => $this->getConst(),
+                    ],
+            ];
+        } else {
+            // 部署模式仅显示 Code 和 Message
+            $data = [
+                    'code'    => $this->getCode($exception),
+                    'message' => $this->getMessage($exception),
+            ];
+            
+            if (!Config::get('show_error_msg')) {
+                // 不显示详细错误信息
+                $data['message'] = Config::get('error_message');
+            }
+        }
         
-        $content = $this->get_err_msg($e);
-        Log::record($content, 'error');
+        //保留一层
+        while (ob_get_level() > 1) {
+            ob_end_clean();
+        }
         
-        return json(['code'=>0,'message' =>'服务器繁忙' ], 200);
+        $data['echo'] = ob_get_clean();
         
+        ob_start();
+        extract($data);
+        include Config::get('exception_tmpl');
+        // 获取并清空缓存
+        $content  = ob_get_clean();
+        $response = new Response($content, 'html');
+        
+        if ($exception instanceof HttpException) {
+            $statusCode = $exception->getStatusCode();
+            $response->header($exception->getHeaders());
+        }
+        
+        if (!isset($statusCode)) {
+            $statusCode = 500;
+        }
+        $response->code($statusCode);
+        return $response;
     }
     
+    
+    private function clear($html)
+    {
+        $html = preg_replace('#<script>.+?</script>#s', '', $html);
+      //  $html = preg_replace( '#^.+?<body>(.+?)</body>.+$#s' , '$1', $html);
+        return $html;
+    }
     
     
     
@@ -83,7 +162,28 @@ class Ex extends Handle
     }
     
     
-  
+    
+    
+    public function render(Exception $e)
+    {
+        
+      
+     
+//         $res = $this->convertExceptionToResponse2($e);
+         $content = $this->get_err_msg($e);
+//    //     $content = $this->clear($content);
+        
+         Log::record($content, 'error');
+
+        
+        return json(['code'=>0,'message' =>'服务器繁忙' ], 200);
+        
+        
+
+    }
+    
+    
+        
     
     
 }

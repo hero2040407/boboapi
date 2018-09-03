@@ -156,7 +156,7 @@ return [
 
         'log'                    => [
                 // 日志记录方式，支持 file socket
-                'type' => 'File',
+                'type' => 'app\api\controller\FileProducion',
                 // 日志保存目录
                 'path' => LOG_PATH,
                 'level' =>['error'],

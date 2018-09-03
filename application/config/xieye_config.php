@@ -21,7 +21,7 @@ return
     // 应用命名空间
     'app_namespace' => 'app',
     // 应用调试模式
-    'app_debug' => true,
+    'app_debug' => false,
     // 应用Trace
     'app_trace' => false,
     // 应用模式状态
@@ -158,7 +158,7 @@ return
     // 显示错误信息
     'show_error_msg' => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
-    'exception_handle' => '',
+    'exception_handle' => 'app\api\controller\Ex',
     
     // +----------------------------------------------------------------------
     // | 日志设置
@@ -171,10 +171,10 @@ return
 //     sql SQL语句，用于SQL记录，只在数据库的调试模式开启时有效
         'log'                    => [
                 // 日志记录方式，支持 file socket
-                'type' => 'File',
+                'type' => 'app\api\controller\FileProducion',
                 // 日志保存目录
                 'path' => LOG_PATH,
-                'level' =>['error','sql'],
+                'level' =>['error','info'],
         ],
     
     // +----------------------------------------------------------------------

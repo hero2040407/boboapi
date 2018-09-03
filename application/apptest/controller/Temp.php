@@ -29,6 +29,31 @@ class Temp
        
    }
     
+   
+   public function index3(){
+       $db = Sys::get_container_db();
+       $sql="
+select ds_id,  count(*) count
+from ds_register_log
+where zong_ds_id=197
+and has_pay=1
+ group by ds_id
+";
+       $result = $db->fetchAll($sql);
+      
+       foreach ($result as $k=> $v) {
+           $sql="select title from ds_race_field where id={$v['ds_id']}";
+           $title = $db->fetchOne($sql);
+           $result[$k]['title']=$title;
+       }
+       foreach ($result as $v) {
+           echo "赛区名:{$v['title']},赛区id:{$v['ds_id']},报名人数：{$v['count']}<br>";
+       }
+       
+      // dump($result);
+   }
+   
+   
    public function index2($aa){
        
 //        throw new \Exception('999');

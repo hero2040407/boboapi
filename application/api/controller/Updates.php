@@ -46,11 +46,11 @@ class Updates
     }
     
     
-    public function detail($updates_id)
+    public function detail($updates_id,$uid=10000)
     {
         $updates = UserUpdates::find( $updates_id );
         $updates->incr_click_count();
-        $temp = $updates->list_info();
+        $temp = $updates->list_info($uid);
         
         return ['code'=>1, 'data' => $temp ];
     }
