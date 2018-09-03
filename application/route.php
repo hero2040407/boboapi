@@ -1,6 +1,7 @@
 <?php
 use think\Route;
 
+Route::rule('v/:v/:a/:b/:c',':a/:b/:c');
 
 // Route::rule('new/:id','apptest/temp/index');
 
