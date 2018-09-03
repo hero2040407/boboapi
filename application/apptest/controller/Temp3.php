@@ -7,32 +7,25 @@ use think\Controller;
 use think\Request;
 
 
-class Temp3 extends  Controller
+class Temp3 
 {
-    public function _initialize(){
-//         session("backstage_islogin",1);
-//         session("backstage_id", 22 );
-        
-        $temp = Request::instance()->param();
-        if ($temp) {
-            foreach ($temp as $k=>$v) {
-               echo "111--{$k}--{$v}<br>";
-               Request::instance()->param([$k => $v ]);
+    
+    function index(){
+        $db = Sys::get_container_db();
+        $db2 = Sys::get_container_dbreadonly();
+        $sql="select * from ds_register_log order by id asc";
+        $query = $db2->query($sql);
+        while($row= $query->fetch()) {
+            if ( !$row['age'] ) {
+                $sql="update ds_register_log set age=? where id=?";
+                $db->query( $sql,[ date("Y"  )- substr( $row['birthday'] ,0,4),  $row['id'] ] );
+                echo date("Y"  )- substr( $row['birthday'] ,0,4);
+                echo "\n";
             }
+//             echo $row['id'];
+//             echo "\n";
+            
         }
-        
-       // dump($temp);
-        
-         Request::instance()->param(['register_id' => 99 ]);
-       // Request::instance()->post(['i' => 112 ]);
-        
-//         Request::instance()->get(['id2' => 339 ]);
-//         Request::instance()->post(['id2' => 3390 ]);
-//         Request::instance()->param(['id2' => 3390 ]);
-//         Request::instance()->param(['field_id' => 33901 ]);
-        
-        
-        //    echo "_initialize<br>";
     }
     
 }

@@ -375,6 +375,7 @@ class RaceNew
                 'weight' => $weight,
                 'is_web_baoming' =>1,
                 'pic' =>$pic,
+                'age' => date("Y") - substr( $birthday,0,4 ),
         ]);
         $last_id = $db->lastInsertId();
         
