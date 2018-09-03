@@ -292,14 +292,23 @@ order by id desc limit 1";
         $uid = intval($uid);
         $range = intval($range);
         
-        
+        $time = time();
+        $public_sql = "
+,case
+ when {$time} > ds_race.end_time then 1
+ when {$time} > ds_race.register_end_time then 2
+ when {$time} > ds_race.register_start_time then 3
+ when {$time} < ds_race.start_time then 4
+ else 0
+ end sort1 
+";
         
         $db = Sys::get_container_db();
         $sql ="
-                select * from ds_race
+                select *{$public_sql} from ds_race
                 where is_active=1 and parent=0
                 and id not between 198 and 203
-                order by has_end asc, sort desc , start_time desc
+                order by sort1 desc,id desc
                 limit {$startid},{$length}
                 ";
         if ($uid &&  \BBExtend\model\User::is_test( $uid ) ) {
@@ -317,23 +326,23 @@ order by id desc limit 1";
         
         if ($range==3) { // 已参加,视频上传未审核和已通过审核
             $sql ="
-            select * from ds_race
+            select *{$public_sql} from ds_race
             where is_active=1 and level=1
 and id not between 198 and 203
 
               and exists(select 1 from ds_register_log where
                  ds_register_log.uid = {$uid}
                  and ds_register_log.zong_ds_id =  ds_race.id
-                 and ds_register_log.has_dangan=1
+                 
                  and ds_register_log.has_pay=1
               )
-            order by has_end asc,sort desc , start_time desc
+            order by sort1 desc,id desc
             limit {$startid},{$length}
             ";
         }
         if ($range==2) { // 能参加, 视频上传后审核失败和未上传过视频
             $sql ="
-            select * from ds_race
+            select *{$public_sql} from ds_race
             where is_active=1 and parent=0
 and id not between 198 and 203
 
@@ -342,10 +351,10 @@ and id not between 198 and 203
             and not exists(select 1 from ds_register_log where
                  ds_register_log.uid = {$uid}
                  and ds_register_log.zong_ds_id =  ds_race.id
-                 and ds_register_log.has_dangan=1
+                 
                  and ds_register_log.has_pay=1
               )
-            order by has_end asc,sort desc , start_time desc
+            order by sort1 desc,id desc
             limit {$startid},{$length}
             ";
         }
