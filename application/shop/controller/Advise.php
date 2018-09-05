@@ -293,6 +293,7 @@ and type_id =?
         
         if ( in_array($uid, get_test_userid_arr() )  ) {
             $money_fen=1;
+            $money=0.01;
         }
         $price_fen = strval( $money_fen); //转成分。
         $title = $advise->title;
