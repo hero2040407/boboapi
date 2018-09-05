@@ -10,6 +10,7 @@ use \Michelf\MarkdownExtra;
  */
 class Dochtml
 {
+    const post_png ='http://resource.guaishoubobo.com/public/brandshop/post.png';
     
     private static function has_post($file)
     {
@@ -49,7 +50,7 @@ class Dochtml
             
             $post='';
             if ( self::has_post($file) ) {
-                $post = ' <img src="/public/post.png" />';
+                $post = ' <img src="' . self::post_png . '" />';
             }
             
             return "<li><a {$style_str} href='/shop/doc/index/name/".urlencode($name).
@@ -74,7 +75,7 @@ class Dochtml
                 
                 $post='';
                 if ( self::has_post($file) ) {
-                    $post = ' <img src="/public/post.png" />';
+                    $post = ' <img src="' . self::post_png . '" />';
                 }
                 
                 return "<li><a  {$style_str} href='/shop/doc/index2/name/".urlencode($name).

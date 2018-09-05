@@ -57,13 +57,15 @@ class Doc  extends Controller
     public function index($name='')
     {
        
-        
+        $post_png ='http://resource.guaishoubobo.com/public/brandshop/post.png';
         
         //首页最简单，只需调 模板
         if (!$name) {
             $this->assign('right_list', Dochtml::get_right());
             $this->assign('middle_list', Dochtml::get_middle());
             $this->assign('left_list', Dochtml::get_left());
+            $this->assign('post_png', $post_png);
+            
            echo $this->fetch();
         }
         else {
