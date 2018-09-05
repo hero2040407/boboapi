@@ -48,7 +48,7 @@ class Robotnews
         }
         
         $people_arr=[];
-        for ($i=0;$i<$people_count*2;$i++ ) {
+  //      for ($i=0;$i<$people_count*2;$i++ ) {
            $sql="
 SELECT t1.uid
 FROM bb_users AS t1 inner JOIN 
@@ -60,18 +60,22 @@ ORDER BY t1.uid LIMIT 1
              $uid = $dbzend->fetchOne($sql);
              if ($uid) 
                  $people_arr[]= $uid;
-        }
+    //    }
         
         $rand = mt_rand(1,100);
-        if ($rand < 80) {
+        if ($rand < 70) {
             $time = time() - 7*24 * 3600;
         }
         if ($rand < 90) {
-            $time = time() - 30*24 * 3600;
+            $time = time() - 2* 30*24 * 3600;
         }else {
             $time = time() - 3 * 30*24 * 3600;
         }
-        $temp_click_count = mt_rand(20000,32000);
+        $temp_click_count = 400000;
+        
+        $record_count=20;
+        
+        // 请注意，这个count只是最大数量，实际不一定有。
         $sql="
           select * from web_article 
 where is_remove=0
@@ -95,17 +99,13 @@ limit {$record_count}
             $record_arr = $dbzend->fetchAll($sql);
 //         }
         
-        
+          $people_arr=[1];
         
         foreach ($record_arr as $record ) {
-            shuffle($people_arr );
-            
             $i=0;
-            foreach ($people_arr as $uid) {
+         //   foreach ($people_arr as $uid) {
                 $i++;
-                if ($i> $people_count) {
-                    break;
-                }
+                
                 
 //                 $db::table('bb_moive_view_log')->insert( [
 //                         'uid' => intval($uid),
@@ -115,7 +115,15 @@ limit {$record_count}
 //                         'create_time' => time(),
 //                         'is_robot' =>1,
 //                 ]);
-                $look_random = mt_rand(10,100);
+
+                // 首先，根据该新闻当前点击量，和 要求的最大点击量相比，是否需要处理。
+                $current_click_count = $record['click_count'];
+                $max_click_count = \BBExtend\user\MaxCount::get_max('news',  $record['id']);
+                if ($current_click_count > $max_click_count) {
+                    continue;
+                }
+                
+                $look_random = mt_rand(10,200);
                 $db::table('web_article')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);
@@ -129,7 +137,7 @@ limit {$record_count}
                 
                 // 注意，这里重新定义随机数，这样就分散了，评论的视频不一定点赞。
                 $rand = mt_rand(1,100);
-                if ($rand <= 3) {
+                if ($rand <= 2) {
                     // 机器人评论。/
                     $this->comment(intval($uid),  $record['id'] );
                     echo "uid:{$uid} commented news id:{$record['id']}\n";
@@ -140,7 +148,7 @@ limit {$record_count}
 //                             ]);
                     
                 }
-            }
+          //  }
             
         }
         return ['code'=>1];
@@ -183,7 +191,7 @@ limit 10";
         
         $db::table('web_article')->where("id",'=', $record_id )->increment('comment_count');
         
-        return $$comment->id;
+       // return $$comment->id;
     }
     
     /**
