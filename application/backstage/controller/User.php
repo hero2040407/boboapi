@@ -204,8 +204,7 @@ exists(
                 $query->select($db::raw(1))
                 ->from('ds_race')
                 ->whereRaw('ds_race.id = ds_register_log.zong_ds_id')
-                ->whereRaw('ds_race.proxy_id='.intval( $proxy_id ))
-                ;
+                ->whereRaw('ds_race.proxy_id='.intval( $proxy_id ));
             });
             
         }
@@ -217,14 +216,24 @@ exists(
             $result[]= $v->id;
         }  
         
-       
+
         $new=[];
-        foreach ($result as $v) {
-            $temp = \BBExtend\backmodel\OfflineRegisterLog::find( $v );
-            $new[]= $temp->display();
+        if ($result){
+            try{
+                foreach ($result as $v) {
+
+                    $temp = \BBExtend\backmodel\OfflineRegisterLog::find( $v );
+
+                    $new[]= $temp->display();
+
+                }
+            }catch (\Exception $exception){
+                var_dump($exception->getMessage());
+            }
         }
+
         return ['code'=>1, 'data'=>['list' => $new, 
-                'pageinfo' =>$this->get_pageinfo($paginator, $per_page) ] ];
+                'pageinfo' =>$this->get_pageinfo($paginator, $per_page) ]];
     }
 
 }

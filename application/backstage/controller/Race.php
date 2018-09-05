@@ -159,8 +159,7 @@ class Race  extends Common
         if (!in_array( $online_type,[1,2] )) {
             return ['code'=>400, 'message'=> 'online_type错误' ];
         }
-       
-        
+
        $race =new \BBExtend\backmodel\Race();
        $race->title = $title;
        $race->is_active=0;
@@ -199,9 +198,8 @@ class Race  extends Common
             $group->group_or_person = $group_or_person;
             $group->save();
         }
-        
-        
-        
+
+        $this->adminActionLog('新增了大赛,id为'.$race->id);
         return ['code'=>1, 'data'=>['insert_id' => $race->id ] ];
         
     }
@@ -288,6 +286,7 @@ class Race  extends Common
             $group->group_or_person = $group_or_person;
             $group->save();
         }
+        $this->adminActionLog('修改了大赛,id为'.$race->id );
         return ['code'=>1 ];
     }
     

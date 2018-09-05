@@ -137,7 +137,9 @@ class Field extends Common
         $admin_race->account_id = $account->id;
         $admin_race->race_id = $race_id;
         $admin_race->field_id = $obj->id;
-        $admin_race->save();
+        $res = $admin_race->save();
+
+        if ($res) $this->adminActionLog('新增了赛区,id为'.$obj->id);
 
         $result = ['code' => 1, 'data' => [
             'insert_id' => $obj->id,
@@ -177,8 +179,8 @@ class Field extends Common
         if (!empty($status)) $field->status = $status;
 
         $field->save();
+        $this->adminActionLog('修改了赛区,id为'.$field_id);
         return ['code' => 1];
-
     }
 
 }

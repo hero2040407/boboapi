@@ -20,9 +20,6 @@ class RaceField extends Model
     
     public function display()
     {
-        
-        
-        
         $result = [
           'id' =>$this->id,
                 'title' =>$this->title,

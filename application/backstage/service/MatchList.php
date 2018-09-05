@@ -81,8 +81,8 @@ class MatchList
         }
         if ($this->sex !== null)
             $map['sex'] = $this->sex;
-        if ($this->lost_uids)
-            $map['uid'] = ['in',$this->lost_uids];
+//        if ($this->lost_uids)
+//            $map['uid'] = ['in',$this->lost_uids];
 
         return $map;
     }
@@ -111,7 +111,7 @@ class MatchList
         $map = $this->setMap();
         $record_model = new RaceRecord();
 
-        $data = $record_model->where($map)->order('sort')->select();
+        $data = $record_model->where($map)->order('id')->select();
 
         $this->list = json_decode(json_encode($data),true);
 
@@ -133,6 +133,7 @@ class MatchList
                 & $map['score'] == 0
                 & $map['delete_time'] == 0;
         });
+//        array_multisort(array_column($list,'id'), SORT_ASC, $list);
         foreach ($list as $item){
             $data[] = $item;
         }
@@ -249,22 +250,12 @@ class MatchList
     {
         $record_model = new RaceRecord();
         $map = $this->setMap();
-        $this->round = $record_model->where($map)->order('round desc')->value('round');
-        if ($round){
-            $advance_uids = $record_model->where([
-                'area_id' => $this->area_id,
-                'round' => $this->round
-            ])->group('uid')->column('uid');
 
+        if ($round)
             $this->round = $round;
+        else $this->round = $record_model->where($map)
+            ->order('round desc')->value('round');
 
-            $last_round_uids = $record_model->where([
-                'area_id' => $this->area_id,
-                'round' => $round
-            ])->group('uid')->column('uid');
-
-            $this->lost_uids = array_diff($advance_uids, $last_round_uids);
-        }
         return $this->round;
     }
 

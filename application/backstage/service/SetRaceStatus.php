@@ -14,6 +14,8 @@ use BBExtend\backmodel\RaceRegistration;
 use think\cache\driver\File;
 use BBExtend\Sys;
 use think\Exception;
+use think\exception\HttpResponseException;
+use think\Response;
 
 // 设置ds_register_log 中的 race_status
 class SetRaceStatus
@@ -50,16 +52,17 @@ class SetRaceStatus
         return $this;
     }
 
-    public function getGroup($race_id, $age)
+    public function getGroup($race_id, $birthday)
     {
         $groups = (new File())->get($race_id.'age_group');
-
+        $age = date("Y") - substr($birthday, 0, 4);
         foreach($groups as $item){
             $ages = explode(',',$item['age']);
             if ($age >= $ages[0] && $age <= $ages[1]){
                 return $item;
             }
         }
+
         return false;
     }
     /**
@@ -74,7 +77,7 @@ class SetRaceStatus
 
         $redis = Sys::get_container_redis();
 
-        $group = $this->getGroup($user_info['zong_ds_id'], $user_info['age']);
+        $group = $this->getGroup($user_info['zong_ds_id'], $user_info['birthday']);
 
         if (!$group) return false;
 
@@ -103,7 +106,7 @@ class SetRaceStatus
      */
     public function getAdvanceUids()
     {
-        $this->advanceUids = (new RaceRecord())->where([
+        return (new RaceRecord())->where([
             'area_id' => $this->area_id,
             'delete_time' => 0
         ])->column('uid');
@@ -117,7 +120,7 @@ class SetRaceStatus
      */
     public function advance()
     {
-        $uids = $this->advanceUids;
+        $uids = $this->getAdvanceUids();
 
         if ($uids)
         $this->log_model->where([
@@ -153,7 +156,7 @@ class SetRaceStatus
      */
     public function getRaceAdvanceUids()
     {
-        $this->advanceUids = (new RaceRecord())->where([
+        return (new RaceRecord())->where([
             'race_id' => $this->race_id,
             'delete_time' => 0,
             'area_id' => 0
@@ -168,7 +171,7 @@ class SetRaceStatus
      */
     public function raceAdvance()
     {
-        $uids = $this->advanceUids;
+        $uids = $this->getRaceAdvanceUids();
 
         if ($uids){
             $this->log_model->where([
@@ -209,7 +212,7 @@ class SetRaceStatus
         $groups = (new File())->get($this->race_id.'age_group');
         if ($groups){
             foreach ($groups as $item){
-                Sys::get_container_redis()->del($this->race_id.$item['age'].'sign');
+                Sys::get_container_redis()->del($this->area_id.$item['age'].'sign');
             }
         }
     }
@@ -218,7 +221,7 @@ class SetRaceStatus
      * Notes: 把数据移动到历史数据中
      * Date: 2018/8/29 0029
      * Time: 下午 6:46
-     * @param $type //类型 0 同一场比赛 1 新的比赛
+     * @param $type //类型 0 结束当日比赛 1 结束区域比赛
      * @throws
      */
     public function moveToRecordHistory($type = 0)
@@ -226,7 +229,7 @@ class SetRaceStatus
         $history_model = new RaceRecordHistory();
         $model = new RaceRecord();
 
-        $data = $model->field('*,avg(score) as score')->where([
+        $data = $model->field('name,uid,round,age,sex,sort,race_id,area_id,avg(score) as score')->where([
             'area_id' => $this->area_id,
             'delete_time' => ['>',0]
         ])->group('uid,round')->select();
@@ -239,6 +242,8 @@ class SetRaceStatus
             if(!$time) $time = 1;
             else $time = $time + 1;
         }
+        elseif(!$time) $time = 1;
+
 
         foreach ($list as &$item){
             $item['time'] = $time;

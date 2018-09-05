@@ -176,7 +176,7 @@ class OfflineRegisterLog extends Model
         $race_title = $race->title;
         
         $field = \BBExtend\backmodel\RaceField::find( $this->ds_id );
-        $field_title = $field->title;
+        $field_title = !empty($field->title) ? $field->title : '';
         
         //$age=0;
         $age=date("Y") - substr( $this->birthday,0,4 );

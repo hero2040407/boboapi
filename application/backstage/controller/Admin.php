@@ -72,17 +72,28 @@ class Admin  extends Common
         if ($account=='admin' && $pwd=='7lxpkdd' ) {
             $this->set_session(['id' => -1 ]);
             return ['code'=>1,'data'=>['role'=> 'admin','auth_list'=> $this->get_auths('admin')  ] ];
-
         }
 
         $db = Sys::get_container_db_eloquent();
         $sql="select * from backstage_admin where is_valid=1 and account=? and pwd=?";
         $row = DbSelect::fetchRow($db, $sql,[ $account, md5( $pwd ) ]);
+
         if ($row) {
-            if ($row['level']==1) {
-                $auth = 'proxy';
-            }else {
-                $auth = 'channel';
+            switch($row['level'])
+            {
+                case '0':
+                    $this->set_session($row);
+                    $this->success('','', ['role' => 'admin', 'auth_list' => $this->get_auths('admin')]);
+                    break;
+                case '1':
+                    $auth = 'proxy';
+                    break;
+                case '2':
+                    $auth = 'channel';
+                    break;
+                default :
+                    $this->error('该账户不合法');
+                    break;
             }
 
             // 谢烨，检查是否有有效的赛区。
@@ -91,7 +102,7 @@ class Admin  extends Common
                 return ['code'=>400,'message'=>'该账户的对应大赛已经被禁止，您无法登陆。'];
             }
 
-            $this->set_session($row );
+            $this->set_session($row);
 
             // 下面是查渠道的大赛id和赛区id。 
             $sql="select * from backstage_admin_race where account_id=?";
@@ -101,7 +112,6 @@ class Admin  extends Common
                 $field_id = $admin_race['field_id'];
             }else {
                 $race_id= $field_id = 0;
-
             }
 
             if ($auth=='proxy') {
@@ -116,8 +126,8 @@ class Admin  extends Common
                     'field_id' => $field_id,
                     'race_id_list' => $race_id_list,// 大赛id数组
                     'auth_list' =>$this->get_auths($auth),
-
-            ] ];
+                    ]
+            ];
 
         }else {
             return ['code'=>400,'message'=>'没有找到匹配的账号，请检查账号和密码'];
@@ -274,8 +284,8 @@ index：代理通过parent字段。渠道通过field_id字段。
                 'parent' => $parent,
                 'pwd_original' => $pwd,
         ]);
-
-        return ['code'=>1,'data'=>['insert_id'=>$id,'pwd'=>$pwd,  ]];
+        if ($id) $this->adminActionLog('新增了一个大赛后台用户,id为'.$id);
+        return ['code'=>1,'data'=>['insert_id'=>$id,'pwd'=>$pwd]];
     }
 
     /**
@@ -306,7 +316,8 @@ index：代理通过parent字段。渠道通过field_id字段。
      * @param unknown $proxy_id
      * @return boolean|unknown
      */
-    private function check_edit_auth($id,$field_id=null,$proxy_id=null){
+    private function check_edit_auth($id,$field_id=null,$proxy_id=null)
+    {
         $role= $this->get_userinfo_role();
         if ($role=='admin') {
             return true;
@@ -316,7 +327,7 @@ index：代理通过parent字段。渠道通过field_id字段。
     }
 
 
-        public function edit ($id, $realname,$phone, $pwd='',$field_id=null,$proxy_id=null )
+    public function edit ($id, $realname,$phone, $pwd='',$field_id=null,$proxy_id=null )
     {
 
 
@@ -336,7 +347,7 @@ index：代理通过parent字段。渠道通过field_id字段。
 
         $result = $admin->edit($pwd);
         if ($result) {
-
+           $this->adminActionLog('修改了用户,id为'.$id);
            return ['code'=>1,];
         }else {
             return ['code'=>400, 'message' =>$admin->message ];
@@ -353,10 +364,8 @@ index：代理通过parent字段。渠道通过field_id字段。
      * @param unknown $proxy_id
      * @return number[]|string[]|number[]
      */
-    public function edit_valid($id=0, $is_valid,$field_id=null,$proxy_id=null) {
-
-
-
+    public function edit_valid($id=0, $is_valid,$field_id=null,$proxy_id=null)
+    {
         $db = Sys::get_container_db_eloquent();
         $is_valid = $is_valid ? 1 : 0 ;
         $sql="select count(*) from backstage_admin where id = ? ";
@@ -374,11 +383,6 @@ index：代理通过parent字段。渠道通过field_id字段。
         $db::table('backstage_admin')->where('id' , $id )->update(['is_valid'=>$is_valid]);
         return ['code'=>1, ];
     }
-
-
-
-
-
 }
 
 
