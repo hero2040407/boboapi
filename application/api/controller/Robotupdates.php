@@ -23,7 +23,7 @@ class Robotupdates
      */
     public function index($record_count=1 )
     {
-      //  Sys::debugxieye("增加点击  count=". $record_count);
+        Sys::debugxieye("日志：增加动态点击");
          
         $people_count=1;
         
@@ -58,7 +58,7 @@ ORDER BY rand() LIMIT 1
         }
         
         $rand = mt_rand(1,100);
-        if ($rand < 80) {
+        if ($rand < 70) {
             $time = time() - 7*24 * 3600;
         }
         if ($rand < 90) {
@@ -66,14 +66,16 @@ ORDER BY rand() LIMIT 1
         }else {
             $time = time() - 3 * 30*24 * 3600;
         }
-        $temp_click_count = mt_rand(10000,20000);
+        $temp_click_count = 400000;
+        $record_count=300;
+        
         $sql="
           select * from bb_users_updates 
 where is_remove=0
 and status=1
 and click_count < {$temp_click_count}
 and create_time > {$time}
-order by rand() 
+
 limit {$record_count}
 ";
 //         else {
@@ -83,16 +85,25 @@ limit {$record_count}
         
         
         foreach ($record_arr as $record ) {
-            shuffle($people_arr );
+           // shuffle($people_arr );
             
             $i=0;
-            foreach ($people_arr as $uid) {
-                $i++;
-                if ($i> $people_count) {
-                    break;
-                }
+            
+            $type='updates';
+            if ($record['agent_uid']) {
+                $type='star_updates';
+            }
+            
+            
+           // foreach ($people_arr as $uid) {
+            $current_click_count = $record['click_count'];
+            $max_click_count = \BBExtend\user\MaxCount::get_max($type ,  $record['id']);
+            if ($current_click_count > $max_click_count) {
+                continue;
+            }
                 
-                $look_random = mt_rand(10,120);
+            
+                $look_random = mt_rand(10,60);
                 $db::table('bb_users_updates')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);
@@ -116,7 +127,7 @@ limit {$record_count}
                  //   echo "uid:{$uid} commented news id:{$record['id']}\n";
                     
                 }
-            }
+           // }
             
         }
         return ['code'=>1,'data' =>['list' => $record_arr ] ];
