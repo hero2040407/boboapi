@@ -48,7 +48,7 @@ class Dochtml
     
     
     
-    public function badge_version($v='5',$size){
+    public static function badge_version($v='5',$size){
         
         if ($v<10) {
             $css='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"

@@ -27,7 +27,7 @@ class Doc  extends Controller
      */
     public function _initialize()
     {
-        if (\BBExtend\Sys::get_machine_name()=='200' ) {
+        if (\BBExtend\Sys::get_machine_name()=='200' || \BBExtend\Sys::get_machine_name()=='xieye' ) {
             
         }else {
             exit();
@@ -329,7 +329,7 @@ class Doc  extends Controller
 {$bb}
 {$a}
 </div>
-        
+        <div style='height:200px' > &nbsp;</div>
         {$html}
         <br>
         {$a}
@@ -422,7 +422,7 @@ a.a_return_index{
 .header_fix{ 
   position:fixed; left:0; top:0; width:100%; 
   height:100px; z-index:9999; 
-  background-color:#000;
+  background-color: #FFF; opacity:1.0;
 }
      
 </style>
