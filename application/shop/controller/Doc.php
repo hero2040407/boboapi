@@ -284,7 +284,7 @@ class Doc  extends Controller
                 $bb .='<img style="" src="/public/js/icon/yestoday.png" />';
             }
             
-            
+            $bb.=$a;
         }
         if ($v_img) {
            $bb.= '<br><br>'.  $v_img;
@@ -327,9 +327,9 @@ class Doc  extends Controller
         <body>
 <div class='header_fix'>
 {$bb}
-{$a}
+
 </div>
-        <div style='height:200px' > &nbsp;</div>
+        <div style='height:15px' > &nbsp;</div>
         {$html}
         <br>
         {$a}
@@ -413,16 +413,28 @@ table td ,table th{
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 4px;
 }
-a.a_return_index{
-  display:block;
-  float:right;
-  clear:both;
+.a_return_index{
+  padding-left:30em;
+ text-decoration:none
+  
+}
+.header_fix a{
+ color:#FFF;
 }
 
 .header_fix{ 
-  position:fixed; left:0; top:0; width:100%; 
-  height:100px; z-index:9999; 
-  background-color: #FFF; opacity:1.0;
+  position:fixed;  
+   z-index:9999;
+  padding-top:15px;
+  padding-left:40px;
+  padding-bottom:10px;
+
+  color:#FFF;
+  top:0;left:0;
+  width:100%;
+  background-color: #ccc; opacity:1.0;
+  background-image:url('/public/pic/TB1h9xxIFXXXXbKXXXXXXXXXXXX.jpg');
+ background-position:0% 60%;
 }
      
 </style>
