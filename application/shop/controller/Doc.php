@@ -20,7 +20,7 @@ class Doc  extends Controller
     
     public $title='';
     
-    const size=60;
+    const size=100;
     
     /**
      * 谢烨注：这是安全代码，千万保留。
@@ -50,7 +50,7 @@ class Doc  extends Controller
                 $text = file_get_contents($file);
                 $html = MarkdownExtra::defaultTransform($text);
 //                 $this->output_html($css, $html, filemtime($file) );
-                $v_img = \app\shop\model\Dochtml::display_version($file);
+                $v_img = \app\shop\model\Dochtml::display_version($file,self::size);
                 $this->output_html($css, $html, filemtime($file), $v_img);
                 
             }else {
@@ -85,7 +85,7 @@ class Doc  extends Controller
                  $text = file_get_contents($file);
                  $html = MarkdownExtra::defaultTransform($text);
                  
-                 $v_img = \app\shop\model\Dochtml::display_version($file);
+                 $v_img = \app\shop\model\Dochtml::display_version($file,self::size);
                  $this->output_html($css, $html, filemtime($file), $v_img);
             }else {
                 echo "文件不存在";
@@ -198,84 +198,7 @@ class Doc  extends Controller
         }
     
     
-    /**
-     * 返回表中文名
-     */
-    public function zhongwen()
-    {
-        return [
-            'bb_activity' => ['zhongwen'=> '玩啥活动表', 'info'=> ''],
-            'bb_activity_comments' => ['zhongwen'=> '玩啥活动评论表', 'info'=> ''],
-            'bb_activity_comments_like' => ['zhongwen'=> '玩啥活动评论点赞表', 'info'=> ''],
-            'bb_activity_comments_reply' => ['zhongwen'=> '玩啥活动评论回复表', 'info'=> ''],
-            'bb_address' => ['zhongwen'=> '商城用户收货地址表', 'info'=> ''],
-            'bb_alitemp' => ['zhongwen'=> '商城支付回调表', 'info'=> ''],
-            'bb_area' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_buy' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_buy_video' => ['zhongwen'=> '学啥课程购买表', 'info'=> ''],
-            'bb_config' => ['zhongwen'=> 'bobo配置表', 'info'=> ''],
-            'bb_config_level' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_currency' => ['zhongwen'=> '用户持有波币表', 'info'=> ''],
-            'bb_currency_log' => ['zhongwen'=> '用户充值日志表', 'info'=> ''],
-            
-            'bb_dashang_log' => ['zhongwen'=> '打赏视频日志表', 'info'=> ''],
-            
-            'bb_emceelevel' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_expression' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_expression_buy' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_expression_package' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_feedback' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_focus' => ['zhongwen'=> '用户关注记录表', 'info'=> ''],
-            'bb_label' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_label_activity' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_label_learn' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_live_device' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_logistics_company' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_monster_animation' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_monster_data' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_monster_list' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_msg' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_push' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_push_like' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_record' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_record_comments' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_record_comments_like' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_record_like' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_rewind' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_rewind_comments' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_rewind_comments_like' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_rewind_comments_reply' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_rewind_like' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_richlevel' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_role' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_shop_comments' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_shop_config' => ['zhongwen'=> '商城配置表', 'info'=> ''],
-            'bb_shop_goods' => ['zhongwen'=> '商城商品表', 'info'=> ''],
-            'bb_shop_logistics_trace' => ['zhongwen'=> '商城快递轨迹表', 'info'=> ''],
-            'bb_shop_order' => ['zhongwen'=> '商城订单表', 'info'=> ''],
-            'bb_shop_order_prepare' => ['zhongwen'=> '商城临时订单表', 'info'=> ''],
-            'bb_shop_users' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_speciality' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_task' => ['zhongwen'=> '任务表', 'info'=> ''],
-            'bb_task_activity' => ['zhongwen'=> '邀约活动表', 'info'=> ''],
-            'bb_task_comments' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_task_comments_like' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_task_comments_reply' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_task_reward' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_task_user' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_toppic' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_umeng_push_msg' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_users' => ['zhongwen'=> '用户表', 'info'=> ''],
-            'bb_users_exp' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_users_exp_log' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_users_platform' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_usersort' => ['zhongwen'=> '', 'info'=> ''],
-            'bb_version' => ['zhongwen'=> '苹果客户端项目版本表', 'info'=> ''],
-            'bb_version_android' => ['zhongwen'=> '安卓客户端项目版本表', 'info'=> ''],
-            'database_version' => ['zhongwen'=> '数据迁移版本表', 'info'=> ''],
-            
-        ];
-    }
+   
     
     /**
      * 数据字典列表。
@@ -402,9 +325,11 @@ class Doc  extends Controller
         </head>
          
         <body>
+<div class='header_fix'>
 {$bb}
-        {$a}
-        <br>
+{$a}
+</div>
+        
         {$html}
         <br>
         {$a}
@@ -492,7 +417,14 @@ a.a_return_index{
   display:block;
   float:right;
   clear:both;
-}     
+}
+
+.header_fix{ 
+  position:fixed; left:0; top:0; width:100%; 
+  height:100px; z-index:9999; 
+  background-color:#000;
+}
+     
 </style>
 html;
         return $css;
