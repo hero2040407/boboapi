@@ -46,7 +46,7 @@ width="75" height="20">
 <g fill="#fff" text-anchor="middle"
 font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="130"> 
   <text x="255" y="140" transform="scale(.1)" textLength="440">release</text>
-  <text x="705" y="140" transform="scale(.1)" textLength="180">v'. $v .'</text>
+  <text x="605" y="140" transform="scale(.1)" textLength="180">v'. $v .'</text>
 </g> 
 </svg>';
        }
@@ -61,7 +61,7 @@ y="140" transform="scale(.1)" textLength="200">v'. $v .'</text></g> </svg>';
        }
        $css = urlencode($css);
        $css = preg_replace('#\+#', '%20', $css);
-       $s="<img  src='data:image/svg+xml;utf8,". $css ."' />";
+       $s="<img width=60 src='data:image/svg+xml;utf8,". $css ."' />";
        return  $s;
    }
     
