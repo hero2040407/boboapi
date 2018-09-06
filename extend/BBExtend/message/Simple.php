@@ -66,7 +66,11 @@ class Simple
         if ($this->color ) {
             $temp['color'] = $this->color ;
         }
-        return $temp;
+        if (isset( $temp['content'] ) ) {
+          return $temp;
+        }else {
+            return [];
+        }
     }
     
 }

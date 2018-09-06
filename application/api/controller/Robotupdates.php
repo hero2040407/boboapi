@@ -107,7 +107,7 @@ limit {$record_count}
                 $db::table('bb_users_updates')->where('id', $record['id'] )->update([
                    'click_count' => $db::raw( 'click_count + '.$look_random ),     
                 ]);
-           //     echo "uid:{$uid} view news id:{$record['id']},count:{$look_random}\n";
+                echo "uid:{$uid} view news id:{$record['id']},count:{$look_random}\n";
                 
                 // 点赞。
                 $rand = mt_rand(1,100);
@@ -130,7 +130,7 @@ limit {$record_count}
            // }
             
         }
-        return ['code'=>1,'data' =>['list' => $record_arr ] ];
+        return ['code'=>1,];
         
     }
     

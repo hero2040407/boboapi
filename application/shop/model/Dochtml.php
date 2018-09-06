@@ -23,6 +23,59 @@ class Dochtml
         
     }
     
+   
+    
+    private static function display_version($file){
+        $content = file_get_contents($file);
+        if ( preg_match('#~~~\s*v=(\d+)\s*~~~#is', $content,$matches) ){
+            $version = $matches[1];
+            return self::badge_version($version);
+        }else {
+            return '';
+        }
+    }
+    
+    
+    
+    
+    private function badge_version($v='5'){
+        
+        if ($v<10) {
+            $css='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+width="75" height="20"><g shape-rendering="crispEdges"><path fill="#555" d="M0 0h49v20H0z"/><path
+fill="#007ec6" d="M49 0h45v20H49z"/></g><g fill="#fff" text-anchor="middle"
+font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110"> <text
+x="255" y="140" transform="scale(.1)" textLength="390">release</text><text x="605"
+y="140" transform="scale(.1)" textLength="150">v'. $v .'</text></g> </svg>';
+        }
+        else {
+            $css='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+width="75" height="20"><g shape-rendering="crispEdges"><path fill="#555" d="M0 0h49v20H0z"/><path
+fill="#007ec6" d="M49 0h45v20H49z"/></g><g fill="#fff" text-anchor="middle"
+font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110"> <text
+x="255" y="140" transform="scale(.1)" textLength="390">release</text><text x="605"
+y="140" transform="scale(.1)" textLength="200">v'. $v .'</text></g> </svg>';
+            
+        }
+        $css = urlencode($css);
+        $css = preg_replace('#\+#', '%20', $css);
+        $s="<img src='data:image/svg+xml;utf8,". $css ."' />";
+        return  $s;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //参数1，文件名，假设显示名懒得改，参数2可不传。
     public static function get_href($name, $display_name='',$is_del=0)
     {
@@ -52,9 +105,9 @@ class Dochtml
             if ( self::has_post($file) ) {
                 $post = ' <img src="' . self::post_png . '" />';
             }
-            
+            $new2 = self::display_version($file);
             return "<li><a {$style_str} href='/shop/doc/index/name/".urlencode($name).
-            "'>{$display_name}{$post}{$new}</a>".
+            "'>{$display_name}{$post}{$new2}</a>".
             
             "<font class=font3>(".date('Y-m-d', filemtime($file)) . ")</font></li>";
             
@@ -77,9 +130,9 @@ class Dochtml
                 if ( self::has_post($file) ) {
                     $post = ' <img src="' . self::post_png . '" />';
                 }
-                
+                $new2 = self::display_version($file);
                 return "<li><a  {$style_str} href='/shop/doc/index2/name/".urlencode($name).
-                "'>{$display_name}{$post}{$new}</a>".
+                "'>{$display_name}{$post}{$new2}</a>".
                 
                 "<font class=font3>(".date('Y-m-d', filemtime($file)) . ")</font></li>";
                 

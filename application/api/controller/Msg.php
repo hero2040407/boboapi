@@ -70,7 +70,9 @@ class Msg
                 $temp['info'] = json_decode($temp['info'], true);
                 $str='';
                 foreach ($temp['info']  as $vv) {
-                    $str.= $vv['content'];
+                    if (isset($vv['content'])  ){
+                      $str.= $vv['content'];
+                    }
                 }
                 $temp['content'] = $str;
                 if ($v['time'] < $standard_time ) {
