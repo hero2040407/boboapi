@@ -23,7 +23,7 @@ class Dochtml
         
     }
     
-    private static function display_post($file)
+    public static function display_post($file)
     {
         $content = file_get_contents($file);
         if ( preg_match('#~~~\s+POST\s+~~~#is', $content) ){
@@ -35,11 +35,11 @@ class Dochtml
     }
     
     
-    private static function display_version($file){
+    public static function display_version($file,$size=60){
         $content = file_get_contents($file);
         if ( preg_match('#~~~\s*v=(\d+)\s*~~~#is', $content,$matches) ){
             $version = $matches[1];
-            return self::badge_version($version);
+            return self::badge_version($version,$size);
         }else {
             return '';
         }
@@ -48,7 +48,7 @@ class Dochtml
     
     
     
-    public function badge_version($v='5'){
+    public function badge_version($v='5',$size){
         
         if ($v<10) {
             $css='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -76,7 +76,7 @@ y="140" transform="scale(.1)" textLength="200">v'. $v .'</text></g> </svg>';
         }
         $css = urlencode($css);
         $css = preg_replace('#\+#', '%20', $css);
-        $s=" <img width=60 src='data:image/svg+xml;utf8,". $css ."' />";
+        $s=" <img width={$size} src='data:image/svg+xml;utf8,". $css ."' />";
         return  $s;
     }
     

@@ -20,6 +20,8 @@ class Doc  extends Controller
     
     public $title='';
     
+    const size=60;
+    
     /**
      * 谢烨注：这是安全代码，千万保留。
      */
@@ -47,7 +49,10 @@ class Doc  extends Controller
                 $css = $this->get_css();
                 $text = file_get_contents($file);
                 $html = MarkdownExtra::defaultTransform($text);
-                $this->output_html($css, $html, filemtime($file) );
+//                 $this->output_html($css, $html, filemtime($file) );
+                $v_img = \app\shop\model\Dochtml::display_version($file);
+                $this->output_html($css, $html, filemtime($file), $v_img);
+                
             }else {
                 echo "文件不存在";
             }
@@ -79,7 +84,9 @@ class Doc  extends Controller
                  $css = $this->get_css();
                  $text = file_get_contents($file);
                  $html = MarkdownExtra::defaultTransform($text);
-                 $this->output_html($css, $html, filemtime($file));
+                 
+                 $v_img = \app\shop\model\Dochtml::display_version($file);
+                 $this->output_html($css, $html, filemtime($file), $v_img);
             }else {
                 echo "文件不存在";
             }
@@ -330,7 +337,7 @@ class Doc  extends Controller
         
     }
     
-    private function output_html($css,$html,$mtime=0)
+    private function output_html($css,$html,$mtime=0,$v_img='')
     {
         $request = \think\Request::instance();
         $action = $request->action();
@@ -355,6 +362,9 @@ class Doc  extends Controller
             }
             
             
+        }
+        if ($v_img) {
+           $bb.= '<br><br>'.  $v_img;
         }
         
         echo  "<!DOCTYPE html>

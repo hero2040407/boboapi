@@ -63,6 +63,9 @@ if ($request->method( ) == "POST") {
     $temp = (array) $_POST;
     
     $post = json_encode( $temp, JSON_UNESCAPED_UNICODE );
+    if (strlen($post) > 1500 ) {
+        $post = \BBExtend\common\Str::substr($post, 0, 500);
+    }
 }
 
 $dbe::table( "bb_request" )->insert( 
