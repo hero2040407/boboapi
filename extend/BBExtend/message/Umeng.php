@@ -115,6 +115,12 @@ class Umeng
     
     public function send_one()
     {
+        if ( $this->message_type==180 ){
+            Sys::debugxieye("有一个友盟推送,uid:".$this->uid);
+            $this->real_send_one();
+            return;
+        }
+        
         if ($this->message_type>0) {
             // 这里，先做检查，如果是配置的特定type， 如果接受，才发送。
             // 不是配置type，都发送。

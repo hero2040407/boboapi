@@ -1,0 +1,64 @@
+
+
+ /etc/supervisord.conf
+ 这是supervisord的配置。
+ 
+ 外壳文件：
+ /root/xieyeshell/phean.sh
+ /root/xieyeshell/w1.sh
+ /root/xieyeshell/w2.sh
+ /root/xieyeshell/phean_dianping.sh
+ /root/xieyeshell/phean_dasai.sh
+ /root/xieyeshell/phean_weixin.sh
+ 
+实际内容。
+
+实际的几个守护进程如下。
+ 
+1. /systemmanage/phean/run
+ 
+2. QUEUE=jobswork REDIS_BACKEND=127.0.0.1:6380 PIDFILE=/tmp/w1.pid  
+ /usr/bin/php /var/www/html/public/index.php /command/worker/start
+
+3. QUEUE=jobswork REDIS_BACKEND=127.0.0.1:6380 PIDFILE=/tmp/w2.pid  
+ /usr/bin/php /var/www/html/public/index.php /command/worker22/start
+
+4. /systemmanage/phean/run_dianping
+5. /systemmanage/phean/run_dasai
+6. /systemmanage/phean/run_weixin
+
+=================================================
+
+其中。
+1. /systemmanage/phean/run
+           实际执行
+   new \BBExtend\service\pheanstalk\Worker::run();
+   ->  "/usr/bin/php /var/www/html/public/index.php /systemmanage/phean_process/index {$data}
+   -> WorkerJobPush::factory( $data );
+   ->根据不同的type，生成 BBExtend\service\pheanstalk\type各种数字的不同类的对象，并执行其excute（）方法
+   
+5.  /systemmanage/phean/run_dasai
+            实际执行$worker = new \BBExtend\service\pheanstalk\Workerdasai()::run();    
+    -> /usr/bin/php /var/www/html/public/index.php /systemmanage/phean_process/dasai {$data}
+    -> /systemmanage/phean_process/dasai::excute_dasai1
+    or /systemmanage/phean_process/dasai::excute_dasai2
+    
+6. /systemmanage/phean/run_weixin
+   实际执行 \BBExtend\service\pheanstalk\Workerweixin()::run()
+    -> /usr/bin/php /var/www/html/public/index.php /systemmanage/phean_process/weixin {$data}
+    -> /systemmanage/phean_process/weixin::weixin_precess();
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
+    
+    

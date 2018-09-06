@@ -12,6 +12,14 @@ use BBExtend\Sys;
  */
 class Type180 extends WorkerJobPush
 {
+    
+    
+    private function msg20180904(){
+        
+    }
+    
+    
+    
     public function excute()
     {
         

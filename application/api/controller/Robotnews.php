@@ -22,7 +22,7 @@ class Robotnews
      */
     public function index($record_count=1, $people_count=1)
     {
-        Sys::debugxieye("日志：增加新闻点击");
+        Sys::debugxieye("日志：增加新闻点击.");
         $db = Sys::get_container_db_eloquent();
         $dbzend = Sys::get_container_dbreadonly();
      //   Sys::debugxieye("record_count:{$record_count},people_count:{$people_count}");
@@ -65,7 +65,7 @@ ORDER BY t1.uid LIMIT 1
         
         $rand = mt_rand(1,100);
         if ($rand < 70) {
-            $time = time() - 7*24 * 3600;
+            $time = time() - 1* 30*24 * 3600;
         }
         if ($rand < 90) {
             $time = time() - 2* 30*24 * 3600;

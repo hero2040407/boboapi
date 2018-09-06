@@ -288,6 +288,9 @@ class Doc  extends Controller
         }
         if ($v_img) {
            $bb.= '<br><br>'.  $v_img;
+           $div_jiange = " <div style='height:55px' > &nbsp;</div>";
+        }else {
+            $div_jiange = " <div style='height:1px' > &nbsp;</div>";
         }
         
         echo  "<!DOCTYPE html>
@@ -329,7 +332,7 @@ class Doc  extends Controller
 {$bb}
 
 </div>
-        <div style='height:15px' > &nbsp;</div>
+        {$div_jiange}
         {$html}
         <br>
         {$a}
@@ -422,6 +425,11 @@ table td ,table th{
  color:#FFF;
 }
 
+.version_img{
+ border:1px #fff solid;
+ width:200px;
+}
+
 .header_fix{ 
   position:fixed;  
    z-index:9999;
@@ -432,6 +440,7 @@ table td ,table th{
   color:#FFF;
   top:0;left:0;
   width:100%;
+  min-height:50px;
   background-color: #ccc; opacity:1.0;
   background-image:url('/public/pic/TB1h9xxIFXXXXbKXXXXXXXXXXXX.jpg');
  background-position:0% 60%;

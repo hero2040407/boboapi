@@ -75,7 +75,7 @@ where is_remove=0
 and status=1
 and click_count < {$temp_click_count}
 and create_time > {$time}
-
+order by rand()
 limit {$record_count}
 ";
 //         else {

@@ -426,15 +426,10 @@ class RaceNew
         }
         
         $race = $this->race;
-        
-       
         $db = Sys::get_container_db();
-        // 先删除过去
-        //  if ( $this->has_register ) {
         
-//             if ($qudao_id==0) {// 说明是线上，
         if ($is_upload==0) {
-            
+            // 填基本信息的情况。
             if ($race->money >= 0.001) { // 如果表中为1，则表示需要付钱。
                 $has_pay = 0;
             } else {
@@ -442,20 +437,14 @@ class RaceNew
                 if ($race->upload_type==1 || $race->upload_type==2 ) {// 填基本信息，且必传视频，当然has_pay=0
                     $has_pay=0;
                 }else {
-                
-                
                   $has_pay = 1;
                 }
             }
             $has_upload=0;
-//             if ( $race->upload_type==1 || $race->upload_type==2 ) {
-//                 $has_upload=0;
-//             }
+            $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
+            $db->query( $sql,[ $uid,$ds_id ] );
             
-           $sql="delete from ds_register_log where uid=? and zong_ds_id=?";
-           $db->query( $sql,[ $uid,$ds_id ] );
-            
-           $val_arr = [
+            $val_arr = [
                    'ds_id' =>$qudao_id,
                    'zong_ds_id' => $ds_id,
                    'uid' =>$uid,
@@ -471,42 +460,38 @@ class RaceNew
                    'register_info' => $addi_info,
                    'is_web_baoming' =>1,
                    'pic' =>$pic,
-                   //'record_url' =>$record_url,
                    'age' => date("Y") - substr( $birthday,0,4 ),
                    
-           ];
-           $height = $this->get_height($addi_info);
-           if ($height) {
-               $val_arr['height'] = $height;
-           }
-           $weight = $this->get_weight($addi_info);
-           if ($weight) {
-               $val_arr['weight'] = $weight;
-           }
-           
-           
+            ];
+            $height = $this->get_height($addi_info);
+            if ($height) {
+                $val_arr['height'] = $height;
+            }
+            $weight = $this->get_weight($addi_info);
+            if ($weight) {
+                $val_arr['weight'] = $weight;
+            }
             $db->insert("ds_register_log", $val_arr );
             
             // 谢烨，保存到 历史表里。
             $this->set_history($uid, $addi_info);
-            
-            
             $last_id = $db->lastInsertId();
+            // 这里判断一下是否成功，假设钱为0，且 不是必传，则成功。
+            if ($race->money < 0.01 && in_array( $race->upload_type,[ 3,4 ] )  ) {
+                $this->register_success=true;
+            }
+            
             return $last_id;
         }else {
             
-            
+            // 传照片视频的情况。
             $record_url = \BBExtend\common\Oss::alihuidiao_mov_to_mp4( $record_url );
             
             if ($race->money >= 0.001) { // 如果表中为1，则表示需要付钱。
                 $has_pay = 0;
             } else {
                 // 谢烨，这里检查一下。
-                
-                    
-                    
                     $has_pay = 1;
-                
             }
             $has_upload=1;
            
@@ -514,20 +499,20 @@ class RaceNew
             // 查是否以前已经报过名
             $sql="select * from ds_register_log where uid=? and zong_ds_id=? ";
             $row = DbSelect::fetchRow($db2, $sql,[ $uid, $ds_id ]);
-           $last_id = $row['id'];
+            $last_id = $row['id'];
             
-           // 谢烨修bug，201808，已支付成功的情况
-           if ( $row['has_pay'] ==1 ) {
-               $has_pay=1;
-           }
+            // 谢烨修bug，201808，已支付成功的情况
+            if ( $row['has_pay'] ==1 ) {
+                $has_pay=1;
+            }
            
             // 谢烨，找到原来的记录，补充。
-           if ( $race->upload_type==1 || $race->upload_type==3  ) {// 1表示必传视频。
+            if ( $race->upload_type==1 || $race->upload_type==3  ) {// 1表示必传视频。
                 $sql="update ds_register_log set 
                   has_pay=?,has_upload=?,
                  record_url=?, record_cover=?,upload_checked=0 where id = ? ";
                 $db->query( $sql,[ $has_pay, $has_upload, $record_url,$record_pic, $last_id  ] );
-            }else {
+            } else {
                 if ( $pic_list  ) {
                     $id_arr=[];
                     $pic_list_arr = explode(',', $pic_list);
@@ -560,6 +545,10 @@ class RaceNew
                     
                 }
             }
+            // 这里判断一下是否成功，假设钱为0，则成功。
+            if ($race->money < 0.01   ) {
+                $this->register_success=true;
+            }
             
         }
             
@@ -580,6 +569,10 @@ class RaceNew
     {
         
         \BBExtend\backmodel\RaceLog::register($ds_id, $uid);
+        
+        
+        // 可以先检查是否发过消息，先略。
+        
         // Type180类具体逻辑。
         $client = new \BBExtend\service\pheanstalk\Client();
         $client->add(

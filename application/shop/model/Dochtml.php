@@ -27,7 +27,7 @@ class Dochtml
     {
         $content = file_get_contents($file);
         if ( preg_match('#~~~\s+POST\s+~~~#is', $content) ){
-            return ' <img src="' . self::post_png . '" />';
+            return ' <img class="version_img" src="' . self::post_png . '" />';
         }else {
             return '';
         }
@@ -76,7 +76,7 @@ y="140" transform="scale(.1)" textLength="200">v'. $v .'</text></g> </svg>';
         }
         $css = urlencode($css);
         $css = preg_replace('#\+#', '%20', $css);
-        $s=" <img width={$size} src='data:image/svg+xml;utf8,". $css ."' />";
+        $s=" <img  class='version_img' width={$size} src='data:image/svg+xml;utf8,". $css ."' />";
         return  $s;
     }
     
