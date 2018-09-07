@@ -12,6 +12,7 @@ use think\Db;
 use BBExtend\BBUser;
 use BBExtend\Focus as Fo2;
 use think\Request;
+use think\Config;
 
 class Common 
 {
@@ -256,7 +257,10 @@ class Common
             $model = 'ios';
         }
         
-        $ip = $_SERVER['REMOTE_ADDR'];
+//         $ip = $_SERVER['REMOTE_ADDR'];
+        
+        $ip= Config::get( "http_head_ip" );
+        
         $datestr = date("Ymd");
         $login_type = $row['login_type'];
         $db->insert("bb_users_register_log", [

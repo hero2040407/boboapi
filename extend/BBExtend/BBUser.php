@@ -380,6 +380,7 @@ class BBUser extends Level
         $infodata = [
          //   'uid'      =>$uid,
             'nickname' => $nickname,
+                'platform_id' => '1',
             'live_cover' => '',
             'device'=>$device,
             'email' => '',
