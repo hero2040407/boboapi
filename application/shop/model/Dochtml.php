@@ -754,6 +754,7 @@ y="140" transform="scale(.1)" textLength="200">v'. $v .'</text></g> </svg>';
       
       self::get_href('短视频生成').
       self::get_href('活动排名确认').
+      self::get_href('后台注册用户').
       
       
       self::get_href('redis键统计').
