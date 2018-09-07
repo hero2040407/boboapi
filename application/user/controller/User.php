@@ -1765,8 +1765,12 @@ and exists (select 1 from bb_push where bb_push.event='publish'
     {
         $uid = input('?param.uid')?(int)input('param.uid'):0;
         $tokens = input('?param.token')?(string)input('param.token'):'';
-        PushMsg::Registered_Token($uid,$tokens);
-        return ['message'=>'注册成功','code'=>1];
+        if ($tokens) {
+           PushMsg::Registered_Token($uid,$tokens);
+           return ['message'=>'注册成功','code'=>1];
+        }else {
+           return ['code' =>1 ]; 
+        }
     }
 
     
