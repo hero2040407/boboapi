@@ -224,7 +224,7 @@ class RecordDetail extends Record
         }
         
         if ($this->type==6 && $this->activity_id  >0) {
-            $sql="select * from bb_advise where id=?  and is_remove=0";
+            $sql="select * from bb_advise where id=?  and is_active=1";
             $row = DbSelect::fetchRow( $db, $sql, [ $this->activity_id ] );
             if ($row) {
                 return [
