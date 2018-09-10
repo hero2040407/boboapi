@@ -214,7 +214,7 @@ css;
 
 <center><h2>怪兽bobo API 检索</h2>
 <form method=get action='/systemmanage/tool/api'>
-<input type=text style='width:480px;height:32px;padding-left:8px' placeholder='请输入完整的接口名称'  id=aa1 name='url' 
+<input type=text style='width:480px;height:32px;padding-left:8px' placeholder='请输入接口名称，模糊查找'  id=aa1 name='url' 
    value='{$v}' />
 <input type=submit class=' ym-button ym-primary '  style=' height:30px;padding-left:8px'  id=aa2 value='　查找一下' />
 </form>
