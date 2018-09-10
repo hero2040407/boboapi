@@ -68,28 +68,28 @@ if ($request->method( ) == "POST") {
     }
 }
 
-$dbe::table( "bb_request" )->insert( 
-        [
-                'create_time' => APP_TIME,
-                'url' => $request->url( ),
-                'ip' => $request->ip( ),
-                'version' => $version,
-                'user_agent' => $user_agent,
-                'domain' => $request->domain( ),
-                'datestr' => date( "Ymd" ),
-                'post' => $post
-        ] );
-$dbe::table( "bb_request2" )->insert(
-        [
-                'create_time' => APP_TIME,
-                'url' => $request->url( ),
-                'ip' => $request->ip( ),
-                'version' => $version,
-                'user_agent' => $user_agent,
-                'domain' => $request->domain( ),
-                'datestr' => date( "Ymd" ),
-                'post' => $post
-        ] );
+// $dbe::table( "bb_request" )->insert( 
+//         [
+//                 'create_time' => APP_TIME,
+//                 'url' => $request->url( ),
+//                 'ip' => $request->ip( ),
+//                 'version' => $version,
+//                 'user_agent' => $user_agent,
+//                 'domain' => $request->domain( ),
+//                 'datestr' => date( "Ymd" ),
+//                 'post' => $post
+//         ] );
+// $dbe::table( "bb_request2" )->insert(
+//         [
+//                 'create_time' => APP_TIME,
+//                 'url' => $request->url( ),
+//                 'ip' => $request->ip( ),
+//                 'version' => $version,
+//                 'user_agent' => $user_agent,
+//                 'domain' => $request->domain( ),
+//                 'datestr' => date( "Ymd" ),
+//                 'post' => $post
+//         ] );
 
 
 // 谢烨，下面的代码不可删除，因为程序中用到了，会读取这几个配置！

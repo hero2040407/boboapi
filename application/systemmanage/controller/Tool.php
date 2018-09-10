@@ -203,7 +203,7 @@ css;
 </script>
 
 </center>";
-       if ($name=='200'){
+       if ($name=='200' || $name='xieye' ){
            
        }else {
            exit();
@@ -338,6 +338,8 @@ css;
            if (preg_match( '#controller#',$v ) &&  !preg_match( '#apptest#i',$v ) 
                    &&  !preg_match( '#command#i',$v )
                    &&  !preg_match( '#live_device#i',$v )
+                   &&  !preg_match( '#backstage#i',$v )
+                   
                    ) {
                $new[]= $v;
            }
