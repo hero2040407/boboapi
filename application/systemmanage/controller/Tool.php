@@ -218,7 +218,7 @@ css;
 <script src='/public/js/jquery-1.9.1.min.js'></script>
 
 <a class='a_return_index' href='/shop/doc/index'>返回怪兽BOBO接口文档首页</a>
-<a class='a_return_index2'  href='/shop/doc/index2/name/服务器api修改日志'>查看 服务器 api 修改日志</a>
+<a class='a_return_index2'  href='/shop/doc/index2/name/服务器api修改日志'>查看服务器 api修改日志</a>
         <br>
 
 <center><h2>怪兽bobo API 检索</h2>
