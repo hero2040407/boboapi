@@ -166,7 +166,7 @@ return
         
         
         // 异常处理handle类 留空使用 \think\exception\Handle
-        'exception_handle'       => 'app\api\controller\Ex',
+        'exception_handle'       => '',
         
         'http_exception_template'    =>  [
                 // 定义404错误的重定向页面地址

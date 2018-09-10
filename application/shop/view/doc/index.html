@@ -39,6 +39,10 @@ h4 {
  background-position:0% 63%;
 }
  
+ #aa1{
+ font-family:"Courier","Courier New";
+ font-weight:bolder;
+ }
  
  .header_fix{ 
   position:fixed;  
@@ -108,7 +112,7 @@ $(document).ready(function(){
                 
          
 <div  class='center' >       
-                <form method=get action='/systemmanage/tool/query'>
+                <form method=get action='/systemmanage/tool/api'>
 <input type=text style='width:480px;height:32px;padding-left:8px' placeholder='请输入完整的接口名称'  id=aa1 name='url' value='' />
 <input type=submit class=' ym-button ym-primary '  style=' height:30px;padding-left:8px'  id=aa2 value='　查找一下' />
 </form>
@@ -117,7 +121,7 @@ $(document).ready(function(){
 
 <script>
 
-  $('#aa1').val('').focus();
+  $('#aa1').focus();
 </script>
                 
                 <div class="ym-grid linearize-level-1 xieye1">

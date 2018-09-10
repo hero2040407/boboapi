@@ -323,6 +323,11 @@ class Doc  extends Controller
     .tr_odd{}   /* 奇数行背景色 */
     .tr_hover{background-color:#fc6} /* 鼠标悬停上的背景色 */
     
+
+code{
+  font-family:\"Courier\",\"Courier New\";
+}
+
    </style>  
         
         </head>

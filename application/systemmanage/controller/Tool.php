@@ -8,8 +8,22 @@
 namespace app\systemmanage\controller;
 
 use BBExtend\Sys;
+use think\Controller;
 
-class Tool { 
+class Tool   extends Controller { 
+    
+    
+    /**
+     * 谢烨注：这是安全代码，千万保留。
+     */
+    public function _initialize()
+    {
+        if (\BBExtend\Sys::get_machine_name()=='200' || \BBExtend\Sys::get_machine_name()=='xieye' ) {
+            
+        }else {
+            exit();
+        }
+    }
     
    public function ipdeny_copy()
    {
@@ -114,6 +128,10 @@ body{
 h2 {
    margin-top:60px;
 }
+ #aa1{
+ font-family:"Courier","Courier New";
+ font-weight:bolder;
+ }
 table {
     width: 100%;
     margin-bottom: 20px;
@@ -167,7 +185,8 @@ a.a_return_index2{
    font-size:150%;
    text-decoration:underline;
 }
-     
+ body{     font-family:"Courier","Courier New";
+}
 </style>
         
         <style >  
@@ -176,12 +195,14 @@ css;
        echo $str;
    }
    
-   public function api()
+   public function api($url='')
    {
        Sys::display_all_error();
        $name = Sys::get_machine_name();
-       
-       
+       $v='';
+       if ($url){
+           $v= htmlentities($url);
+       }
        
        echo "
 <link href='/public/js/yaml4/demos/css/flexible-grids.css' rel='stylesheet' type='text/css'/>
@@ -192,14 +213,15 @@ css;
         <br>
 
 <center><h2>怪兽bobo API 检索</h2>
-<form method=get action='/systemmanage/tool/query'>
-<input type=text style='width:480px;height:32px;padding-left:8px' placeholder='请输入完整的接口名称'  id=aa1 name='url' value='' />
+<form method=get action='/systemmanage/tool/api'>
+<input type=text style='width:480px;height:32px;padding-left:8px' placeholder='请输入完整的接口名称'  id=aa1 name='url' 
+   value='{$v}' />
 <input type=submit class=' ym-button ym-primary '  style=' height:30px;padding-left:8px'  id=aa2 value='　查找一下' />
 </form>
 
 <script>
 
-  $('#aa1').val('').focus();
+  $('#aa1').focus();
 </script>
 
 </center>";
@@ -209,43 +231,35 @@ css;
            exit();
        }
        
-       // 检索出所有的文件，和他的全部路径
-       $temp=[];
-       self::get_file_by_folder('/var/www/html/application', $temp, '#\\.php$#' );
-//        dump($temp);
+      
        
-       $result = $this->check1($temp);
-       //dump($result);
-       sort($result);
        
-       $new2=[];
-       foreach ( $result as $class_name ) {
-         //  echo "<h5>{$class_name}</h5>";
-           // $v 是 类名
-           try{
-             $temp =     $this->check2($class_name);
-             
-             foreach ($temp as $v) {
-                 $new2[]= $v;
-             }
-             
-             //dump( $temp );
-             
-           }catch( \Exception $e ) {
+       $new2 = \BBExtend\service\Api::get_all_method() ;
+       $exists=0;
+       echo "<h5>查询结果如下：</h5>";
+       echo "<ol>";
+       if (empty( $url )) {
+           foreach ( $new2 as $k=>$v ) {
+               $exists=1;
+               echo "<li>" . $v . "  (<a target=_blank href='/systemmanage/tool/query?url=". urlencode($v) ."'> 查询 </a>)"  . "</li>" ;
                
            }
-//            $class = new \ReflectionClass('app\systemmanage\controller\Dict');
-//            $methods = $class->getMethods(\ReflectionProperty::IS_PUBLIC);
-//            dump($methods);
+       }else {
+           foreach ( $new2 as $k=>$v ) {
+               if (preg_match( "#{$url}#", $v )) {
+                   $exists=1;
+                 echo "<li>" . $v . "  (<a target=_blank href='/systemmanage/tool/query?url=". urlencode($v) ."'> 查询 </a>)"  . "</li>" ;
+               }
+           }
            
        }
-       sort($new2);
-       echo "<ol>";
-       foreach ( $new2 as $k=>$v ) {
-           echo "<li>" . $v . "  (<a target=_blank href='/systemmanage/tool/query?url=". urlencode($v) ."'>查询</a>)"  . "</li>" ;
-           
-       }
+       
        echo "</ol>";
+       
+       if (!$exists) {
+           echo "<h3>没找到  {$url} 的接口</h3>";
+       }
+       
        $this->get_css();
        echo "
 <script src='/public/js/yaml4/yaml/core/js/yaml-focusfix.js'></script>
@@ -255,39 +269,43 @@ css;
    }
    
    public function query($url){
+       $url = trim($url);
        $temp=[];
        self::get_file_by_folder('/var/www/html/application/shop/view', $temp, '#\\.md$#' );
       //  dump($temp);
-       
-       foreach ($temp as $filename) {
-           
-           if (preg_match('/api/', $filename)) {
-               continue;
-           }
-           
-           $content = file_get_contents($filename);
-           
-           
-           //echo $
-           if ( preg_match('#' . trim($url) . '\s+#si' , $content) ) {
-           
-              // $str = file_get_contents($filename);
+       if ( preg_match('#^/.+/.+/.+$#', $url) ) {
+           foreach ($temp as $filename) {
                
-               $new_file_url = "/shop/doc/";
-               if ( preg_match('#doc2#', $filename) ){
-                   $new_file_url .= "index2/name/";
-               }else {
-                   $new_file_url .= "index/name/";
+               if (preg_match('/api/', $filename)) {
+                   continue;
                }
-               $temp2 = preg_replace('#^.+/([^/]+).md$#', '$1', $filename);
-               $new_file_url .= $temp2;
-               header("location: {$new_file_url}");
                
+               $content = file_get_contents($filename);
+               
+               
+               //echo $
+               if ( preg_match('#' . trim($url) . '\s+#si' , $content) ) {
+               
+                  // $str = file_get_contents($filename);
+                   
+                   $new_file_url = "/shop/doc/";
+                   if ( preg_match('#doc2#', $filename) ){
+                       $new_file_url .= "index2/name/";
+                   }else {
+                       $new_file_url .= "index/name/";
+                   }
+                   $temp2 = preg_replace('#^.+/([^/]+).md$#', '$1', $filename);
+                   $new_file_url .= $temp2;
+                   header("location: {$new_file_url}");
+                   
+               }
            }
        }
-       echo "没找到 {$url} 的文档";
-       //header("location: {$new_file_url}");
-//        echo $new_file_url;
+       // 谢烨，这里可以先检查是否在那个里面。
+       //如果在，则 显示列表。
+       
+          echo "<h3>没找到 {$url} 的文档</h3>";
+       
        
    }
    
@@ -354,6 +372,12 @@ css;
        return $new;
        
    }
+   
+   
+//    public function test1(){
+//        $arr = \BBExtend\service\Api::get_all_method();
+//        dump($arr);
+//    }
    
    private function my_getmethods( $file )
    {
