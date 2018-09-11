@@ -50,13 +50,11 @@ class Robotnews
         
         $people_arr=[];
   //      for ($i=0;$i<$people_count*2;$i++ ) {
-           $sql="
-SELECT t1.uid
-FROM bb_users AS t1 inner JOIN 
-(SELECT ROUND(RAND() * 5000000+ 3000000) AS uid) AS t2
-WHERE t1.uid >= t2.uid
-and t1.permissions=10
-ORDER BY t1.uid LIMIT 1
+        $sql="
+select uid
+from bb_users
+where permissions=99
+ORDER BY rand() LIMIT 1
 ";
              $uid = $dbzend->fetchOne($sql);
              if ($uid) 
