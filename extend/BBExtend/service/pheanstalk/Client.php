@@ -1,6 +1,8 @@
 <?php
 namespace BBExtend\service\pheanstalk;
 use Pheanstalk\Pheanstalk;
+use BBExtend\Sys;
+
 /**
  * 消息队列。pheanstalk
  * @author Administrator
@@ -22,6 +24,10 @@ class Client
      */
     public function add(Data $data)
     {
+        if ( Sys::is_phpunit_server() ) {
+            return ;
+        }
+        
       //  if (\BBExtend\Sys::is_product_server()) {
         
             $beanstalkd = new Pheanstalk('127.0.0.1', '11300');
@@ -44,6 +50,10 @@ class Client
     {
      //   if (\BBExtend\Sys::is_product_server()) {
             
+        if ( Sys::is_phpunit_server() ) {
+            return ;
+        }
+        
             $beanstalkd = new Pheanstalk('127.0.0.1', '11300');
             //这是消息数据，在本demo中，type不能省略。区分任务类型。
             //         $delay = (int) strtotime($data['time']) - time();
@@ -61,6 +71,10 @@ class Client
     public function add_dianpingtest(Datadp $data)
     {
         
+        if ( Sys::is_phpunit_server() ) {
+            return ;
+        }
+        
         $beanstalkd = new Pheanstalk('127.0.0.1', '11300');
         $delay=0;
         $beanstalkd->useTube( Workerdptest::queue_name  )
@@ -75,6 +89,10 @@ class Client
     public function add_dasai(DataDasai $data)
     {
         //   if (\BBExtend\Sys::is_product_server()) {
+        
+        if ( Sys::is_phpunit_server() ) {
+            return ;
+        }
         
         $beanstalkd = new Pheanstalk('127.0.0.1', '11300');
         //这是消息数据，在本demo中，type不能省略。区分任务类型。
@@ -97,6 +115,10 @@ class Client
     public function add_weixin(DataWeixin $data)
     {
         //   if (\BBExtend\Sys::is_product_server()) {
+        
+        if ( Sys::is_phpunit_server() ) {
+            return ;
+        }
         
         $beanstalkd = new Pheanstalk('127.0.0.1', '11300');
         //这是消息数据，在本demo中，type不能省略。区分任务类型。

@@ -350,6 +350,16 @@ class Sys
         //return preg_match('#bobo.yimwing.com#', $url);
         return self::get_machine_name() =='production';
     }
+    
+    /**
+     * 判断是否单元测试机器。
+     */
+    public static function is_phpunit_server()
+    {
+        //$url = \BBExtend\common\BBConfig::get_server_url();
+        //return preg_match('#bobo.yimwing.com#', $url);
+        return self::get_machine_name() =='xieye';
+    }
 
     /**
      * 得到机器名称，由php.ini配置，在最后几行
