@@ -23,7 +23,8 @@ ss;
    
    
    public function tuisong($uid=10010) {
-       $content ="你好，怪兽BOBO欢迎您！".date("Y-m-d H:i:s");
+       $content ="你好，你好你好你好你好你！";
+    //   $content="1233333333333333333333你好3333333333333333";
        
        Umeng::getinstance()
        ->set_content( $content )

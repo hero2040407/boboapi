@@ -22,7 +22,7 @@ class Robotnews
      */
     public function index($record_count=1, $people_count=1)
     {
-        Sys::debugxieye("日志：增加新闻点击.");
+     //   Sys::debugxieye("日志：增加新闻点击.");
         $db = Sys::get_container_db_eloquent();
         $dbzend = Sys::get_container_dbreadonly();
      //   Sys::debugxieye("record_count:{$record_count},people_count:{$people_count}");

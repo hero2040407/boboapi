@@ -201,8 +201,9 @@ class Umeng
             // Set extra fields
   //          $unicast->setExtraField("test", "helloworld");
   //          print("Sending unicast notification, please wait...\r\n");
-            $unicast->send();
-         //   print("Sent SUCCESS\r\n");
+           $r= $unicast->send();
+        //    Sys::debugxieye($r);
+           // print("Sent SUCCESS\r\n");
         } catch (\Exception $e) {
     //        print("Caught exception: " . $e->getMessage());
         }
@@ -234,8 +235,8 @@ class Umeng
 // echo "wait";
             // Set 'production_mode' to 'true' if your app is under production mode
             $customizedcast->setPredefinedKeyValue("production_mode", $this->production_mode);
-            $customizedcast->send();
-        
+        $r =     $customizedcast->send();
+       // Sys::debugxieye($r);
         } catch (\Exception $e) {
         //   print("Caught exception: " . $e->getMessage());
        //     \BBExtend\Sys::debug($e->getMessage());
