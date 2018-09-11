@@ -194,7 +194,7 @@ li {
 
 li:nth-child(2n){ } 
 li:nth-child(2n-1){ background:#eee;} 
-
+li:hover{ background:#FFFF77;}
 
 </style>
         
@@ -206,7 +206,7 @@ css;
    
    public function api($url='')
    {
-       Sys::display_all_error();
+       
        $name = Sys::get_machine_name();
        $v='';
        if ($url){
@@ -257,7 +257,10 @@ css;
            foreach ( $new2 as $k=>$v ) {
                if (preg_match( "#{$url}#", $v )) {
                    $exists=1;
-                 echo "<li>" . $v . "  (<a target=_blank href='/systemmanage/tool/query?url=". urlencode($v) ."'> 查询 </a>)"  . "</li>" ;
+                   $v_html= $v;
+                   $v_html = str_replace( $url , "<font style='color:red'>".$url."</font>", $v_html);
+                   
+                 echo "<li>" . $v_html . "  (<a target=_blank href='/systemmanage/tool/query?url=". urlencode($v) ."'> 查询 </a>)"  . "</li>" ;
                }
            }
            
