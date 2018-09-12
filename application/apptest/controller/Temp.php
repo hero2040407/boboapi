@@ -4,19 +4,36 @@ namespace app\apptest\controller;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
 
+
+
 use BBExtend\message\Umeng;
 class Temp extends \think\Controller 
 {
+   // const aa = \app\apptest\controller\abcd;
+   
     
-    private function t1(){
-        return 23;
+    public static function abc(){
+        return 2222;
     }
     
    public function index()
    {
-       //echo intval( $this->t1() );
-       echo config("wechat.mobile_AppID");
+       require_once ( realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Config.php");
+      // require_once ( realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Config.Web.php");
+       
+       $this->index2();
+//        echo self::aa;
+     
+//        define('bb',22);
+//        define('bb',33);
+       
+//        echo bb;
       
+   }
+   
+   
+   public function index2(){
+       echo \WxPayConfig::APPID;
    }
    
    

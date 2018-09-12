@@ -295,40 +295,7 @@ class HelpWeb
         return $this->success;
     }
     
-//     /**
-//      * 查询第三方支付的服务器。
-//      * @param unknown $serial
-//      */
-//     public function query_remote($serial){
-//         $input = new \WxPayOrderQuery();
-//         $input->SetOut_trade_no($serial);
-//         $return_arr = \WxPayApi::orderQuery($input);
-//      //   return $return_arr;
-//         // 以下字段在return_code为SUCCESS的时候有返回
-//         try{
-//             if ($return_arr['return_code'] =='SUCCESS') {
-//                 if ($return_arr['result_code']  =='SUCCESS' ) {
-//                     //xieye,这里有好几个值
-//                     if (isset( $return_arr['trade_state'] )
-//                         && $return_arr['trade_state']=='SUCCESS'     
-//                        ){
-//                         return ['code'=>1, 'data'=>['success' =>1 ]];
-//                     }else {
-//                         return ['code'=>1, 'data'=>['success' =>0 ]];
-//                     }
-//                     //return ['code'=>1, 'data'=> $this->get_mobile_query($return_arr['prepay_id']) ];
-//                 }else {
-//                     return ['code'=>0, 'message'=> $return_arr['err_code_des']];
-//                 }
-        
-//             }else {
-//                 return ['code'=>0, 'message'=> $return_arr['return_msg']];
-//             }
-//         }catch(Exception $s) {
-//             return ['code'=>0, 'message'=> '未知的错误异常。'];
-//         }
-//     }
-    
+
     
     
     
