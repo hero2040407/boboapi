@@ -35,6 +35,9 @@ return  [
     'third_AppID'=>'wxd5e78ef8b655459f',
     'third_AppSecret'=>'',
     
+    // 阿里的账号，也放在微信账号列表里。
+    'ali_partner' => '2088421400078132',
+    'ali_seller_id' => '201457175@qq.com',
     
     
 ];

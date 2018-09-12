@@ -12,7 +12,7 @@
 //合作身份者ID，签约账号，以2088开头由16位纯数字组成的字符串，查看地址：https://openhome.alipay.com/platform/keyManage.htm?keyType=partner
 $alipay_config['partner']		= '2088421400078132';
 
-$alipay_config['seller_id']     = ALIPAY_SELLER_ID;
+$alipay_config['seller_id']     = config('wechat.ali_seller_id');
 
 //商户的私钥,此处填写原始私钥去头去尾，RSA公私钥生成：https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.nBDxfy&treeId=58&articleId=103242&docType=1
 $alipay_config['private_key']	= '-----BEGIN RSA PRIVATE KEY-----

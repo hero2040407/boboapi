@@ -18,25 +18,7 @@ class Api extends Controller
     const ali_partner   = "2088421400078132";    //阿里 开发者帐号
     const ali_seller_id = ALIPAY_SELLER_ID;     //商户帐号
     
-    /**
-     * 这段代码是加一个校验，保证交易安全 
-     */
-    public function _initialize()
-    {
-//         $request = request();
-//         $chekc_action =['buy', 'get_default_address', 'get_address_list', 'add_address', 
-//                 'editor_address','del_address', ];
-//         if ( in_array( $request->action(), $chekc_action )) {
-//             $help = new \BBExtend\pay\Sign();
-//             $result = $help->check(input('param.v'), input('param.uid'), 
-//                 input('param.time'), input('param.sign')      );
-//             if (!$result) {
-//                 echo json_encode(["code"=>0, "message"=>$help->get_info() ] , 
-//                     JSON_UNESCAPED_UNICODE);
-//                 exit();
-//             }
-//         }
-    }
+   
     
     
     /**
