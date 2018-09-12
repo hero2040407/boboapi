@@ -72,7 +72,7 @@ class Api extends Controller
             return ['code'=>0,'message'=>'vip申请费用不可以重复缴纳'];
         }
         
-        $serial = $this->get_vip_order_serial();     //订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_vip();
         $title_goods = "VIP小童星申请费用";
         $money = 50;
         if ( in_array($uid, get_test_userid_arr() )  ) {
@@ -237,7 +237,7 @@ class Api extends Controller
         
         //既然条件都对，生成订单号，最后插入临时订单表。
         $title_goods = $result["info"] ? $result["info"] : '支付' ;
-        $serial = $this->get_baoming_order_serial();//订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_baoming(); 
         $db->insert("bb_baoming_order_prepare", [
             "uid" =>$uid,
             "price" => $money,
@@ -280,7 +280,7 @@ class Api extends Controller
         }
         
         //既然条件都对，生成订单号，最后插入临时订单表。
-        $serial = $this->get_order_serial($mobile);//订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_shop(); 
         $order = new \app\shop\model\ShopOrderPrepare();
         $order->uid = $uid;
         $order->goods_id = $goods_id;
@@ -324,7 +324,7 @@ class Api extends Controller
             $money = 0.01;
         }
         //既然条件都对，生成订单号，最后插入临时订单表。
-        $serial = $this->get_order_serial($mobile);     //订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_shop();
         $order = new \app\shop\model\ShopOrderPrepare();
         $order->uid = $uid;
         $order->goods_id = $goods_id;
@@ -406,7 +406,7 @@ class Api extends Controller
         }
         
         //既然条件都对，生成订单号，最后插入订单表。
-        $serial = $this->get_order_serial($mobile);
+        $serial = \BBExtend\pay\Order::get_order_serial_shop();
         $order = new \app\shop\model\Order();
         $order->data('uid', $uid);
         $order->data('address_id', $address_id);
@@ -464,7 +464,7 @@ class Api extends Controller
         }
     
         //既然条件都对，生成订单号，最后插入订单表。
-        $serial = $this->get_order_serial($mobile);
+        $serial = \BBExtend\pay\Order::get_order_serial_shop();
         $order = new \app\shop\model\Order();
         $order->data('uid', $uid);
         $order->data('address_id', $address_id);
@@ -492,41 +492,6 @@ class Api extends Controller
     }
      
     
-    private function get_vip_order_serial()
-    {
-        $pre = "XX1";
-        $orderSn = $pre .date("Ymd") . strtoupper(dechex(date('m'))) . date('d') .
-            substr(time(), -5) .  substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
-
-    
-    /**
-     * 产生订单号
-     * 
-     * @param unknown $mobile
-     */
-    private  function get_order_serial($mobile)
-    {
-        $pre = $mobile=="ios" ? 'BI':'BA';
-        $orderSn = $pre .date("Ymd") . strtoupper(dechex(date('m'))) . date('d') .
-            substr(time(), -5) .  substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
-    
-
-    /**
-     * 特别收费  产生订单号
-     * 
-     * 201707
-     */
-    private  function get_baoming_order_serial()
-    {
-        $pre = $mobile="BM";
-        $orderSn = $pre .date("Ymd") . strtoupper(dechex(date('m'))) . date('d') .
-            substr(time(), -5) .  substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
     
    
     /**
@@ -604,7 +569,7 @@ class Api extends Controller
         
         
         //既然条件都对，生成订单号，最后插入订单表。
-        $serial = $this->get_order_serial($mobile);
+        $serial = \BBExtend\pay\Order::get_order_serial_shop();
         $user_agent = \think\Request::instance()->header('User-Agent');
         $order = new \app\shop\model\Order();
         $order->data('uid', $uid);

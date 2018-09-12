@@ -20,23 +20,6 @@ use app\race\model\DsRegisterLog;
 class Raceapi extends Controller
 {
     
-//     public function _initialize()
-//     {
-//         $request = request();
-//         $chekc_action =['buy', 'get_default_address', 'get_address_list', 'add_address', 
-//                 'editor_address','del_address', ];
-//         if ( in_array( $request->action(), $chekc_action )) {
-//             $help = new \BBExtend\pay\Sign();
-//             $result = $help->check(input('param.v'), input('param.uid'), 
-//                 input('param.time'), input('param.sign')      );
-//             if (!$result) {
-//                 echo json_encode(["code"=>0, "message"=>$help->get_info() ] , 
-//                     JSON_UNESCAPED_UNICODE);
-//                 exit();
-//             }
-//         }
-//     }
-    
     
     /**
      * 微信回调
@@ -151,7 +134,7 @@ class Raceapi extends Controller
         $user_agent = \think\Request::instance()->header('User-Agent');
         $user_agent = strval($user_agent);
         
-        $serial = $this->get_order_serial($mobile);//订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_race();
         
         
         $prepare = new DsMoneyPrepare();
@@ -199,7 +182,7 @@ class Raceapi extends Controller
         $user_agent = \think\Request::instance()->header('User-Agent');
         $user_agent = strval($user_agent);
         
-        $serial = $this->get_order_serial($mobile);//订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_race();
         
         
         $prepare = new DsMoneyPrepare();
@@ -286,7 +269,7 @@ class Raceapi extends Controller
         
         
         //既然条件都对，生成订单号，最后插入订单表。
-        $serial = $this->get_order_serial($mobile);
+        $serial = \BBExtend\pay\Order::get_order_serial_race();
         $user_agent = \think\Request::instance()->header('User-Agent');
         $order = new \app\shop\model\Order();
         $order->data('uid', $uid);
@@ -318,217 +301,7 @@ class Raceapi extends Controller
     }
     
     
-     
-    //产生订单号
-    // 
-    private  function get_order_serial($mobile)
-    {
-        $pre = $mobile=="ios" ? 'DSI':'DSA';
-        
-        $orderSn = $pre .date("Ymd") . strtoupper(dechex(date('m'))) . date('d') .
-            substr(time(), -5) .  substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
-   
-    
-    
-    
-    
-    
-    
-
-    //================================================
-    //地址管理模块
-    //================================================
-    //增加用户地址
-    public function add_address()
-    {
-        $uid = input('?param.uid')?(int)input('param.uid'):0;
-        $name = input('?param.name')?(string)input('param.name'):'';
-        $phone = input('?param.phone')?(string)input('param.phone'):'';//手机号码
-        $countries = input('?param.countries')?(string)input('param.countries'):'中国';//国家
-        $province = input('?param.province')?(string)input('param.province'):'';//省
-        $city = input('?param.city')?(string)input('param.city'):'';//市
-        $area = input('?param.area')?(string)input('param.area'):'';//区
-        $street = input('?param.street')?(string)input('param.street'):'';//街道地址
-        $tel = input('?param.tel')?(string)input('param.tel'):'';//电话
-        $is_default = input('?param.is_default')?(int)input('param.is_default'):0;//是否默认地址
-        $zip_code = input('?param.zip_code')?(string)input('param.zip_code'):''; //邮编
-        if (\app\user\model\Exists::userhExists($uid)!=1)
-        {
-            return ['message'=>'没有此用户','code'=>0];
-        }
-        if (!$name)
-        {
-            return ['message'=>'用户名称不能为空','code'=>0];
-        }
-        $AddressDB = array();
-        if ($phone)
-        {
-            $AddressDB['phone'] = $phone;
-        }
-        if ($countries)
-        {
-    
-            $AddressDB['countries'] = $countries;
-        }
-        if ($province)
-        {
-            $AddressDB['province'] = $province;
-        }
-        if ($city)
-        {
-            $AddressDB['city'] = $city;
-        }
-        if ($area)
-        {
-            $AddressDB['area'] = $area;
-        }
-        if ($street)
-        {
-            $AddressDB['street'] = $street;
-        }
-        if ($tel)
-        {
-            $AddressDB['tel'] = $tel;
-        }
-        if ($zip_code)
-        {
-            $AddressDB['zip_code'] = $zip_code;
-        }
-        $AddressDB['is_default'] =0;
-        if ($is_default)
-        {
-            $AddressDB['is_default'] = $is_default;
-            Db::table('bb_address')->where(['uid'=>$uid,'is_default'=>1])
-                ->update(['is_default'=>0]);
-        }
-        $AddressDB['uid'] = $uid;
-        $AddressDB['name'] = $name;
-        $AddressDB['time'] = time();
-        Db::table('bb_address')->insert($AddressDB);
-        $AddressDB['id'] = Db::table('bb_address')->getLastInsID();
-        return ['data'=>$this->conversion_address($AddressDB),'code'=>1];
-    }
-    
-    //删除用户地址
-    public function del_address()
-    {
-        $id = input('?param.id')?(int)input('param.id'):0;
-        $uid = input('?param.uid')?(int)input('param.uid'):0;
-        $AddressDB = Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->find();
-        if ($AddressDB)
-        {
-            Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->update(["is_del"=>1 ]);
-            return ['message'=>'删除成功','code'=>1];
-        }
-        return ['message'=>'没有当前的这个ID地址请检查','code'=>0];
-    }
-    
-    //修改用户地址
-    public function editor_address()
-    {
-        $id = input('?param.id')?(int)input('param.id'):0;
-        $uid = input('?param.uid')?(int)input('param.uid'):0;
-        $phone = input('?param.phone')?(string)input('param.phone'):'';//手机号码
-        $countries = input('?param.countries')?(string)input('param.countries'):'';//国家
-        $province = input('?param.province')?(string)input('param.province'):'';//省
-        $city = input('?param.city')?(string)input('param.city'):'';//市
-        $area = input('?param.area')?(string)input('param.area'):'';//区
-        $street = input('?param.street')?(string)input('param.street'):'';//街道地址
-        $tel = input('?param.tel')?(string)input('param.tel'):'';//电话
-        $is_default = input('?param.is_default')?(int)input('param.is_default'):0;//是否默认地址
-        $zip_code = input('?param.zip_code')?(string)input('param.zip_code'):''; //邮编
-        $AddressDB = Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->find();
-        if ($AddressDB)
-        {
-            if ($phone)
-            {
-                $AddressDB['phone'] = $phone;
-            }
-            if ($countries)
-            {
-                $AddressDB['countries'] = $countries;
-            }
-            if ($province)
-            {
-                $AddressDB['province'] = $province;
-            }
-            if ($city)
-            {
-                $AddressDB['city'] = $city;
-            }
-            if ($area)
-            {
-                $AddressDB['area'] = $area;
-            }
-            if ($street)
-            {
-                $AddressDB['street'] = $street;
-            }
-            if ($tel)
-            {
-                $AddressDB['tel'] = $tel;
-            }
-            if ($zip_code)
-            {
-                $AddressDB['zip_code'] = $zip_code;
-            }
-            $AddressDB['is_default'] =0;
-            if ($is_default)
-            {
-                $AddressDB['is_default'] = $is_default;
-                Db::table('bb_address')->where(['uid'=>$uid,'is_default'=>1])
-                    ->update(['is_default'=>0]);
-            }
-            Db::table('bb_address')->where(['uid'=>$uid,'id'=>$id])->update($AddressDB);
-            return ['message'=>'修改成功','code'=>1];
-        }
-        return ['message'=>'没有此用户请检查UID以及地址id','code'=>0];
-    }
-    
-    //得到用户所有地址
-    public function get_address_list()
-    {
-        $uid     =  input('?param.uid')?(int)input('param.uid'):0;
-        if(\app\user\model\Exists::userhExists($uid)==1)
-        {
-            $AddressDB_list = Db::table('bb_address')->where(['uid'=>$uid, "is_del"=>0])->select();
-            $DB_List = array();
-            foreach ($AddressDB_list as $AddressDB)
-            {
-                array_push($DB_List,$this->conversion_address($AddressDB));
-            }
-            return ['data'=>$DB_List,'code'=>1];
-        }
-        return ['message'=>'没有此用户请检查UID','code'=>0];
-    }
-    
-    //得到默认地址
-    public function get_default_address()
-    {
-        $uid =  input('?param.uid')?(int)input('param.uid'):0;
-        $AddressDB = Db::table('bb_address')->where(['uid'=>$uid,'is_default'=>1, "is_del"=>0])
-            ->find();
-        if (!$AddressDB)
-        {
-            $AddressDB = Db::table('bb_address')->where(['uid'=>$uid, "is_del"=>0])
-                ->order('time','desc')->find();
-        }
-        if (!$AddressDB)
-        {
-            return ['message'=>'该用户没有设置任何地址','code'=>0];
-        }
-        return ['data'=>$this->conversion_address($AddressDB),'code'=>1];
-    }
-    
-    //强转类型
-    private function conversion_address($AddressDB)
-    {
-        $AddressDB['id'] = (int)$AddressDB['id'];
-        $AddressDB['uid'] = (int)$AddressDB['uid'];
-        return $AddressDB;
-    }
+ 
     
     
 }

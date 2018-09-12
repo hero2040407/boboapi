@@ -245,7 +245,7 @@ and type_id =?
         $user_agent = \think\Request::instance()->header('User-Agent');
         $user_agent = strval($user_agent);
         
-        $serial = $this->get_order_serial($mobile);//订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_TG();
         
         
         $prepare = new \BBExtend\model\BaomingOrderPrepare();
@@ -303,7 +303,7 @@ and type_id =?
         $user_agent = \think\Request::instance()->header('User-Agent');
         $user_agent = strval($user_agent);
         
-        $serial = $this->get_order_serial($mobile);//订单号
+        $serial = \BBExtend\pay\Order::get_order_serial_TG();
         
         
         $prepare = new \BBExtend\model\BaomingOrderPrepare();
@@ -345,17 +345,6 @@ and type_id =?
         
     }
     
-   
-    //产生订单号
-    // 
-    private  function get_order_serial($mobile)
-    {
-        $pre = $mobile=="ios" ? 'TGI':'TGA';
-        
-        $orderSn = $pre .date("Ymd") . strtoupper(dechex(date('m'))) . date('d') .
-            substr(time(), -5) .  substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
    
     
     

@@ -15,21 +15,21 @@ use think\Controller;
 class Android extends Controller
 {
     
-    public function _initialize()
-    {
-        $request = request();
-        $chekc_action =['set_order',  ];
-        if ( in_array( $request->action(), $chekc_action )) {
-            $help = new \BBExtend\pay\Sign();
-            $result = $help->check(input('param.v'), input('param.uid'), 
-                input('param.time'), input('param.sign')      );
-            if (!$result) {
-                echo json_encode(["code"=>0, "message"=>$help->get_info() ] ,
-                        JSON_UNESCAPED_UNICODE);
-                exit();
-            }
-        }
-    }
+//     public function _initialize()
+//     {
+//         $request = request();
+//         $chekc_action =['set_order',  ];
+//         if ( in_array( $request->action(), $chekc_action )) {
+//             $help = new \BBExtend\pay\Sign();
+//             $result = $help->check(input('param.v'), input('param.uid'), 
+//                 input('param.time'), input('param.sign')      );
+//             if (!$result) {
+//                 echo json_encode(["code"=>0, "message"=>$help->get_info() ] ,
+//                         JSON_UNESCAPED_UNICODE);
+//                 exit();
+//             }
+//         }
+//     }
     
     
     public function test_user_pay_success()
@@ -86,7 +86,7 @@ class Android extends Controller
         
        
         //既然条件都对，生成订单号，最后插入充值订单表。
-        $serial = $this->get_order_serial();
+        $serial = \BBExtend\pay\Order::get_order_serial_PA();
         $order = new \app\pay\model\Buy();
         $order->uid = $uid;
         $order->order = $serial;
@@ -147,55 +147,6 @@ class Android extends Controller
         $orderSn = "PA"  .date("Ymd") . strtoupper(dechex(date('m'))) . date('d') . substr(time(), -5) . substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
         return $orderSn;
     }
-    
-//     public function get_request(){
-//         //谢烨，总结，需要订单号，商品名，详情，金额，
-        
-        
-//         // 签约合作者身份ID
-//         String orderInfo = "partner=" + "\"" + PARTNER + "\"";
-        
-//         // 签约卖家支付宝账号
-//         orderInfo += "&seller_id=" + "\"" + SELLER + "\"";
-        
-//         // 商户网站唯一订单号
-//         orderInfo += "&out_trade_no=" + "\"" + getOutTradeNo() + "\"";
-        
-//         // 商品名称
-//         orderInfo += "&subject=" + "\"" + subject + "\"";
-        
-//         // 商品详情
-//         orderInfo += "&body=" + "\"" + body + "\"";
-        
-//         // 商品金额
-//         orderInfo += "&total_fee=" + "\"" + price + "\"";
-        
-//         // 服务器异步通知页面路径
-//         orderInfo += "&notify_url=" + "\"" + "http://notify.msp.hk/notify.htm" + "\"";
-        
-//         // 服务接口名称， 固定值
-//         orderInfo += "&service=\"mobile.securitypay.pay\"";
-        
-//         // 支付类型， 固定值
-//         orderInfo += "&payment_type=\"1\"";
-        
-//         // 参数编码， 固定值
-//         orderInfo += "&_input_charset=\"utf-8\"";
-        
-//         // 设置未付款交易的超时时间
-//         // 默认30分钟，一旦超时，该笔交易就会自动被关闭。
-//         // 取值范围：1m～15d。
-//         // m-分钟，h-小时，d-天，1c-当天（无论交易何时创建，都在0点关闭）。
-//         // 该参数数值不接受小数点，如1.5h，可转换为90m。
-//         orderInfo += "&it_b_pay=\"30m\"";
-        
-//         // extern_token为经过快登授权获取到的alipay_open_id,带上此参数用户将使用授权的账户进行支付
-//         // orderInfo += "&extern_token=" + "\"" + extern_token + "\"";
-        
-//         // 支付宝处理完请求后，当前页面跳转到商户指定页面的路径，可空
-//         orderInfo += "&return_url=\"m.alipay.com\"";
-        
-//     }
     
 
 }
