@@ -23,6 +23,7 @@ use app\race\model\DsRegisterLog;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
 
+require_once realpath( EXTEND_PATH).'/WxpayAPI/lib/WxPay.Config.php';
  require_once ( realpath( realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Api.php"));
  require_once ( realpath( realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Notify.php"));
  
