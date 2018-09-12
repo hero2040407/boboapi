@@ -115,8 +115,8 @@ class Sys
         $result = $redis->get($key);
         if (!$result) {
         
-            $appid = 'wx190ef9ba551856b0';
-            $secret = '55a4e4aa42e36a3691ee242c967ffd5f';
+            $appid = config('wechat.service_account_AppID');
+            $secret = config('wechat.service_account_AppSecret');
             $url ='https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.
                  $appid.'&secret='.$secret;
             $result = file_get_contents($url);

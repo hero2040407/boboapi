@@ -15,7 +15,7 @@ class Temp extends \think\Controller
    public function index()
    {
        //echo intval( $this->t1() );
-       echo config("wechat.id");
+       echo config("wechat.mobile_AppID");
       
    }
    
