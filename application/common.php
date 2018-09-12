@@ -4,8 +4,7 @@ use BBExtend\Sys;
 // xieye ，定义时间常量，定义zend类库加载路径。
 define( 'APP_TIME', time( ) );
 
-// 支付宝邮箱，千万勿删除，xieye 201803
-define( 'ALIPAY_SELLER_ID', '201457175@qq.com' );
+
 // 大赛报名推送
 define( 'DASAI_PUSH_QUDAO_ID', 156 );
 // 缺省图片
@@ -23,7 +22,7 @@ define( 'REQUEST_LIMIT_ALL_TEN_MINUTE', 2000 );
 
 
 
-\think\Debug::remark( 'begin_bobo' );
+//\think\Debug::remark( 'begin_bobo' );
 
 // debug('begin_bobo');
 // 2017 07 加载composer，位于如下地址

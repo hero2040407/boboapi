@@ -15,11 +15,7 @@ use BBExtend\model\User;
  */
 class Api extends Controller
 {
-    const ali_partner   = "2088421400078132";    //阿里 开发者帐号
-    const ali_seller_id = ALIPAY_SELLER_ID;     //商户帐号
-    
    
-    
     
     /**
      * 微信服务器对我的回调，重要
@@ -110,8 +106,8 @@ class Api extends Controller
                     "total_fee"      => $money,  //订单总价
                     "notify_url"     => ali_gateway(),   // 异步回调地址，是服务端的
                     "subject"        => $title_goods,    //商品的名称
-                    "partner"        => self::ali_partner,   //开发者帐号
-                    "seller_id"      => self::ali_seller_id, //商户帐号
+                    "partner"        =>  config('wechat.ali_partner') ,   //开发者帐号
+                    "seller_id"      => config('wechat.ali_seller_id') , //商户帐号
                     "body"           => $title_goods,    //商品详细描述
                     "all_request"    => $sign_urlencode, // 具体的请求数据
             ];
@@ -366,8 +362,8 @@ class Api extends Controller
             "total_fee"      => $temp['price'],  //订单总价
             "notify_url"     => ali_gateway(),   // 异步回调地址，是服务端的
             "subject"        => $title_goods,    //商品的名称
-            "partner"        => self::ali_partner,   //开发者帐号
-            "seller_id"      => self::ali_seller_id, //商户帐号
+            "partner"        =>  config('wechat.ali_partner') ,   //开发者帐号
+            "seller_id"      => config('wechat.ali_seller_id') , //商户帐号
             "body"           => $title_goods,    //商品详细描述
             "all_request"    => $sign_urlencode, // 具体的请求数据
         ];
