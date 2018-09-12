@@ -51,6 +51,18 @@ class Order
         return 'DS' . self::get_part_of_serial();
     }
     
+    // 付钱点赞，给大赛报名者。
+    public static function get_order_serial_race_like()
+    {
+        return 'DL' . self::get_part_of_serial();
+    }
+    
+    
+    // 付钱打赏，应该是以前的视频打赏。
+    public static function get_order_serial_dashang()
+    {
+        return 'TI' . self::get_part_of_serial();
+    }
     
     
     

@@ -349,7 +349,7 @@ class HelpWeb
 //         Sys::debugxieye($openid);
         
         
-        $trade = self::get_order_no_for_dashang();
+        $trade = \BBExtend\pay\Order::get_order_serial_dashang();
         $openid = strval($openid);
         $record = $this->get_record($room_id);
         
@@ -441,7 +441,7 @@ class HelpWeb
     public function tongyi_xiadan_for_race_like($ds_id=0,  $self_uid=0, $target_uid=0,  $openid='')
     {
         //  Sys::debugxieye("wx:1");
-        $trade = $this->get_order_no_for_race_like();
+        $trade = \BBExtend\pay\Order::get_order_serial_race_like();
         $uid =  $self_uid= intval($self_uid);
         $phone = '';
         $openid = strval($openid);
@@ -550,7 +550,7 @@ class HelpWeb
     public function tongyi_xiadan_v5($ds_id=0,  $uid=0, $phone='', $openid='')
     {
         //  Sys::debugxieye("wx:1");
-        $trade = $this->get_order_no();
+        $trade = \BBExtend\pay\Order::get_order_serial_race();
         $uid = intval($uid);
         $phone = strval($phone);
         $openid = strval($openid);
@@ -663,7 +663,7 @@ class HelpWeb
     public function tongyi_xiadan_demo($ds_id=0,  $uid=0, $phone='', $openid='')
     {
       //  Sys::debugxieye("wx:1");
-        $trade = $this->get_order_no();
+        $trade = \BBExtend\pay\Order::get_order_serial_race();
         $uid = intval($uid);
         $phone = strval($phone);
         $openid = strval($openid);
@@ -760,7 +760,7 @@ class HelpWeb
      */
     public function tongyi_xiadan($ds_id,  $uid, $phone, $openid)
     {
-        $trade = $this->get_order_no();
+        $trade = \BBExtend\pay\Order::get_order_serial_race();
         $uid = intval($uid);
         $phone = strval($phone);
         $openid = strval($openid);
@@ -847,33 +847,9 @@ class HelpWeb
         
     }
     
-    //产生订单号
-    //p表示pay充值，A表示安卓。
-    private static function get_order_no()
-    {
-        $orderSn = "DS"  .date("Ymd") . 
-           strtoupper(dechex(date('m'))) . date('d') . substr(time(), -5) . 
-           substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
+   
     
-    //产生订单号,为 打赏
     
-    public static function get_order_no_for_dashang()
-    {
-        $orderSn = "TI"  .date("Ymd") .
-        strtoupper(dechex(date('m'))) . date('d') . substr(time(), -5) .
-        substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
-    
-    public static function get_order_no_for_race_like()
-    {
-        $orderSn = "DL"  .date("Ymd") .
-        strtoupper(dechex(date('m'))) . date('d') . substr(time(), -5) .
-        substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
-        return $orderSn;
-    }
    
     
 }
