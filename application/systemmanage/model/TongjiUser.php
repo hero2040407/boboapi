@@ -23,8 +23,8 @@ class TongjiUser
         $urlname= \BBExtend\common\BBConfig::get_server_url() . "/uploads/tongji/{$date}.xlsx";
         $filename= "/var/www/html/public/uploads/tongji/{$date}.xlsx";
         
-        
-        require_once 'BBExtend/PHPExcel.php';
+        require_once realpath( EXTEND_PATH).'/BBExtend/PHPExcel.php';
+       // require_once 'BBExtend/PHPExcel.php';
         $obj = new Excel($filename);
         $obj->write([
             '统计日期','注册日期', 'UID', '渠道','登录类型',
