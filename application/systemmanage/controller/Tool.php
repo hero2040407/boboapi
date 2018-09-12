@@ -166,7 +166,7 @@ table td ,table th{
     padding: 9.5px;
     margin: 0px 0px 10px;
     font-size: 15px;
-    font-family:'Times New Roman', Arial, 'Microsoft YaHei',SimHei; 
+    font-family:font-family:Consolas,Inconsolata,Courier,monospace,"PingFang SC","Microsoft YaHei",sans-serif; 
     line-height: 20px;
     word-break: break-all;
     word-wrap: break-word;
@@ -185,7 +185,7 @@ a.a_return_index2{
    font-size:150%;
    text-decoration:underline;
 }
- body{     font-family:"Courier","Courier New";
+ body{     font-family:Consolas,Inconsolata,Courier,monospace,"PingFang SC","Microsoft YaHei",sans-serif;
 }
 
 li {
