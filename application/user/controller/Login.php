@@ -405,7 +405,7 @@ limit 1";
             ->set_uid( $uid )
             ->send( );
         $UserDB['unread_count'] = 1;
-        $UserDB = self::conversion_for_login( $UserDB ); // 强制转换，和登录一样。
+        $UserDB = $this->conversion_user( $UserDB ); // 强制转换，和登录一样。
         $bonus = BBUser::regis_additional( $uid ); // 注册有一个额外流程，必须走。
         $return_platform_id='';
         if ($login_type==1) {// 微信登录返回openid
@@ -425,15 +425,7 @@ limit 1";
         ];
     }
 
-    private function has_deny ( $uid )
-    {
-        
-        $agent = \BBExtend\common\Client::user_agent( );
-        if (preg_match( '#3c:b6:b7:58:3d:86#', $agent )) {
-            return true;
-        }
-        return false;
-    }
+  
 
     /**
      * 登录流程
@@ -448,12 +440,6 @@ limit 1";
                     'message' => '您已被禁止登录'
             ];
         }
-//         if ($this->has_deny( $uid )) {
-//             return [
-//                     'code' => Err::code_not_login,
-//                     'message' => '您已被禁止登录'
-//             ];
-//         }
         
         // 更新token
         $user_arr['userlogin_token'] = BBUser::userlogin_token( md5( $platform_id ) );
@@ -497,7 +483,7 @@ limit 1";
         $user_arr['unread_count'] = Db::table( 'bb_msg' )->where( "uid", $uid )
             ->where( 'is_read', 0 )
             ->count( );
-        $user_arr = self::conversion_for_login( $user_arr ); // xieye 2016 11 ,这句话必须最后！
+        $user_arr = $this->conversion_user( $user_arr ); // xieye 2016 11 ,这句话必须最后！
         
         \BBExtend\user\Tongji::getinstance( $uid )->otherlogin( );
         $return_platform_id='';
@@ -517,6 +503,60 @@ limit 1";
     
     }
     
+    
+    private function conversion_user($UserDB)
+    {
+        $UserDB['rewind_count'] = 0;
+        $UserDB['movies_count'] = 0;
+        $UserDB['next_exp'] = 0;
+        $UserDB['uid'] = (int)$UserDB['uid'];
+        $UserDB['sex'] = (int)$UserDB['sex'];
+        $UserDB['attestation'] = (int)$UserDB['attestation'];
+        $UserDB['permissions'] = (int)$UserDB['permissions'];
+        $UserDB['max_record_time'] = (int)$UserDB['max_record_time'];
+        $UserDB['min_record_time'] = (int)$UserDB['min_record_time'];
+        $UserDB['vip'] = (int)$UserDB['vip'];
+//         $UserDB['level'] = self::get_user_level($UserDB['uid']);
+        $UserDB['black_count'] = 0;
+        //         $UserDB['follow_count'] = Db::table('bb_focus')->where('uid',$UserDB['uid'])->count();
+        //         $UserDB['focus_count'] = Db::table('bb_focus')->where('focus_uid',$UserDB['uid'])->count();
+        
+        // xieye 2016 10 24
+//         $UserDB['follow_count'] = \BBExtend\user\Focus::getinstance($UserDB['uid'])
+//         ->get_guanzhu_count();
+//         $UserDB['focus_count'] = \BBExtend\user\Focus::getinstance($UserDB['uid'])
+//         ->get_fensi_count();
+        
+        $UserDB['ranking'] = strval($UserDB['ranking']) ;
+        
+        
+        // 谢烨，2018 04
+        $user =  \BBExtend\model\User::find($UserDB['uid']);
+        $UserDB['role'] = $user->role;
+        $UserDB['frame'] = $user->get_frame();
+        $UserDB['badge'] = $user->get_badge();
+        $UserDB['level'] = intval( $user->get_level() );
+        $UserDB['follow_count'] = $user->get_count_about_follow();
+        $UserDB['focus_count'] = $user->get_count_about_fans();
+        
+        
+        
+        $UserDB['is_starmaker'] = 0;
+        if ( $user->role==2 ) {
+            $UserDB['is_starmaker'] = 1;
+        }
+        return $UserDB;
+    }
+    
+    private function has_deny ( $uid )
+    {
+        
+        $agent = \BBExtend\common\Client::user_agent( );
+        if (preg_match( '#3c:b6:b7:58:3d:86#', $agent )) {
+            return true;
+        }
+        return false;
+    }
     
     public function only_login($uid,$token)
     {

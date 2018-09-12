@@ -34,7 +34,7 @@ return
     'extra_config_list' => [ 
         'database',
         'route',
-        'validate' 
+        'validate' , 'wechat'
     ],
     // 扩展函数文件
     'extra_file_list' => [ 

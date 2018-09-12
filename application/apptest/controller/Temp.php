@@ -8,16 +8,14 @@ use BBExtend\message\Umeng;
 class Temp extends \think\Controller 
 {
     
+    private function t1(){
+        return 23;
+    }
+    
    public function index()
    {
-       $file =<<<ss
-212
-~~~ 
-v=5
-~~~
-ss;
-     echo $this->display_version($file);
-       
+       //echo intval( $this->t1() );
+       echo config("wechat.id");
       
    }
    
