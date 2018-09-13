@@ -749,6 +749,7 @@ y="140" transform="scale(.1)" textLength="200">v'. $v .'</text></g> </svg>';
       self::get_href('伪直播关闭').
       self::get_href('增加视频观看').
       self::get_href('增加粉').
+      self::get_href('增加用户粉').
       self::get_href('增加新闻观看').
       self::get_href('增加动态观看数').
       

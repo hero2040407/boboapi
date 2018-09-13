@@ -7,27 +7,32 @@ use BBExtend\DbSelect;
 
 
 use BBExtend\message\Umeng;
-class Temp extends \think\Controller 
+
+class T1 {
+    public $a=1;
+    public function geta(){
+        echo $this->a;
+    }
+}
+
+class Temp extends T1  
 {
    // const aa = \app\apptest\controller\abcd;
    
-    
-    public static function abc(){
-        return 2222;
-    }
+    public $a=232;
     
    public function index()
    {
-       echo ini_get('include_path');
+      // echo ini_get('include_path');
       
    }
    
    
-   public function index2(){
-       echo \WxPayConfig::APPID;
-   }
    
    
+   
+   
+   // 推送测试
    public function tuisong($uid=10010) {
        $content ="你好，你好你好你好你好你！";
     //   $content="1233333333333333333333你好3333333333333333";
@@ -42,7 +47,7 @@ class Temp extends \think\Controller
    }
    
    
-   
+   // 重定向测试
    public function test_redirect(){
        
      //  return ['code'=>2];

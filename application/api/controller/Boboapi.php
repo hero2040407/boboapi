@@ -311,7 +311,7 @@ class Boboapi
         $rule_id = \BBExtend\model\BottomBar::get_rule_id();
         $result = \BBExtend\model\BottomBar::get_pics_lists($rule_id);
         
-        return ['code'=>1,'data'=>[ 'object' =>$result['android'] ]];
+        return ['code'=>1,'data'=>[ 'object' =>$result['android'],'rule_id' =>$rule_id  ]];
         
     }
     
@@ -326,9 +326,9 @@ class Boboapi
         
         
             return ['code'=>1,'data'=>[ 'zip' =>$result['zip_path'], 'list'=> $result['all_pic'] , 
-                     'version'=>$result['create_time']  ]];
+                'version'=>$result['create_time'],'rule_id' =>$rule_id  ]];
         }else {
-            return ['code'=>1,'data'=>[ 'zip' =>'', 'version'=>$version,'list' =>null  ]];
+            return ['code'=>1,'data'=>[ 'zip' =>'', 'version'=>$version,'list' =>null,'rule_id' =>$rule_id  ]];
         }
         
     }
