@@ -28,6 +28,13 @@ class Api extends Controller
         echo $result;
     }
     
+    
+    public function wxpay_web_notify( )
+    {
+        $help = new \BBExtend\pay\wxpay\HelpWeb();
+        $result = $help->receive_post();
+        echo $result;
+    }
      
     /**
      * 支付宝服务器对我的回调
