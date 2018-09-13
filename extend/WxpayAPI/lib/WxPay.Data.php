@@ -3,8 +3,8 @@
 * 2015-06-29 修复签名问题
 **/
 //require_once "WxPay.Config.php";
-require_once "WxPay.Exception.php";
-
+// require_once "WxPay.Exception.php";
+require_once realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Exception.php";
 /**
  * 
  * 数据对象基础类，该类中定义数据类最基本的行为，包括：

@@ -18,16 +18,7 @@ class Temp extends \think\Controller
     
    public function index()
    {
-       require_once ( realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Config.php");
-      // require_once ( realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Config.Web.php");
-       
-       $this->index2();
-//        echo self::aa;
-     
-//        define('bb',22);
-//        define('bb',33);
-       
-//        echo bb;
+       echo ini_get('include_path');
       
    }
    

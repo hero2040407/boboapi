@@ -30,11 +30,11 @@ use BBExtend\Currency;
 use BBExtend\BBRecord;
 
 
-require_once realpath( EXTEND_PATH).'/WxpayAPIWeb/lib/WxPay.Config.php';
- require_once realpath( EXTEND_PATH)."/WxpayAPIWeb/lib/WxPay.Api.php";
- require_once realpath( EXTEND_PATH)."/WxpayAPIWeb/example/WxPay.JsApiPay.php";
- require_once realpath( EXTEND_PATH).'/WxpayAPIWeb/example/log.php';
- require_once realpath( EXTEND_PATH).'/WxpayAPIWeb/lib/WxPay.Data.php';
+require_once realpath( EXTEND_PATH).'/WxpayAPI/lib/WxPay.Config.Web.php';
+ require_once realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Api.php";
+ require_once realpath( EXTEND_PATH)."/WxpayAPI/example/WxPay.JsApiPay.php";
+ require_once realpath( EXTEND_PATH).'/WxpayAPI/example/log.php';
+ require_once realpath( EXTEND_PATH).'/WxpayAPI/lib/WxPay.Data.php';
 /**
  * 该类封装 阿里支付，根据其demo改编。
  * @author 谢烨
@@ -524,7 +524,7 @@ class HelpWeb
         
         $ds_id = intval($ds_id);
         $db = Sys::get_container_db();
-        $sql ="select * from ds_race where is_active=1 and id = {$ds_id}";
+        $sql ="select * from ds_race where  id = {$ds_id}";
         $ds  = $db->fetchRow($sql);
         if (!$ds) {
                  return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];

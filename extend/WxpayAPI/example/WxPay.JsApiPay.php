@@ -1,5 +1,12 @@
 <?php
-require_once "../lib/WxPay.Api.php";
+// require_once "../lib/WxPay.Api.php";
+
+require_once realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Api.php";
+
+// require_once realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Config.php";
+// require_once realpath( EXTEND_PATH)."/WxpayAPI/lib/WxPay.Api.php";
+
+
 /**
  * 
  * JSAPI支付实现类
@@ -29,7 +36,7 @@ class JsApiPay
 	 * @var array
 	 */
 	public $data = null;
-	
+	public $curl_timeout=20;
 	/**
 	 * 
 	 * 通过跳转获取用户的openid，跳转流程如下：
