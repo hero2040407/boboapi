@@ -19,6 +19,14 @@ class Json {
         
     }
     
+    public static function encode_format($arr) {
+        $result = json_encode($arr, JSON_UNESCAPED_UNICODE );
+        $result = preg_replace('#,#', ",\n", $result);
+        return $result;
+        
+    }
+    
+    
     /**
      * 将json字符串 还原成php数组
      * @param unknown $s

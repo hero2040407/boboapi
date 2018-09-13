@@ -161,11 +161,20 @@ class AlipayHelp
         {
             if($alipayNotify->getSignVeryfy($_POST, $_POST['sign'])) {//使用支付宝公钥验签
                 
-                $temp = new \app\pay\model\Alitemp();
-                $temp->data('url', 'alipay_post_to_me');
-                $temp->data('content', json_encode($_POST) );
-                $temp->data('create_time',date("Y:m:d H-i-s"));
-                $temp->save();
+//                 $temp = new \app\pay\model\Alitemp();
+//                 $temp->data('url', 'alipay_post_to_me');
+//                 $temp->data('content', json_encode($_POST) );
+//                 $temp->data('create_time',date("Y:m:d H-i-s"));
+//                 $temp->save();
+                
+                
+                $request = \think\Request::instance( );
+                $third_party = new \BBExtend\model\ThirdPartyPayCallBack();
+                $third_party->type='ali';
+                $third_party->url = $request->url(true) ;
+                $third_party->create_time = time();
+                $third_party->post_body= \BBExtend\common\Json::encode_format($_POST) ;
+                $third_party->save();
                 
                 
                 //——请根据您的业务逻辑来编写程序（以下代码仅作参考）——

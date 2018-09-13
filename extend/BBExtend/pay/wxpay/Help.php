@@ -60,8 +60,8 @@ class Help
     
     public function receive_post(){
         
-        $temp = new \app\pay\model\Alitemp();
-        $temp->data('url', 'weixin_post_to_me');
+//         $temp = new \app\pay\model\Alitemp();
+//         $temp->data('url', 'weixin_post_to_me');
         
         $response =file_get_contents("php://input");
         
@@ -72,10 +72,20 @@ class Help
             return '<xml><return_code><![CDATA[FAIL]]></return_code></xml>';
         }
         
-        $temp->data('content', json_encode($result) );
+//         $temp->data('content', json_encode($result) );
         
-        $temp->data('create_time',date("Y:m:d H-i-s"));
-        $temp->save();
+//         $temp->data('create_time',date("Y:m:d H-i-s"));
+//         $temp->save();
+        
+        $request = \think\Request::instance( );
+        $third_party = new \BBExtend\model\ThirdPartyPayCallBack();
+        $third_party->type='wx';
+        $third_party->url = $request->url(true) ;
+        $third_party->create_time = time();
+        $third_party->post_body=$response;
+        $third_party->save();
+        
+        
         
         //现在验签通过，需要看微信告诉我 成功了 ，还是失败了。
         if (isset($result['result_code']) &&

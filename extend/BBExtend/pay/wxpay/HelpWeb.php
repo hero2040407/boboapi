@@ -64,6 +64,17 @@ class HelpWeb
         }catch (\Exception $e) {
             return '<xml><return_code><![CDATA[FAIL]]></return_code></xml>';
         }
+        
+        
+        $request = \think\Request::instance( );
+        $third_party = new \BBExtend\model\ThirdPartyPayCallBack();
+        $third_party->type='wx';
+        $third_party->url = $request->url(true) ;
+        $third_party->create_time = time();
+        $third_party->post_body=$response;
+        $third_party->save();
+        
+        
       //  Sys::debugxieye( json_encode($result ) );
         
 //         {"appid":"wx190ef9ba551856b0",
