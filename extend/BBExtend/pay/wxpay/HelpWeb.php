@@ -44,7 +44,7 @@ class HelpWeb
 {
 
 
-    private $success = '<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>';
+    private $success = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
     
     
     public function test(){

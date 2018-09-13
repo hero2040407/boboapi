@@ -52,7 +52,7 @@ class Help
 //     <transaction_id><![CDATA[4009332001201609063265188316]]></transaction_id>
 //     </xml>
 
-    private $success = '<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>';
+    private $success = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
     
     public function test(){
         echo "hello, 支付test";
@@ -193,7 +193,7 @@ class Help
         $log->create_time = time();
         $log->save();      
         
-        return 'success';
+        return $this->success;
     }
     
     
@@ -247,7 +247,7 @@ class Help
             "create_time" => $time,
             "is_success" =>1,
         ]);
-        return 'success';
+        return $this->success;
     }
     
     
@@ -310,7 +310,7 @@ class Help
         }
         
         
-        return 'success';
+        return $this->success;
     }
     
     /**
@@ -335,7 +335,7 @@ class Help
         //生成正式订单表，发送物流信息，
         $user = Users::get($prepare->getData('uid'));
         $user->buy_success_money($out_trade_no,$third_name,$third_serial);
-        return 'success';
+        return $this->success;
     }
     
     
