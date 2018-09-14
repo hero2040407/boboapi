@@ -23,8 +23,16 @@ class Temp extends T1
     
    public function index()
    {
-      // echo ini_get('include_path');
-      
+       $s="aa31";
+       echo $s[0]."<br>";
+       echo $s[1]."<br>";
+       echo $s[2]."<br>";
+       $all=0;
+       for ($i=0; $i < strlen($s);$i++  ) {
+           $all += ord( $s[$i] );
+       }
+       echo $all;
+
    }
    
    

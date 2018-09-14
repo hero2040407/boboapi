@@ -355,6 +355,27 @@ select count(*) from bb_advise_join
 ";
             $join_count = $db->fetchOne($sql, [ $this->id ]);
         }
+        
+        // 2018 10 修改。
+        $add_count=0;
+         $s = md5(  $this->id );
+        $all=0;
+        for ($i=0; $i < strlen($s);$i++  ) {
+            $all += ord( $s[$i] );
+        }
+        $add_count = $all % 150;
+        if ($add_count < 50 ) {
+            $add_count+=50;
+        }
+        
+        
+        // 小邱发现的bug
+//         if ($join_count < 100) {
+//             $join_count+= $add_count;
+//         }
+        
+        
+        
         return $join_count;
     }
     

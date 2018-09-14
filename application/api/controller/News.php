@@ -17,6 +17,9 @@ class News
     public function indexall($uid=10000, $startid=0, $length=10)
     {
         $uid = intval($uid);
+        if ($uid ==0) {
+            $uid=10000;
+        }
         $startid = intval($startid);
         $length = intval($length);
         
@@ -60,7 +63,8 @@ class News
                    
                     limit {$startid}, 2
                     ";
-        $videos = DbSelect::fetchAll($db, $sql);
+        $db2 = Sys::get_container_db_eloquent();
+        $videos = DbSelect::fetchAll($db2, $sql);
         $new2=[];
         foreach ($videos as $video) {
             //  Sys::debugxieye($videos);

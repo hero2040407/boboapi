@@ -7,7 +7,7 @@ use BBExtend\pay\wxpay\HelpWeb;
 use think\Session;
 use think\Db;
 
-require_once realpath( EXTEND_PATH). "/WxpayAPIWeb/example/WxPay.JsApiPay.php";
+require_once realpath( EXTEND_PATH). "/WxpayAPI/example/WxPay.JsApiPay.php";
 
 class Demo  extends Controller
 {
