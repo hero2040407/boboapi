@@ -50,7 +50,10 @@ class Expression
             $package['heat_level'] = (int)$package['heat_level'];
             $BuyDB = Db::table('bb_expression_buy')->where(['uid'=>$uid,'package_id'=>$package['id']])->find();
             $package['url'] = $ServerName.$package['url'];
-            $package['pic'] = $ServerName.$package['pic'];
+        //    $package['pic'] = $ServerName.$package['pic'];
+            
+            $package['pic'] =   \BBExtend\common\PicPrefixUrl::add_pic_prefix_https( $package['pic']);
+            
             if ($BuyDB)
             {
                 $package['is_buy'] = true;
