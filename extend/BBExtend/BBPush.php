@@ -199,14 +199,20 @@ class BBPush extends Currency
         //显示在线观看人数以及点赞人数
         $RedisDB = BBRedis::getInstance('push')->hGetAll($DataDB['uid'].'push');
         $DataDB['is_like'] = false;
-        if ($RedisDB)
-        {
-                $DataDB['like'] = (int)$RedisDB['like'];
-                $DataDB['people'] = (int)$RedisDB['people'] + 1 ;
-        }else {
-            $DataDB['like'] =0;
-            $DataDB['people'] =1;
-        }
+        
+        
+        // 谢烨2018 10，查无like字段。
+        $DataDB['like'] =0;
+        $DataDB['people'] =1;
+        
+//         if ($RedisDB)
+//         {
+//                 $DataDB['like'] = (int)$RedisDB['like'];
+//                 $DataDB['people'] = (int)$RedisDB['people'] + 1 ;
+//         }else {
+//             $DataDB['like'] =0;
+//             $DataDB['people'] =1;
+//         }
         $DataDB['nickname'] = $user->get_nickname();
       //  $Pic = $DB['bigpic'];
         $DataDB['bigpic'] = \BBExtend\common\PicPrefixUrl::add_pic_prefix_https_use_default(
