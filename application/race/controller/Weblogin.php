@@ -251,13 +251,13 @@ class Weblogin extends Controller
      */
     public function register_new_v5()
     {
-        $uid= input("param.uid/d");
+        $uid= intval( input("param.uid/d"));
         $phone = input("param.phone/s");
         $name  = input("param.name/s");
-        $sex = input("param.sex/d");
+        $sex =intval( input("param.sex/d"));
         $birthday = input("param.birthday/s");
-        $ds_id = input("param.ds_id/d");
-        $qudao_id = input("param.qudao_id/d");
+        $ds_id = intval(input("param.ds_id/d"));
+        $qudao_id = intval(input("param.qudao_id/d"));
         $pic = input("param.pic/s");
         
         $record_url = input("param.record_url/s");
@@ -265,7 +265,7 @@ class Weblogin extends Controller
         
         $pic_list = input("param.pic_list/s");
         $addi_info = input("param.addi_info/s");
-        $is_upload = input("param.is_upload/d");
+        $is_upload = intval(input("param.is_upload/d"));
         
        
         

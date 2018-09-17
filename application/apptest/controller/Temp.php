@@ -23,7 +23,12 @@ class Temp extends T1
     
    public function index()
    {
-       echo 1/0;
+       
+       $qudao_id = input("param.qudao_id/d");
+     //  $qudao_id = intval(input("param.qudao_id"));
+       
+       echo $qudao_id;
+       
 //        $s="aa31";
 //        echo $s[0]."<br>";
 //        echo $s[1]."<br>";
