@@ -16,7 +16,13 @@ class Present
         $sql = "select * from bb_present order by gold asc";
         $result = $db->fetchAll($sql);
         foreach ($result as $k => $v) {
-            $result[$k]['pic'] = \BBExtend\common\BBConfig::get_server_url().$result[$k]['pic'];
+            
+            
+            
+            $result[$k]['pic'] = 
+            \BBExtend\common\PicPrefixUrl::add_pic_prefix_https( $result[$k]['pic'] );
+            
+            
         }
         
         return ['code'=>1,'data'=>$result];
