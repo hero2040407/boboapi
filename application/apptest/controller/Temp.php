@@ -23,15 +23,16 @@ class Temp extends T1
     
    public function index()
    {
-       $s="aa31";
-       echo $s[0]."<br>";
-       echo $s[1]."<br>";
-       echo $s[2]."<br>";
-       $all=0;
-       for ($i=0; $i < strlen($s);$i++  ) {
-           $all += ord( $s[$i] );
-       }
-       echo $all;
+       echo 1/0;
+//        $s="aa31";
+//        echo $s[0]."<br>";
+//        echo $s[1]."<br>";
+//        echo $s[2]."<br>";
+//        $all=0;
+//        for ($i=0; $i < strlen($s);$i++  ) {
+//            $all += ord( $s[$i] );
+//        }
+//        echo $all;
 
    }
    

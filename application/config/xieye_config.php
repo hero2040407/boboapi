@@ -21,7 +21,7 @@ return
     // 应用命名空间
     'app_namespace' => 'app',
     // 应用调试模式
-    'app_debug' => true,
+    'app_debug' => false,
     // 应用Trace
     'app_trace' => false,
     // 应用模式状态
@@ -160,31 +160,51 @@ return
     // 异常处理handle类 留空使用 \think\exception\Handle
     
         
+// 异常处理handle类 留空使用 \think\exception\Handle
+    'exception_handle'       => 'app\api\controller\Ex',
+    
+    'http_exception_template'    =>  [
+        // 定义404错误的重定向页面地址
+        //   404 =>  APP_PATH.'404.html',
+        // 还可以定义其它的HTTP status
+        500 =>  ROOT_PATH.'public/500.html',
+    ],
+    // +----------------------------------------------------------------------
+    // | 日志设置
+    // +----------------------------------------------------------------------
+    
+    'log'                    => [
+        // 日志记录方式，支持 file socket
+        'type' => 'app\api\controller\FileProducion',
+        // 日志保存目录
+        'path' => LOG_PATH,
+        'level' =>['error'],
+    ],
+    
         
         
         
         
+//         // 异常处理handle类 留空使用 \think\exception\Handle
+//         'exception_handle'       => '',
         
-        // 异常处理handle类 留空使用 \think\exception\Handle
-        'exception_handle'       => '',
+//         'http_exception_template'    =>  [
+//                 // 定义404错误的重定向页面地址
+//                 //   404 =>  APP_PATH.'404.html',
+//                 // 还可以定义其它的HTTP status
+//                 500 =>  ROOT_PATH.'public/500.html',
+//         ],
+//         // +----------------------------------------------------------------------
+//         // | 日志设置
+//         // +----------------------------------------------------------------------
         
-        'http_exception_template'    =>  [
-                // 定义404错误的重定向页面地址
-                //   404 =>  APP_PATH.'404.html',
-                // 还可以定义其它的HTTP status
-                500 =>  ROOT_PATH.'public/500.html',
-        ],
-        // +----------------------------------------------------------------------
-        // | 日志设置
-        // +----------------------------------------------------------------------
-        
-        'log'                    => [
-                // 日志记录方式，支持 file socket
-                'type' => 'app\api\controller\FileProducion',
-                // 日志保存目录
-                'path' => LOG_PATH,
-                'level' =>['error'],
-        ],
+//         'log'                    => [
+//                 // 日志记录方式，支持 file socket
+//                 'type' => 'app\api\controller\FileProducion',
+//                 // 日志保存目录
+//                 'path' => LOG_PATH,
+//                 'level' =>['error'],
+//         ],
         
     
     // +----------------------------------------------------------------------

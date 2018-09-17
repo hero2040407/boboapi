@@ -375,7 +375,7 @@ select count(*) from bb_advise_join
 //         }
         
         
-        
+        $join_count+= $add_count;
         return $join_count;
     }
     
