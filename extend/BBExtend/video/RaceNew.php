@@ -391,12 +391,28 @@ class RaceNew
     }
    
     private function get_height($addi_info){
-        $info = json_decode($addi_info,1);
-        if ($info && isset( $info['身高'] ) ) {
-            return $info['身高'];
+        $arr = json_decode($addi_info,1);
+        
+        
+        if ($arr) {
+            $key_arr = array_keys($arr);
+            foreach ( $key_arr as $key ) {
+                if ( preg_match('#身高#', $key) ) {
+                    $value = $arr[$key];
+                    if ($value > 0 && $value < 2) {
+                        $arr[$key] = intval( $value* 100);
+                        
+                    }
+                    return $arr[$key];
+                }
+            }
         }
+//         if ($arr && isset( $info['身高'] ) ) {
+//             return $info['身高'];
+//         }
         return '';
     }
+    
     
     private function get_weight($addi_info){
         $info = json_decode($addi_info,1);
