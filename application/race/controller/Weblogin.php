@@ -267,7 +267,7 @@ class Weblogin extends Controller
         $addi_info = input("param.addi_info/s");
         $is_upload = intval(input("param.is_upload/d"));
         
-       
+        Sys::debugxieye($addi_info);
         
         
         $reg = new \BBExtend\video\RaceNew(  );

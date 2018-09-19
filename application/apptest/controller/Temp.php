@@ -24,24 +24,25 @@ class Temp extends T1
    public function index()
    {
        
-       $qudao_id = input("param.qudao_id/d");
-     //  $qudao_id = intval(input("param.qudao_id"));
-       
-       echo $qudao_id;
-       
-//        $s="aa31";
-//        echo $s[0]."<br>";
-//        echo $s[1]."<br>";
-//        echo $s[2]."<br>";
-//        $all=0;
-//        for ($i=0; $i < strlen($s);$i++  ) {
-//            $all += ord( $s[$i] );
-//        }
-//        echo $all;
-
+       $arr=[
+           "2身高2"=>12.2,
+           "题主" => 2112,
+       ];
+       $key_arr = array_keys($arr);
+       foreach ( $key_arr as $key ) {
+           if ( preg_match('#身高#', $key) ) {
+               $value = $arr[$key];
+               if ($value > 0 && $value < 2) {
+                   $arr[$key] = intval( $value* 100);
+               }
+           }
+       }
+       dump($arr);
    }
    
-   
+   public function index55()  {
+       echo 22;
+   }
    
    
    

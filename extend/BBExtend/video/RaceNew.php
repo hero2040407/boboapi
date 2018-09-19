@@ -417,10 +417,39 @@ class RaceNew
         }
     }
     
+    
+    // 对身高做单独处理一下。保证是厘米。
+    private function change_addi($addi_info)
+    {
+        $arr = json_decode($addi_info,1);
+        if ($arr  ) {
+         //   $keys = array
+            $find=0;
+            $key_arr = array_keys($arr);
+            foreach ( $key_arr as $key ) {
+                if ( preg_match('#身高#', $key) ) {
+                    $value = $arr[$key];
+                    if ($value > 0 && $value < 2) {
+                        $arr[$key] = intval( $value* 100);
+                        $find =1;
+                    }
+                }
+            }
+            if ( $find ) {
+                return \BBExtend\common\Json::encode($arr);
+            }
+            return $addi_info;
+        }
+        return $addi_info;
+    }
+    
+    
     private function insert_v5($ds_id=0, $qudao_id=0,
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
             $pic,$record_url, $pic_list, $addi_info,$is_upload, $record_pic)
     {
+        $addi_info = $this->change_addi($addi_info);
+        
         if ($this->has_err() ) {
             return false;
         }
