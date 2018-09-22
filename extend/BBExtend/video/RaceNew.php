@@ -398,7 +398,7 @@ class RaceNew
             $key_arr = array_keys($arr);
             foreach ( $key_arr as $key ) {
                 if ( preg_match('#身高#', $key) ) {
-                    $value = $arr[$key];
+                    $value = floatval( $arr[$key]);
                     if ($value > 0 && $value < 2) {
                         $arr[$key] = intval( $value* 100);
                         
@@ -444,7 +444,7 @@ class RaceNew
             $key_arr = array_keys($arr);
             foreach ( $key_arr as $key ) {
                 if ( preg_match('#身高#', $key) ) {
-                    $value = $arr[$key];
+                    $value = floatval( $arr[$key] );
                     if ($value > 0 && $value < 2) {
                         $arr[$key] = intval( $value* 100);
                         $find =1;

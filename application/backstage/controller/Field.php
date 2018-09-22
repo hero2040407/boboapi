@@ -2,9 +2,11 @@
 
 namespace app\backstage\controller;
 
+use app\backstage\service\SetRaceStatus;
+use BBExtend\backmodel\RaceField;
+use BBExtend\backmodel\RaceRegistration;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
-
 
 /**
  * 赛区接口
@@ -14,14 +16,17 @@ use BBExtend\DbSelect;
  */
 class Field extends Common
 {
+    const STOP = 0;
+    const SIGN_IN = 1;
+    const MATCH = 2;
+    const FINISH = 3;
     /**
      * 赛
      *
      * @return number[]|string[]|number[]
      */
     public function index($status = null, $is_valid = null, $per_page = 10, $page = 1, $ds_id = null, $field_id = null,
-                          $proxy_id = null
-    )
+                          $proxy_id = null)
     {
         $db = Sys::get_container_db_eloquent();
 
@@ -121,7 +126,7 @@ class Field extends Common
         $account->save();
 
 
-        $obj = new \BBExtend\backmodel\RaceField();
+        $obj = new RaceField();
         $obj->address = $address;
         $obj->title = $title;
         $obj->channel_id = $account->id;
@@ -167,7 +172,7 @@ class Field extends Common
     {
         $id = \BBExtend\Session::get_my_id();
 
-        $field = \BBExtend\backmodel\RaceField::find($field_id);
+        $field = RaceField::find($field_id);
 
         if (!$field_id) {
             return ['code' => 400, 'message' => '赛区id错误。'];
@@ -183,6 +188,84 @@ class Field extends Common
         return ['code' => 1];
     }
 
+    /**
+     * Notes: 复赛
+     * Date: 2018/9/6 0006
+     * Time: 下午 2:08
+     * @throws
+     */
+    public function repeat($area_id = '')
+    {
+        if (empty($area_id))
+            $this->error('area_id必须');
+
+        $register = new SetRaceStatus();
+        $model = new RaceField();
+
+        $res = $register->setAreaId($area_id)->repeat();
+
+        if ($res){
+            $model->where('id',$area_id)->increment('round');
+            $model->where('id',$area_id)->update(['status' => self::SIGN_IN]);
+            $this->success('成功开启复赛');
+        }
+        $this->error('没有可以参加复赛的选手');
+    }
+
+    /**
+     * Notes:按身高排序
+     * Date: 2018/9/17 0017
+     * Time: 下午 1:18
+     * @throws
+     */
+    public function sortByHeight($race_id = '', $area_id = '')
+    {
+        if (empty($race_id) || empty($area_id))
+            $this->error('race_id或area_id必须');
+
+        if ($area_id){
+            $res = (new RaceField())->where('id',$area_id)->update(['status' => 2]);
+            if (!$res) $this->error('请勿重复排序');
+        }
+
+        $set_status = new SetRaceStatus();
+        $set_status->setAreaId($area_id);
+        $set_status->setRaceId($race_id);
+        $set_status->sort();
+        $this->success('排序成功');
+    }
+
+    /**
+     * Notes: 把报名信息归到某个赛区
+     * Date: 2018/9/6 0006
+     * Time: 上午 9:21
+     * @throws
+     */
+    public function merge($race_id = '', $area_id = '', $to_area_id = '')
+    {
+        if (empty($area_id) || empty($to_area_id) || empty($race_id))
+            $this->error('race_id,area_id,to_area_id必须');
+
+//        $race_field = new RaceField();
+//        $to_race = $race_field->where('id',$to_area_id)->value('race_id');
+//        $races = $race_field->where('id','in',$area_id)->select('race_id');
+//        foreach ($races as $item){
+//            if ($item['race_id'] != $to_race){
+//                $this->error('请勿合并不同大赛的赛区'.$item['']);
+//            }
+//        }
+        $area_id = (array)$area_id;
+
+        $res = (new RaceRegistration())
+            ->where([
+                'zong_ds_id' => $race_id,
+                'ds_id' => ['in',$area_id]
+            ])->update(['ds_id' => $to_area_id]);
+//        RaceField::destroy($area_id);
+
+        if ($res) $this->success('赛区合并成功');
+        $this->error('赛区合并失败');
+    }
 }
 
 

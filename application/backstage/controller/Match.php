@@ -5,7 +5,6 @@
  * Date: 2018/8/19 0019
  * Time: 上午 9:18
  */
-
 namespace app\backstage\controller;
 
 use app\backstage\service\MatchList;
@@ -20,6 +19,12 @@ use think\cache\driver\File;
 //等待比赛 过号 弃权
 class Match extends Common
 {
+    protected $beforeActionList = ['access'];
+    protected function access()
+    {
+        if ($this->userInfo['level'] === 0)
+            $this->error('此账号无权限');
+    }
 
     /**
      * Notes: 大赛所有列表数据
@@ -86,7 +91,7 @@ class Match extends Common
      * @param string $race_id
      * @throws
      */
-    public function scoreIndex($area_id = '', $age = '', $race_id = '', $round = '')
+    public function scoreIndex($area_id = '', $race_id = '', $age = '', $round = '')
     {
         $list = MatchList::getInstance();
 
@@ -147,14 +152,15 @@ class Match extends Common
 
         $user_info = $register_model->where([
             'id' => $id,])->find();
-
         if ($user_info['race_status'] == 11) {
             $this->error('此用户已签到');
         }
+        if (!$user_info['sort']) $this->error('请先给选手生成参赛编号');
 
-        $max_sort = (new SetRaceStatus())->signIn($id, $user_info);
-
-        if (!$max_sort) $this->error('此大赛还未设置分组,请先设置分组');
+        $register_model->save(
+            ['race_status' => SetRaceStatus::SING_IN, 'signin_time' => time()],
+            ['id' => $id]
+        );
 
         $record_model->uid = $user_info['uid'];
         $record_model->name = $user_info['name'];
@@ -162,7 +168,7 @@ class Match extends Common
         $record_model->sex = $user_info['sex'];
         $record_model->height = $user_info['height'];
         $record_model->race_id = $user_info['zong_ds_id'];
-        $record_model->sort = $max_sort;
+        $record_model->sort = $user_info['sort'];
         $record_model->round = 1;
 //        设置签到人的签到顺序
         $record_model->area_id = $user_info['ds_id'];
@@ -182,7 +188,7 @@ class Match extends Common
     public function read($id = '')
     {
         if (empty($id))
-            $this->error('id必须');
+        $this->error('id必须');
         $record_model = new RaceRecord();
         $record = $record_model->get($id);
 
@@ -196,10 +202,12 @@ class Match extends Common
 
         $user_info = (new RaceRegistration())->where($map)->find();
         $user_info['sort'] = $record->sort;
-//        $user_info['score_record'] = (new RaceRecordHistory())->where([
-//            'race_id' => $record->race_id,
-//            'uid' => $record->uid
-//        ])->select();
+
+        $user_info['score_record'] = (new RaceRecordHistory())->field('*,avg(score) as score')->where([
+            'race_id' => $record->race_id,
+            'uid' => $record->uid
+        ])->group('time')->order('id desc')->select();
+
         $this->success('', '', $user_info);
     }
 
@@ -247,61 +255,41 @@ class Match extends Common
      * Time: 上午 9:43
      * @throws
      */
-    public function advance($id = '')
+    public function advance($race_id = '', $area_id = '', $id = '', $age = '')
     {
+        if (empty($id) || empty($age) || empty($race_id) || empty($area_id))
+            $this->error('id,race_id,area_id,age必须');
+
+        $list = MatchList::getInstance();
         $record_model = new RaceRecord();
-        if (empty($id))
-            $this->error('id必须');
-
+        $register = new RaceRegistration();
         $ids = (array)$id;
-        $map['id'] = ['in', $ids];
 
-        $records = $record_model
-            ->field('id,create_time,update_time,delete_time,score', true)
-            ->where($map)->select();
+        $time = time();
 
-        $records = json_decode(json_encode($records), true);
+        $list->setRaceId($race_id);
+        $list->setAreaId($area_id);
+        $list->setAge($age);
+        $list->setRound();
+        $map = $list->setMap();
 
-        $uids = [];
-        foreach ($records as &$item) {
-            $round = $item['round'];
-            $item['round'] = $item['round'] + 1;
-            $uids[] = $item['uid'];
-            $area_id = $item['area_id'];
-            $race_id = $item['race_id'];
-        }
+        $map['update_time'] = 0;
+        $map['delete_time'] = 0;
+        $res = $record_model->where($map)->find();
+        if ($res) $this->error('请将所有选手打分或过号以后再晋级');
 
-        $this->finishField($area_id, $round);
+        $map = getValidParam($map,'area_id,race_id,age,round,delete_time');
+        $record_model->save(['delete_time' => $time], $map);
 
-//        $groups = (new File())->get($race_id.'age_group');
-//        foreach ($groups as $key => $item){
-//            $is_finish = $redis->get($area_id.$item['age'].'finish');
-//            if ($is_finish != 1) $this->error('请先结束所有组别的比赛场次后再晋级选手');
-//        }
-//        foreach ($groups as $item){
-//            $redis->set($area_id.$item['age'].'finish', null);
-//        }
+        $uids = $record_model->where(['id' =>['in', $ids]])->column('uid');
 
-        if ($area_id) {
-            $res = $record_model->where([
-                'uid' => ['in', $uids],
-                'round' => $round + 1,
-                'area_id' => $area_id
-            ])->find();
-        } else {
-            $res = $record_model->where([
-                'uid' => ['in', $uids],
-                'round' => $round + 1,
-                'race_id' => $race_id
-            ])->find();
-        }
+        $res = $register->where([
+            'zong_ds_id' => $race_id,
+            'uid' => ['in',$uids]
+        ])->update(['race_status' => SetRaceStatus::ADVANCE]);
 
-        if ($res)
-            $this->error('不能重复晋级序号为'.$res['sort'].'的选手');
-
-        $res = $record_model->saveAll($records);
         if ($res) $this->success('晋级成功');
-        $this->error('晋级失败');
+        $this->error('请勿重复晋级');
     }
 
     /**
@@ -310,34 +298,30 @@ class Match extends Common
      * Time: 下午 3:52
      * @throws
      */
-    public function finishRound($area_id = '', $age = '')
+    public function finishRound($race_id = '', $area_id = '', $age = '')
     {
-        if (empty($area_id) || empty($age))
-            $this->error('area_id和age必须');
+        if (empty($race_id) || empty($age))
+            $this->error('race_id和age必须');
 
         $list = MatchList::getInstance();
+        $list->setRaceId($race_id);
         $list->setAreaId($area_id);
         $list->setAge($age);
-        $round = $list->setRound();
+        $list->setRound();
+        $map = $list->setMap();
 
-        (new RaceRecord())->save(
-            ['delete_time' => time()],
-            [
-                'area_id' => $area_id,
-                'age' => ['between', $age],
-                'round' => $round,
-                'delete_time' => 0
-            ]);
+        $mark_map = $map;
+        $mark_map['delete_time'] = 0;
+
+        (new RaceRecord())->save(['delete_time' => time()], $mark_map);
 
         $list = (new RaceRecord())
             ->field('uid,round,name,sex,age,sort,race_id,area_id,height,create_time')
-            ->where([
-            'area_id' => $area_id,
-            'age' => ['between', $age],
-            'round' => $round,
-        ])->group('uid')->order('id')->select();
+            ->where($map)->group('uid')->order('id')->select();
 
-        $list = json_decode(json_encode($list),true);
+        foreach ($list as &$item){
+            $item = $item->getData();
+        }
 
         $res = (new RaceRecord())->insertAll($list);
 
@@ -348,57 +332,77 @@ class Match extends Common
     }
 
     /**
-     * Notes: 结束本场比赛
+     * Notes: 开始下一场比赛
      * Date: 2018/8/28 0028
      * Time: 上午 9:55
      * @throws
      */
-    private function finishField($area_id, $round)
+    public function finishField($race_id = '', $area_id = '', $age = '')
     {
-        if (empty($area_id))
-            $this->error('area_id必须');
+        if (empty($race_id) || empty($age))
+            $this->error('race_id和age必须');
+        $model = new RaceRecord();
+        $register = new RaceRegistration();
+        $list = MatchList::getInstance();
+        $list->setRaceId($race_id);
+        $list->setAreaId($area_id);
+        $list->setAge($age);
+        $round = $list->setRound();
+        $map = $list->setMap();
 
-        $res = (new RaceRecord())->where([
-            'area_id' => $area_id,
-            'round' => $round,
-            'update_time' => 0,
-            'delete_time' => 0
-        ])->find();
+        $map['update_time'] = 0;
+        $map['delete_time'] = 0;
+        $res = $model->where($map)->find();
+        if ($res) $this->error('请先晋级再结束本场比赛');
 
-        if ($res) $this->error('比赛还未完成,请勿晋级');
+        $register_map['zong_ds_id'] = $map['race_id'];
+        $register_map['age'] = ['between', $age];
+        if (isset($map['area_id'])) $register_map['ds_id'] = $map['area_id'];
+        $register_map['race_status'] = ['<',SetRaceStatus::ADVANCE];
+        $register->where($register_map)->update(['race_status' => SetRaceStatus::LOST]);
 
-//        $list = MatchList::getInstance();
-//        $list->setAreaId($area_id);
-//        $list->setAge($age);
-//        $round = $list->setRound();
-        (new RaceRecord())->save(
-            ['delete_time' => time()],
-            [
-                'area_id' => $area_id,
-                'round' => $round,
-                'delete_time' => 0
-            ]);
-//        $res = Sys::get_container_redis()->set($area_id.$age.'finish', 1);
+        $register_map['race_status'] = SetRaceStatus::ADVANCE;
+        $records = $register->field('uid,age,name,sex,height,sort')->where($register_map)->select();
+
+        foreach ($records as &$item) {
+            $item = $item->getData();
+            $item['round'] = $round + 1;
+            $item['race_id'] = $race_id;
+            $item['area_id'] = $area_id;
+        }
+
+        $res = $model->insertAll($records);
+
+        if ($res) $register->where($register_map)->update(['race_status' => SetRaceStatus::SING_IN]);
+
+        if ($res){
+            $this->success('本场比赛结束');
+        }
+        $this->error('本场比赛结束失败');
     }
 
     /**
-     * Notes: 结束当天的比赛
-     * Date: 2018/8/30 0030
-     * Time: 下午 4:41
-     * @param string $race_id
-     * @param string $area_id
+     * Notes: 结束今天的比赛
+     * Date: 2018/8/19 0019
+     * Time: 上午 10:40
      * @throws
      */
-    public function finishDays($race_id = '', $area_id = '')
+    public function finishDay($race_id = '', $area_id = '')
     {
         if (empty($area_id) || empty($race_id))
             $this->error('area_id,race_id必须');
 
+        $match = new MatchList();
+        $match->setRaceId($race_id);
+        $match->setAreaId($area_id);
+        $map = $match->setMap();
+
         $change = (new SetRaceStatus())->setAreaId($area_id);
         $change->setRaceId($race_id);
-        $change->clearAllRedis();
-        $change->moveToRecordHistory();
-        $this->success('比赛结束成功');
+        $res = $change->moveToRecordHistory($map);
+
+        if ($res) $this->success('今日比赛结束成功');
+        $this->success('今日比赛结束失败');
     }
 
     /**
@@ -412,35 +416,36 @@ class Match extends Common
         if (empty($area_id) || empty($race_id))
             $this->error('area_id,race_id必须');
 
+        $match = new MatchList();
+        $match->setRaceId($race_id);
+        $match->setAreaId($area_id);
+        $map = $match->setMap();
+
+        (new RaceRegistration())->where([
+            'ds_id' => $area_id,
+            'zong_ds_id' => $race_id,
+            'race_status' => ['<',SetRaceStatus::ADVANCE]
+        ])->update([
+            'race_status' => SetRaceStatus::LOST
+        ]);
+
         $change = (new SetRaceStatus())->setAreaId($area_id);
         $change->setRaceId($race_id);
-        $change->advance();
-        $change->lost();
         $change->clearAllRedis();
-        $change->moveToRecordHistory(1);
-        $res = RaceField::where('id', $area_id)->update(['status' => 3]);
+        $res = $change->moveToRecordHistory($map);
+
+        RaceField::where('id', $area_id)->update(['status' => Field::FINISH]);
+
         if ($res) $this->success('比赛结束成功');
         $this->error('比赛结束失败');
     }
 
+//    --大赛
+//        --赛区
+//          --复赛轮次
+//              --比赛场次
+//                  --比赛场次中的轮次
 
-    /**
-     * Notes: 本次大赛结束
-     * Date: 2018/8/21 0021
-     * Time: 上午 11:14
-     */
-    public function finishRace($race_id = '')
-    {
-        if (empty($race_id))
-            $this->error('race_id必须');
-
-        $change = (new SetRaceStatus())->setRaceId($race_id);
-        $change->getRaceAdvanceUids();
-        $change->raceAdvance();
-        $change->raceLost();
-
-        $this->success('本次大赛结束成功');
-    }
 
     /**
      * Notes: 最终晋级名单
@@ -484,38 +489,19 @@ class Match extends Common
      */
     public function updateUsers($race_id = '', $area_id = '')
     {
-        $map['ds_id'] = 19;
-        $arr = (new RaceRegistration())->where($map)->select();
-
-
-        $arr = json_decode(json_encode($arr), true);
-
-        foreach ($arr as $item) {
-            $map1['id'] = $item['id'];
-            $age['age'] = rand(1, 16);
-            (new RaceRegistration())->save($age, $map1);
-        }
-        $this->success('修改用户成功');
-    }
-
-    /**
-     * Notes:
-     * Date: 2018/8/23 0023
-     * Time: 下午 4:12
-     * @throws
-     */
-    public function moveData($area_id = '')
-    {
-
-//        $map = [
-//            'area_id' => $area_id,
-//        ];
-//        $arr = (new RaceRecord())->where($map)->select();
-//        $data = json_decode(json_encode($arr), true);
-
-//        $res = (new RaceRecordOne())->saveAll($data);
-
-//        if ($res) $this->success('数据移动成功');
-//        $this->error('数据移动失败');
+        $change = (new SetRaceStatus())->setAreaId($area_id);
+        $change->setRaceId($race_id);
+        $change->clearAllRedis();
+//        $map['ds_id'] = 19;
+//        $arr = (new RaceRegistration())->where($map)->select();
+//
+//        $arr = json_decode(json_encode($arr), true);
+//
+//        foreach ($arr as $item) {
+//            $map1['id'] = $item['id'];
+//            $age['age'] = rand(1, 16);
+//            (new RaceRegistration())->save($age, $map1);
+//        }
+//        $this->success('修改用户成功');
     }
 }

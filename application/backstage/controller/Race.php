@@ -1,9 +1,12 @@
 <?php
 namespace app\backstage\controller;
 
+use app\backstage\service\SetRaceStatus;
+use BBExtend\backmodel\RaceField;
+use BBExtend\backmodel\RaceRegistration;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
-
+use think\cache\driver\File;
 
 
 class Race  extends Common
@@ -21,9 +24,12 @@ class Race  extends Common
     }
     
     
-    public function edit_valid($ds_id=0, $is_valid) {
+    public function edit_valid($ds_id = 0, $is_valid) {
         $db = Sys::get_container_db_eloquent();
-        
+        $group = (new File())->get($ds_id.'age_group');
+        if (!$group) $this->error('请先设置分组');
+        $count = (new \BBExtend\backmodel\RaceField())->where('race_id',$ds_id)->count();
+        if (!$count) $this->error('请先添加赛区');
        // Sys::debugxieye($is_valid);
         $is_valid = $is_valid ? 1 : 0 ;
         //Sys::debugxieye($is_valid);
@@ -47,15 +53,17 @@ class Race  extends Common
     {
         $time = time();
      //   $proxy_id = input("get.proxy_id") ;
-        
+        $map = [
+            'parent' => 0,
+            'delete_time' => null
+        ];
         $db = Sys::get_container_db_eloquent();
         $paginator = $db::table('ds_race')->select(['id',]);
-        $paginator =  $paginator->where( "parent",0 );// 确保只查大赛
+        $paginator =  $paginator->where($map);// 确保只查大赛
         
         if ($is_active != null ) {
             $paginator =  $paginator->where( "is_active",$is_active );
             $paginator =  $paginator->where( "end_time",">", time() );
-            
         }
         //Sys::debugxieye($proxy_id."!2!");
         //Sys::debugxieye("param2". input("param.proxy_id") );
@@ -140,8 +148,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1,$money=0,$upload_type=1,$reward=''
-            )
+            $group_or_person=1,$money=0,$upload_type=1)
     {
         
         $admin = \BBExtend\model\BackstageAdmin::find( $proxy_id );
@@ -178,7 +185,6 @@ class Race  extends Common
        $race->online_type = $online_type;
        $race->money = floatval( $money );
        $race->upload_type = $upload_type;
-       $race->reward = $reward;
        $race->save();
         
         
@@ -250,8 +256,7 @@ class Race  extends Common
         $race->register_end_time = intval( $register_end_time );
         $race->start_time = intval( $start_time );
         $race->end_time = intval( $end_time );
-        
-        
+
         $race->uid = intval( $uid );
         $race->title = strval( $title );
         $race->banner_bignew = strval( $banner );
@@ -321,7 +326,42 @@ class Race  extends Common
         return ['code'=>1];
     }
 
+    /**
+     * Notes:开启总决赛
+     * Date: 2018/9/19 0019
+     * Time: 下午 1:34
+     * @throws
+     */
+    public function startFinal($race_id = '')
+    {
+        if (empty($race_id))
+            $this->error('race_id必须');
+        $register = new RaceRegistration();
+        $res = (new RaceField())->where('race_id',$race_id)
+            ->whereIn('status',[Field::SIGN_IN,Field::MATCH])->value('id');
 
+        if($res) $this->error('还有赛区的比赛未完成');
+
+        $count = (new RaceField())->where('race_id',$race_id)
+            ->where('status',Field::STOP)->count();
+        if ($count > 1) $this->error('请先将非总决赛的赛区设为结束状态');
+
+        $area_id = (new RaceField())->where('race_id',$race_id)
+            ->where('status',Field::STOP)->value('id');
+
+        if (!$area_id) $this->error('请添加一个总决赛赛区并将其设为等待状态');
+
+        $res = $register->where([
+            'zong_ds_id' => $race_id,
+            'race_status' => SetRaceStatus::ADVANCE
+        ])->update([
+            'ds_id' => $area_id,
+            'race_status' => SetRaceStatus::SING_UP
+        ]);
+
+        if ($res) $this->success('大赛开启成功');
+        $this->error('大赛开启失败');
+    }
 }
 
 

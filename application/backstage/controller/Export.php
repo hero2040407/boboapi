@@ -7,7 +7,6 @@
  */
 namespace app\backstage\controller;
 
-use app\backstage\service\MiddleModel;
 use BBExtend\Sys;
 use BBExtend\backmodel\RaceField;
 use think\Controller;

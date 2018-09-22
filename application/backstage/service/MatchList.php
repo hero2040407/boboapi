@@ -21,7 +21,6 @@ class MatchList
     private $age;
     private $sex;
     private $list;
-    private $lost_uids;
     private static $instance;
 
     public static function getInstance()
@@ -75,14 +74,10 @@ class MatchList
             $map['age'] = ['between',$this->age];
         if (!empty($this->area_id))
             $map['area_id'] = $this->area_id;
-        if (!empty($this->race_id)){
+        if (!empty($this->race_id))
             $map['race_id'] = $this->race_id;
-            $map['area_id'] = 0;
-        }
         if ($this->sex !== null)
             $map['sex'] = $this->sex;
-//        if ($this->lost_uids)
-//            $map['uid'] = ['in',$this->lost_uids];
 
         return $map;
     }
@@ -110,11 +105,8 @@ class MatchList
 
         $map = $this->setMap();
         $record_model = new RaceRecord();
-
-        $data = $record_model->where($map)->order('id')->select();
-
+        $data = $record_model->where($map)->order('height,sort')->select();
         $this->list = json_decode(json_encode($data),true);
-
         return $this->list;
     }
 
@@ -170,25 +162,12 @@ class MatchList
      */
     public function scoreIndex()
     {
-//        $array = (array)$this->list;
-//        $data = [];
-//        $list = array_filter($array, function($map){
-//            return $map['delete_time'] > 0;
-//        });
-//        array_multisort(array_column($list,'score'), SORT_DESC, $list);
-//        foreach ($list as $item){
-//            $data[] = $item;
-//        }
         $map = $this->setMap();
         $record_model = new RaceRecord();
 
         $data = $record_model->field('*,max(id) as id,avg(score) as avg,sum(score) as sum')
             ->where($map)->group('uid')->order('sum desc')->select();
 
-//        if ($this->age){
-//            $type = Sys::get_container_redis()->get($this->area_id.$this->age.'finish');
-//            if ($type == 1) $data['type'] = 1;
-//        }
         $ids = [];
         foreach ($data as $item){
             $ids[] = $item['id'];
@@ -200,6 +179,7 @@ class MatchList
             ])->select();
 
             foreach ($data as &$item){
+                $item['score'] = 0;
                 foreach ($list as $value){
                     if ($item['uid'] == $value['uid']){
                         $item['score'] = $value['score'];

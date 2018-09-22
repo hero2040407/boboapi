@@ -139,7 +139,6 @@ class Common extends Controller
             $my_id = \BBExtend\Session::get_my_id();
 //            $my_id = -1;
             if ($my_id !== false) { // 已登录
-//                 Sys::debugxieye(213);
 
                 //第一步，路由校验。
                 if ( $my_id== -1 ){
@@ -148,18 +147,12 @@ class Common extends Controller
                     $role = $this->get_userinfo_role();
                 }
 
-
-        //        Sys::debugxieye(33341);
-
                 $result = \app\backstage\model\Auth::check_route($role, strtolower( $controller), strtolower(  $action ) );
                 if ($result ===false ) {
-//                     Sys::debugxieye(214);
-            //        Sys::debugxieye(33342);
                     header('Content-Type:application/json; charset=utf-8');
                     $arr = array('code'=>403,'message'=>'账号权限错误');
                     exit(json_encode($arr));
                 }
-           //     Sys::debugxieye(33343);
 
                 // 第2步，请求参数注入。
                 $result = \app\backstage\model\Auth::check_param($role, $my_id, strtolower( $controller), strtolower(  $action ) );
@@ -201,17 +194,18 @@ class Common extends Controller
     {
         $admin_log = new AdminActionLog();
         $user_info = $this->userInfo;
-        $admin_log->action_ip = getClientIp(1);
-        $admin_log->remark = $user_info['realname'].$action;
-        $admin_log->user_id = $user_info['id'];
-        $admin_log->create_time = time();
-        $admin_log->save();
+        if ($user_info['level'] === 0){
+            $admin_log->action_ip = getClientIp(1);
+            $admin_log->remark = $user_info['realname'].$action;
+            $admin_log->user_id = $user_info['id'];
+            $admin_log->create_time = time();
+            $admin_log->save();
+        }
     }
     
     public function _empty()
     {
         $this->error('此路由不存在');
     }
-
 }
 

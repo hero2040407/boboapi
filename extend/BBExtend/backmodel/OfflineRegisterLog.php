@@ -108,42 +108,40 @@ class OfflineRegisterLog extends Model
     * 谢烨，这是专门给导出的做到。
     */
    public function get_export(){
-      
-       
+
+
        $user = \BBExtend\model\User::find( $this->uid );
        $user_pic = $user->get_userpic();
        
        $race = \BBExtend\backmodel\Race::find( $this->zong_ds_id );
        $race_title = $race->title;
-       
+
        $field = \BBExtend\backmodel\RaceField::find( $this->ds_id );
-       $field_title = $field->title;
-       
+       $field_title = $field ? $field->title : '';
+
        //$age=0;
        $age=date("Y") - substr( $this->birthday,0,4 );
        
        
        return [
-               'id' =>$this->id,
-               'create_time' => date("Y-m-d H:i", $this->create_time),  //报名时间
-               'uid'=>$this->uid,
-               'money'=>$this->money,//缴纳的费用
-               'phone'=>$this->phone, // 手机
-               'sex'=>$this->sex ?"男":"女",
-               'birthday'=>$this->birthday,
-               'age'  => $age,
-               'name'=>$this->name,
-               'height'=>$this->height,
-               'weight'=>$this->weight,
-               
-               'pic'   => $this->pic,
-               
-               'race_title' =>$race_title,
-               'race_id'    => $this->zong_ds_id,
-               'field_title' =>$field_title,
-               'field_id' =>$this->ds_id,
-               
-               
+           'id' =>$this->id,
+           'create_time' => date("Y-m-d H:i", $this->create_time),  //报名时间
+           'uid'=>$this->uid,
+           'money'=>$this->money,//缴纳的费用
+           'phone'=>$this->phone, // 手机
+           'sex'=>$this->sex ?"男":"女",
+           'birthday'=>$this->birthday,
+           'age'  => $age,
+           'name'=>$this->name,
+           'height'=>$this->height,
+           'weight'=>$this->weight,
+           'sort'=>$this->sort,
+           'pic'   => $this->pic,
+
+           'race_title' =>$race_title,
+           'race_id'    => $this->zong_ds_id,
+           'field_title' => $field_title,
+           'field_id' => $this->ds_id,
        ];
    }
    
@@ -184,6 +182,7 @@ class OfflineRegisterLog extends Model
         
         return [
                 'id' =>$this->id,
+                'sort' =>$this->sort,
                 'create_time' =>$this->create_time, //报名时间
                 'uid'=>$this->uid,
                 'money'=>$this->money,//缴纳的费用

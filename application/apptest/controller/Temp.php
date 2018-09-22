@@ -24,20 +24,26 @@ class Temp extends T1
    public function index()
    {
        
-       $arr=[
-           "2身高2"=>12.2,
-           "题主" => 2112,
-       ];
-       $key_arr = array_keys($arr);
-       foreach ( $key_arr as $key ) {
-           if ( preg_match('#身高#', $key) ) {
-               $value = $arr[$key];
-               if ($value > 0 && $value < 2) {
-                   $arr[$key] = intval( $value* 100);
-               }
-           }
+       $a =floatval("0米");
+       if ($a >0 ) {
+           echo 1;
        }
-       dump($arr);
+       echo 2;
+       
+//        $arr=[
+//            "2身高2"=>12.2,
+//            "题主" => 2112,
+//        ];
+//        $key_arr = array_keys($arr);
+//        foreach ( $key_arr as $key ) {
+//            if ( preg_match('#身高#', $key) ) {
+//                $value = $arr[$key];
+//                if ($value > 0 && $value < 2) {
+//                    $arr[$key] = intval( $value* 100);
+//                }
+//            }
+//        }
+//        dump($arr);
    }
    
    public function index55()  {

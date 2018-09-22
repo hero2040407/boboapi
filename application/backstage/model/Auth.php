@@ -180,102 +180,106 @@ and exists(
      * @param unknown $action
      * @return boolean
      */
-    public static function check_route( $role, $controller, $action )
+    public static function check_route($role, $controller, $action)
     {
         
      //   return true;
         
-        
-        if ($role=='admin') {
+        if ($role == 'admin') {
             return true;
         }
         
         $route = $controller . '/' . $action;
-        
-        
-        // 代理账号
-        if ( $role=='proxy' ) {
-            if (in_array($route, [
-                    'statistics/index',
-                    'message/add',
-                    'message/index',
-                    'user/index',
-                    'user/detail',
-                    'user/export_list',
-                    'generateform/index',
-                    'generateform/save',
 
-                    'group/index',
-                    'group/save',
-                    'registration/index',
-                    'registration/read',
-                    'race/detail',
-                    'field/edit',
-                    'field/add',
-                    'field/index',
-                    'race/index',
-                    'admin/edit',
-                    'admin/logout',
-                    'admin/login',
-                    'admin/index',
-                    'admin/getid',
-                    
-            ] )) {
-                return true;
-            }
-            return false;
-            
-            
+        // 代理账号
+        if ($role == 'proxy') {
+            return in_array($route, [
+                'statistics/index',
+                'message/add',
+                'message/index',
+                'user/index',
+                'user/detail',
+                'user/export_list',
+                'generateform/index',
+                'generateform/save',
+
+                'match/index',
+                'match/signin',
+                'match/read',
+                'match/late',
+                'match/marking',
+                'match/advance',
+                'match/finishround',
+                'match/finishfield',
+                'match/finishday',
+                'match/finisharea',
+                'match/scoreindex',
+
+                'group/index',
+                'group/save',
+                'registration/index',
+                'registration/create',
+                'registration/read',
+                'registration/changearea',
+
+                'race/detail',
+                'field/edit',
+                'field/add',
+                'field/index',
+                'field/repeat',
+                'field/merge',
+
+                'race/index',
+                'race/startfinal',
+                'admin/edit',
+                'admin/logout',
+                'admin/login',
+                'admin/index',
+                'admin/getid',
+            ]);
         }
         
         // 渠道账号权限。
-        if ( $role=='channel' ) {
-            
-            if (in_array($route, [
-                    'message/add',
-                    'message/index',
-                    'user/index',
-                    'user/detail',
-                    'user/export_list',
+        if ($role == 'channel') {
+            return in_array($route,[
+                'message/add',
+                'message/index',
+                'user/index',
+                'user/detail',
+                'user/export_list',
 
-                    'match/index',
-                    'match/signin',
-                    'match/read',
-                    'match/late',
-                    'match/marking',
-                    'match/advance',
-                    'match/finishround',
-                    'match/finishfield',
-                    'match/finisharea',
-                    'match/scoreindex',
+                'match/index',
+                'match/signin',
+                'match/read',
+                'match/late',
+                'match/marking',
+                'match/advance',
+                'match/finishround',
+                'match/finishfield',
+                'match/finishday',
+                'match/finisharea',
+                'match/scoreindex',
 
-                    'mobilemessage/sendtoadvance',
-                    'mobilemessage/index',
-                    'mobilemessage/notified',
+                'mobilemessage/sendtoadvance',
+                'mobilemessage/index',
+                'mobilemessage/notified',
 
-                    'group/index',
-                    'registration/read',
-                    'field/edit',
-                    'field/index',
-                    'race/detail',
-                    'race/index',
-                    'admin/edit',
-                    'admin/logout',
-                    'admin/login',
-                    'admin/getid',
-            ] )) {
-                return true;
-            }
-            
-            // 叫号系统全部支持
-            if ( $controller == 'round' ) {
-                return true;
-            }
-            
-            
-            return false;
-            
-            
+                'group/index',
+                'registration/read',
+                'registration/create',
+                'registration/advance',
+                'field/edit',
+                'field/index',
+                'field/repeat',
+                'field/sortbyheight',
+
+                'race/detail',
+                'race/index',
+                'admin/edit',
+                'admin/logout',
+                'admin/login',
+                'admin/getid',
+            ]);
         }
         return false;
     }
