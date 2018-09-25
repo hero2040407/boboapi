@@ -213,7 +213,6 @@ exists(
 
 //        大赛排序
         $res = (new RaceRegistration())->where([
-            'zong_ds_id' => $ds_id,
             'ds_id' => $field_id
         ])->where('sort','not null')->find();
 
