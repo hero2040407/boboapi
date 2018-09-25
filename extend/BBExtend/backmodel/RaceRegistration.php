@@ -62,7 +62,7 @@ class RaceRegistration extends Model
         $data['register_info'] = [
             '身高' => $data['height'],
             '体重' => $data['weight']
-        ];;
+        ];
         $data['uid'] = $uid;
         $data['has_pay'] = 1;
         $data['has_dangan'] = 1;

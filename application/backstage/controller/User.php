@@ -1,6 +1,7 @@
 <?php
 namespace app\backstage\controller;
 
+use BBExtend\backmodel\RaceRegistration;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
 
@@ -161,6 +162,7 @@ exists(
      * 未过期大赛
      * 
      * @return number[]|string[]|number[]
+     * @throws
      */
     public function index($per_page=10,$page=1,$ds_id=null, $field_id=null,$proxy_id=null,
                             $uid = '', $phone = '', $name = '', $match_status = '', $sort = '',$age = '')
@@ -208,14 +210,25 @@ exists(
                 ->whereRaw('ds_race.proxy_id='.intval( $proxy_id ));
             });
         }
-        
-        
-        $paginator = $paginator->orderBy('height')->paginate($per_page, ['*'],'page',$page);
+
+//        大赛排序
+        $res = (new RaceRegistration())->where([
+            'zong_ds_id' => $ds_id,
+            'ds_id' => $field_id
+        ])->where('sort','not null')->find();
+
+        if ($res){
+            $paginator->selectSub('MID(sort,1,1)','key')->orderBy('key');
+            $paginator->selectSub('MID(sort,2,10)+1','sort')->orderBy('sort');
+        }
+        else $paginator->orderBy('height');
+
+        $paginator = $paginator->paginate($per_page, ['*'],'page',$page);
+
         $result=[];
         foreach ($paginator as $v) {
             $result[]= $v->id;
-        }  
-        
+        }
 
         $new=[];
         if ($result){
@@ -232,7 +245,7 @@ exists(
             }
         }
 
-        return ['code'=>1, 'data'=>['list' => $new, 
+        return ['code'=>1, 'data'=>['list' => $new,
                 'pageinfo' =>$this->get_pageinfo($paginator, $per_page) ]];
     }
 
