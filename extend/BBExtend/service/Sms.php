@@ -52,7 +52,7 @@ class Sms
             '13100000029', //原来沈德志重复绑定手机账号
             '15822224562', // 沈德志  绑定QQ  所有服务器都可以通过
             '15850502439', // 沈德志
-
+            
             // web 测试账号
             '13100000031',
             '13100000032',
@@ -130,7 +130,7 @@ class Sms
             if($status == 200){
                 return ['code'=>1,'message'=>'发送成功,请检查手机短信!'];
             }else{
-                return ['code'=>0,'message'=>$error[ $status ]|| $error[ '500' ] ]  ;
+                return ['code'=>0,'message'=>$error[ $status ] ]  ;
             }
         }else {
             return ['code'=>0,'message'=>'手机号错误' ];
@@ -178,7 +178,7 @@ class Sms
             if($status == 200){
                 return ['code'=>1,'message'=>'校验成功' ];
             }else{
-                return ['code'=>0,'message'=>$error[ $status ]|| $error[ '500' ] ]  ;
+                return ['code'=>0,'message'=>$error[ $status ] ]  ;
             };
         } else {
             return ['code'=>0,'message'=>'手机号和验证码都必须传'];
