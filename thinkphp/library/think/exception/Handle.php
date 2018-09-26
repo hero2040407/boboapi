@@ -260,7 +260,7 @@ class Handle
      * 获取常量列表
      * @return array 常量列表
      */
-    private static function getConst()
+    protected static function getConst()
     {
         return get_defined_constants(true)['user'];
     }
