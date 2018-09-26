@@ -24,7 +24,7 @@ class User   extends Common
 
         $map = ['has_dangan' => 1, 'has_pay' => 1];
         if ($sex !== '') $map['sex'] = $sex;
-        if ($match_status) $map['race_status'] = $match_status;
+        if ($match_status !== '') $map['race_status'] = $match_status;
         if ($age) $age = explode(',', $age);
 
         $db = Sys::get_container_db_eloquent();
