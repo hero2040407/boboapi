@@ -47,6 +47,7 @@ class Registration extends Common Implements CommonInterface
         $list = RaceRegistration::get($id);
         if ($list) {
             $list->items = (new Images())->all($list->pic_id_list);
+            $list->birthday = strtotime($list->birthday);
         }
         else $list = [];
         $this->success('','',$list);
@@ -112,21 +113,21 @@ class Registration extends Common Implements CommonInterface
      */
     function update($id = '', $birthday = '', $height = 0, $weight = 0)
     {
-        if (empty($birthday)) $this->error('出生日期必须');
-        $data_time = date('Y-m',$birthday);
         $model = RaceRegistration::get($id);
         $register_info = $model->register_info;
-
         if ($height){
             $register_info['身高'] = $height;
+            $model->height = $height;
         }
         if ($weight){
             $register_info['体重'] = $weight;
+            $model->weight = $weight;
         }
-        $model->height = $height;
-        $model->weight = $weight;
-        $model->birthday = $data_time;
-        $model->age = date('Y') - substr($data_time, 0, 4);
+        if ($birthday){
+            $data_time = date('Y-m',$birthday);
+            $model->birthday = $data_time;
+            $model->age = date('Y') - substr($data_time, 0, 4);
+        }
         $model->register_info = $register_info;
 
         $res = $model->save();
