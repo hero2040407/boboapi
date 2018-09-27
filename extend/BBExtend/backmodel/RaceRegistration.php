@@ -8,7 +8,6 @@
 namespace BBExtend\backmodel;
 
 use app\backstage\service\SetRaceStatus;
-use BBExtend\Sys;
 use think\exception\HttpResponseException;
 use think\Model;
 
@@ -50,11 +49,15 @@ class RaceRegistration extends Model
             'zong_ds_id' => $zong_ds_id
         ])->find();
         if ($res) throwErrorMessage('此用户已报名');
-        $redis = Sys::get_container_redis();
+
         $data['birthday'] = date('Y-m',$data['birthday']);
         $group = (new SetRaceStatus())->getGroup($zong_ds_id, $data['birthday']);
         if (!$group) throwErrorMessage('此用户的年龄不能参加大赛');
-        $sort = $redis->get($ds_id.$group['age'].'sort');
+        $count = (new RaceRegistration())->where([
+            'zong_ds_id' => $zong_ds_id,
+            'ds_id' => $ds_id,
+            'age' => ['between',$group['age']],
+        ])->where('sort','not null')->count();
         $data['age'] = date('Y') - substr($data['birthday'], 0, 4);
         $data['register_info'] = [
             '身高' => $data['height'],
@@ -64,10 +67,7 @@ class RaceRegistration extends Model
         $data['has_pay'] = 1;
         $data['has_dangan'] = 1;
         $data['create_time'] = time();
-        if ($sort){
-            $sort = $redis->incr($ds_id.$group['age'].'sort');
-            $data['sort'] = $group['key'].$sort;
-        }
+        if ($count > 0) $data['sort'] = $group['key'].($count + 1);
 
         return self::save($data);
     }
