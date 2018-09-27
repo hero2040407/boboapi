@@ -188,7 +188,7 @@ class OfflineRegisterLog extends Model
                 'money'=>$this->money,//缴纳的费用
                 'phone'=>$this->phone, // 手机
                 'sex'=>$this->sex,
-                'birthday'=>$this->birthday,
+                'birthday'=>strtotime($this->birthday),
                 'age'  => $age,
                 'name'=>$this->name,
                 'height'=>$this->height,
