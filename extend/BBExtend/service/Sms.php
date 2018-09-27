@@ -36,29 +36,42 @@ class Sms
     {
         $this->phone = $phone;
         $this->test_phone=[
-                '13100000011',
-               
-                '13089898409', 
-                '15160005310',
-                '15858181110',
-                '15850502439',
-                '15267019207',
-                '18092558987',
-                '15384074906',
-                '17695556242',
-                
-                '13912995884',
-                '12345123456',
-                '12345612345',
-                '13089848408',
-                
-                
-                
-                '15857152467',
-                
-                
-            //    '15062280508',
-                
+            //  ios 测试账号
+            '13100000011',// ios审核使用
+            '13100000012',//
+            '13100000013',//
+            '13100000014',//
+            '13100000015',//
+
+            //  安卓测试账号
+            '13100000021',
+            '13100000022',
+            '13100000023',
+            '13100000024',
+            '13100000025',
+            '13100000029', //原来沈德志重复绑定手机账号
+            '15822224562', // 沈德志  绑定QQ  所有服务器都可以通过
+            '15850502439', // 沈德志
+            
+            // web 测试账号
+            '13100000031',
+            '13100000032',
+            '13100000033',
+            '13100000034',
+            '13100000035',
+
+            //测试账号组
+            '12345678910',
+            '12345678911',
+            '12345678912',
+            '12345678913',
+            '12345678914',
+            '12345678915',
+            '12345678916',
+            '12345678917',
+            '12345678918',
+            '12345678919',
+
         ];
     }
     
@@ -92,6 +105,7 @@ class Sms
         $data['phone']= $this->phone;
         
         $error= array(
+            '500'=>'远程服务器错误（短信发送失败）',
             '405'=>'请求参数中的appkey为空',
             '406'=>'非法的appkey',
             '456'=>'请求参数中的手机号码或者国家代码为空',
@@ -116,13 +130,13 @@ class Sms
             if($status == 200){
                 return ['code'=>1,'message'=>'发送成功,请检查手机短信!'];
             }else{
-                return ['code'=>0,'message'=>$error[ $status ]];
+                return ['code'=>0,'message'=>$error[ $status ] ]  ;
             }
         }else {
             return ['code'=>0,'message'=>'手机号错误' ];
         }
     }
-    
+
     /**
      * 检测密码是否用户填写正确。
      * @param unknown $code
@@ -141,6 +155,7 @@ class Sms
         $data['phone']= $phone;
         $data['code']= $code;
         $error= array(
+            '500'=>'远程服务器错误（短信发送失败）',
             '405'=>'请求参数中的appkey为空',
             '406'=>'非法的appkey',
             '408'=>'提交的验证码格式错误 ',
@@ -152,21 +167,20 @@ class Sms
             '468'=>'手机验证码错误',
             '469'=>'没有开启发送WebApi的开关',
             '471'=>'请求ip和绑定ip不符 ',
+            '475'=>'应用信息不存在，检查appKey是否低于2.0版本',
+            '477'=>'当前手机号码在怪兽BOBO每天最多可发送短信10条!',
+            '478'=>'当前手机号码在当前应用下12小时内最多可发送文本验证码5条. '
         );
         if($code && $phone ){
-            
             $res = $this->postRequest(config('CHECKURL'),$data);
             $json = json_decode($res,true);
             $status = $json['status'];
-            
-            
             if($status == 200){
-                
                 return ['code'=>1,'message'=>'校验成功' ];
             }else{
-                return ['code'=>0,'message'=>$error[ $status ]];
-            }
-        }else{
+                return ['code'=>0,'message'=>$error[ $status ] ]  ;
+            };
+        } else {
             return ['code'=>0,'message'=>'手机号和验证码都必须传'];
         }
         
@@ -182,8 +196,8 @@ class Sms
         curl_setopt( $ch, CURLOPT_POST, 1 );
         // 不验证https证书
         curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $params ) );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
         // 发送数据
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 
