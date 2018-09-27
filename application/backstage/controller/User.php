@@ -212,15 +212,11 @@ exists(
         }
 
 //        大赛排序
-        $res = (new RaceRegistration())->where([
-            'ds_id' => $field_id
-        ])->where('sort','not null')->find();
 
-        if ($res){
-            $paginator->selectSub('MID(sort,1,1)','key')->orderBy('key');
-            $paginator->selectSub('MID(sort,2,10)+1','sort')->orderBy('sort');
-        }
-        else $paginator->orderBy('height');
+        $paginator->orderBy('race_status');
+        $paginator->selectSub('MID(sort,1,1)','key')->orderBy('key');
+        $paginator->selectSub('MID(sort,2,10)+1','sort')->orderBy('sort');
+        $paginator->orderBy('height');
 
         $paginator = $paginator->paginate($per_page, ['*'],'page',$page);
 
