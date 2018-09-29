@@ -5,15 +5,16 @@ use BBExtend\model\User;
 use BBExtend\Sys;
 use BBExtend\DbSelect;
 
-use BBExtend\model\MoneyRainLog;
+use BBExtend\model\GameLog;
+use BBExtend\model\GameSources;
+
 use BBExtend\common\Client;
 
-//*
-//任务抽奖改成7天签到抽奖*/
 class  Guoqing
 {
-
-    const starTime = 1538280000;  //2018-09-30 12:00:00s
+    const gamename = '18Guoqing'; //游戏标示
+    const starTime = 1533323200;  //测试用
+    //const starTime = 1538323200;  //2018-09-30 12:00:00s
     const endTime =  1538280000; //2018-10-07 00:00:00
     /**
      * 查是否是游戏的有效时间
@@ -21,81 +22,85 @@ class  Guoqing
     private function valid_time()
     {
         $curent = time();
-
+        $hour = date('H');
+        if ($hour >= 21 ) {
+            return '小朋友今天的比赛已经结束啦，明天再接再厉哦！';
+        }
+        if( self::starTime > $curent  ){
+            return "游戏10月1日才开始哦~";
+        }
         if( self::starTime < $curent  &&  $curent >  self::endTime  ){
-            return true;
+            return "游戏已经结束啦，下次再来哦~";
         }
-        return false;
+        return '';
     }
 
 
 
-
-    public function check($token='',$uid=0)
+    //    获取我的今日数据
+    private function get_today_my_info($uid)
     {
-        if( self::starTime > $curent   ){
-            return ["code"=>0,'message'=>'游戏尚未开始(开始时间9月30日12点)！'];
-        }
-        if( self::endTime < $curent   ){
-            return ["code"=>0,'message'=>'游戏已经结束，下次再来玩哦！'];
-        }
-
-        $user = User::find($uid);
-        if (!$user) {
-            return ["code"=>0,'message'=>'uid error'];
-        }
-
-        if ( !$user->check_token($token ) ) {
-            return ['code'=>0,'message'=>'uid error'];
-        }
-        //if ($log) {
-        return ['code'=>1,'data'=>[
-            'my'=> self::get_today_my_info($uid) ],
-            'top50' => \BBExtend\user\MoneyRain::top50(),
-            'day' => \BBExtend\user\MoneyRain::get_day(),
-        ];
-    }
-
-
-
-
-    public static function get_today_my_info($uid)
-    {
-        $uid = intval($uid);
         $datestr = date("Ymd");
         $db = Sys::get_container_db_eloquent();
-        $sql="select * from bb_money_rain_log where uid=? and datestr= ?";
-        $row  = DbSelect::fetchRow($db, $sql,[ $uid,  $datestr]);
+        $sql="select * from bb_game_scores where uid=? and game=? and datestr=?";
+        $row  = DbSelect::fetchRow($db, $sql,[ $uid ,self::gamename,  $datestr]);
         if (!$row) {
-            return null;
+            return ['score' => 0 , 'ranking' => 9999999  ];
         }
-
-        $sql="select count(*) from bb_money_rain_log 
+        //
+        $sql="select count(*) from bb_game_scores 
              where datestr= ? and score>= ? ";
         $ranking  = DbSelect::fetchOne($db, $sql,[ $datestr, $row['score']]);
-
-        return ['score' =>$row['score'],'ranking' => $ranking  ];
-
+        return ['score' =>$row['score'],'ranking' => $ranking   ];
     }
 
+    //    获取我的今日数据
+    private function get_ranking($datestr,$source)
+    {
+        $db = Sys::get_container_db_eloquent();
+        $sql="select count(*) from bb_game_scores 
+             where datestr= ? and game=? and score>= ? ";
+        $ranking  = DbSelect::fetchOne($db, $sql,[ $datestr,self::gamename, $source]);
+        return $ranking ;
+    }
 
+    /**
+     * 计算排名时，得给出你超过了谁，需要查一下。
+     */
+    private function get_compare_target($uid,$score)
+    {
+        $uid = intval($uid);
+        $time = time();
+        $datestr = date("Ymd");
+        $db = Sys::get_container_db_eloquent();
+        $sql="select * from bb_game_scores where uid !=? and game=? and datestr= ? and score < ? 
+           order by score desc limit 1";
+        $row  = DbSelect::fetchRow($db, $sql,[ $uid,self::gamename,  $datestr, $score ]);
+        if (!$row) {
+            return "怪兽BOBO";
+        }else {
+            $user = \BBExtend\model\User::find( $row['uid'] );
+            return $user->get_nickname();
+        }
+    }
 
-
-    public static function top50()
+    //获取当天排行榜
+    private  function top50()
     {
         $db = Sys::get_container_db_eloquent();
         $datestr = date("Ymd");
 
         $sql="
-select * from bb_money_rain_log
+select * from bb_game_scores
 where datestr=?
+and game=?
 and score >0
-order by score desc, balance_time desc
+order by score desc, last_time desc
 limit 50
 ";
-        $result = DbSelect::fetchAll($db, $sql,[ $datestr ]);
-        $new=[];
         $i=0;
+        $rank=[];
+        $result = DbSelect::fetchAll($db, $sql,[ $datestr ,self::gamename,]);
         foreach ($result as $v) {
             $i++;
             $temp=[];
@@ -104,12 +109,111 @@ limit 50
             $temp['pic']      = $user->get_userpic();
             $temp['ranking'] = $i;
             $temp['score'] = $v['score'];
-
-            $new[]= $temp;
+            $rank[]= $temp;
         }
-        return $new;
+        return $rank;
     }
 
+
+
+
+    public function check($token='',$uid=0)
+    {
+        $message = $this->valid_time();
+        if($message){
+            return ["code"=>0,'message'=> $message  ];
+        }
+
+        $user = User::find($uid);
+        if (!$user) {
+            return ["code"=>0,'message'=>'用户信息失效请重新登录','relogin'=>'true'];
+        }
+
+        if ( !$user->check_token($token ) ) {
+            return ["code"=>0,'message'=>'用户信息失效请重新登录','relogin'=>'true'];
+        }
+
+        return ['code'=>1, 'data'=>[
+            'uid'=> $uid,
+             'my'=> self::get_today_my_info($uid) ],
+             'ranks' => self::top50(),
+             'date' => date("Ymd")
+        ];
+    }
+
+
+
+    //    提交成绩
+    public function play($token='',$uid=0,$score='')
+    {
+        $message = $this->valid_time();
+        if($message){
+            return ["code"=>0,'message'=> $message  ];
+        }
+
+        $user = User::find($uid);
+        if (!$user) {
+            return ["code"=>0,'message'=>'用户信息失效请重新登录','relogin'=>'true'];
+        }
+        if ( !$user->check_token($token ) ) {
+            return ["code"=>0,'message'=>'用户信息失效请重新登录','relogin'=>'true'];
+        }
+
+        $time = time();
+        $datestr = date("Ymd");
+
+        if (strlen( $score ) < 35 ) {
+            return ['code'=>0,'message'=>'参数错误'];
+        }
+
+        $score = substr($score, 30, 10);
+        $score = intval($score);
+        //日志数据
+        $log = new GameLog();
+        $log->uid = $uid;
+        $log->uid = $uid;
+        $log->game = "18Guoqing";
+        $log->datestr = $datestr;
+        $log->score = $score;
+        $log->create_time = $time;
+        $log->save();
+
+        // 记录排行
+        $daylog = GameSources::where( "uid",$uid )->where('game',"18Guoqing")->where('datestr',$datestr )->first();
+        $is_best=0;
+        $nickname='';
+        $max_score = 0;
+        if (!$daylog) {
+            $daylog = new GameSources();
+            $daylog->uid = $uid;
+            $daylog->game = "18Guoqing";
+            $daylog->datestr = $datestr;
+            $daylog->last_time = $time;
+            $daylog->score = $score;
+            $daylog->times=1;
+            $daylog->save();
+            $max_score = $score;
+        }else {
+            if ($score > $daylog->score) {
+                $daylog->score = $score;
+                $is_best = 1;
+                $max_score = $score;
+            } else {
+                $max_score = $daylog->score;
+            }
+            $daylog->last_time = $time;
+            $daylog->times = $daylog->times + 1;
+            $daylog->save();
+        }
+
+        return ['code'=>1,'data' =>[
+            'score'=>$score,
+            'isbest' =>$is_best,
+            'nickname' => self::get_compare_target($uid, $max_score ),
+            'ranking'  => self::get_ranking($datestr, $max_score),
+            'maxscore' => $max_score,
+        ] ];
+    }
 
 
 
@@ -165,20 +269,21 @@ limit 50
         $time = time();
         $db = Sys::get_container_db_eloquent();
 
-        $sql = "select * from bb_money_rain_reward where datestr=?";
-        $row = DbSelect::fetchRow($db, $sql,[ $datestr ]);
+        $sql = "select * from bb_game_rewards where datestr=? and game=?";
+        $row = DbSelect::fetchRow($db, $sql,[ $datestr ,self::gamename]);
         if ($row) {
-            return ['code'=>0,'message'=>'已经发奖过了' ];
+            return ['code'=>0,'message'=>'今天已经发奖过了' ];
         }
 
         $sql="
-select * from bb_money_rain_log
+select * from bb_game_scores
 where datestr=?
+and game=?
 and score >0
-order by score desc, balance_time desc
+order by score desc, last_time desc
 limit 50
 ";
-        $result = DbSelect::fetchAll($db, $sql,[ $datestr ]);
+        $result = DbSelect::fetchAll($db, $sql,[ $datestr,self::gamename ]);
         $sort=0;
         foreach ( $result as $v ) {
             $sort++;
@@ -186,20 +291,20 @@ limit 50
                 break;
             }
             $reward = $this->get_reward_value_by_sort($sort);
-            $db::table('bb_money_rain_reward')->insert([
+            $db::table('bb_game_rewards')->insert([
                 'create_time' => $time,
                 'datestr' => $datestr,
-                'sort' => $sort,
+                'rand' => $sort,
                 'uid' => $v['uid'],
                 'score' => $v['score'],
                 'money' => $reward,
             ]);
         }
 
-        $sql = "select * from bb_money_rain_reward where datestr=?";
-        $rows = DbSelect::fetchAll($db, $sql,[ $datestr ]);
+        $sql = "select * from bb_game_rewards where datestr=? and game=?";
+        $rows = DbSelect::fetchAll($db, $sql,[ $datestr , self::gamename]);
         foreach ($rows as $v) {
-            \BBExtend\Currency::add_bobi($v['uid'], $v['money'], '天降红包开奖' );
+            \BBExtend\Currency::add_bobi($v['uid'], $v['money'], '国庆马拉松' );
 
             //要给每个人发消息
             $client = new \BBExtend\service\pheanstalk\Client();
@@ -213,10 +318,6 @@ limit 50
         return ['code'=>1 ];
 
     }
-
-
-
-
 
 
 

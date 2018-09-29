@@ -312,10 +312,9 @@ class Boboapi
         $result = \BBExtend\model\BottomBar::get_pics_lists($rule_id);
         
         return ['code'=>1,'data'=>[ 'object' =>$result['android'],'rule_id' =>$rule_id  ]];
-        
     }
-    
-    
+
+
     public function bottom_bar_for_ios($version=0){
         
         $version = intval( $version );
