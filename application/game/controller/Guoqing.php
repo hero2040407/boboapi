@@ -258,15 +258,11 @@ limit 50
 
     public function reward($pass='')
     {
-//         if (!$this->is_valid_time()) {
-//             return ["code"=>0,'message'=>'请在规定的时间开奖'];
-//         }
-
         //$datestr = $pass;
-		$datestr = $pass;// date("Ymd");
-        if ($pass != $datestr) {
-            return ['code'=>0,'message'=>'err12' ];
-        }
+		$datestr = date("Ymd");
+        // if ($pass != $datestr) {
+            // return ['code'=>0,'message'=>'日期参数错误' ];
+        // }
 
 
         $time = time();
