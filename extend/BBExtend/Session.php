@@ -9,18 +9,18 @@ class Session
     // 取得当前id
     public static function get_my_id()
     {
-        if ( IS_WIN ) {
-            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
-            $id = file_get_contents($file);
-            $id = intval($id);
-        //    Sys::debugxieye(11111);
-            if ($id && $id != 0 ) {
-          //      Sys::debugxieye("get ok:".$id);
-                return $id;
-            }else {
-                return false;
-            }
-        }
+//        if ( IS_WIN ) {
+//            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
+//            $id = file_get_contents($file);
+//            $id = intval($id);
+//        //    Sys::debugxieye(11111);
+//            if ($id && $id != 0 ) {
+//          //      Sys::debugxieye("get ok:".$id);
+//                return $id;
+//            }else {
+//                return false;
+//            }
+//        }
         
         $temp =  session("?backstage_islogin");
         if ($temp) {
@@ -48,11 +48,11 @@ class Session
        //     return false; // 这里不能强行设置。
         }
         
-        if ( IS_WIN ) {
-            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
-            file_put_contents($file, $id);
-         
-        }
+//        if ( IS_WIN ) {
+//            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
+//            file_put_contents($file, $id);
+//
+//        }
         
         
         session("backstage_islogin",1);
@@ -75,11 +75,11 @@ class Session
             return false;
         }
         
-        if ( IS_WIN ) {
-            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
-            file_put_contents($file, '0');
-            
-        }
+//        if ( IS_WIN ) {
+//            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
+//            file_put_contents($file, '0');
+//
+//        }
         
         Se::clear();
        // session(null);
@@ -96,11 +96,11 @@ class Session
     public static function clean_up_other($id)
     {
         
-        if ( IS_WIN ) {
-            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
-            file_put_contents($file, '0');
-            
-        }
+//        if ( IS_WIN ) {
+//            $file = "D:/workspace_utf8/guai2/runtime/session.txt";
+//            file_put_contents($file, '0');
+//
+//        }
         
         $redis = Sys::get_container_redis();
         $key =  "backstage:id:".$id;

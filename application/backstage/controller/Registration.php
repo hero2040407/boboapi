@@ -47,6 +47,7 @@ class Registration extends Common Implements CommonInterface
         $list = RaceRegistration::get($id);
         if ($list) {
             $list->items = (new Images())->all($list->pic_id_list);
+            $list->birthday = strtotime($list->birthday);
         }
         else $list = [];
         $this->success('','',$list);
@@ -100,9 +101,38 @@ class Registration extends Common Implements CommonInterface
 
     }
 
-    function update()
+    /**
+     * Notes:
+     * Date: 2018/9/27 0027
+     * Time: 下午 12:03
+     * @param string $id
+     * @param string $birthday
+     * @param int $height
+     * @param int $weight
+     * @throws
+     */
+    function update($id = '', $birthday = '', $height = 0, $weight = 0)
     {
+        $model = RaceRegistration::get($id);
+        $register_info = $model->register_info;
+        if ($height){
+            $register_info['身高'] = $height;
+            $model->height = $height;
+        }
+        if ($weight){
+            $register_info['体重'] = $weight;
+            $model->weight = $weight;
+        }
+        if ($birthday){
+            $data_time = date('Y-m',$birthday);
+            $model->birthday = $data_time;
+            $model->age = date('Y') - substr($data_time, 0, 4);
+        }
+        $model->register_info = $register_info;
 
+        $res = $model->save();
+        if ($res) $this->success('修改成功');
+        $this->error('请修改数据后提交');
     }
 
     /**

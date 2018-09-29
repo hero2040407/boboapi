@@ -221,6 +221,7 @@ and exists(
                 'registration/create',
                 'registration/read',
                 'registration/changearea',
+                'registration/update',
 
                 'race/detail',
                 'field/edit',
@@ -268,6 +269,8 @@ and exists(
                 'registration/read',
                 'registration/create',
                 'registration/advance',
+                'registration/update',
+
                 'field/edit',
                 'field/index',
                 'field/repeat',
