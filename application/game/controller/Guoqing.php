@@ -10,6 +10,8 @@ use BBExtend\model\GameSources;
 
 use BBExtend\common\Client;
 
+//*
+//任务抽奖改成7天签到抽奖*/
 class  Guoqing
 {
     const gamename = '18Guoqing'; //游戏标示
@@ -260,9 +262,10 @@ limit 50
 //             return ["code"=>0,'message'=>'请在规定的时间开奖'];
 //         }
 
-        $datestr = $pass;
+        //$datestr = $pass;
+		$datestr = $pass;// date("Ymd");
         if ($pass != $datestr) {
-            return ['code'=>0,'message'=>'err' ];
+            return ['code'=>0,'message'=>'err12' ];
         }
 
 
@@ -283,6 +286,7 @@ and score >0
 order by score desc, last_time desc
 limit 50
 ";
+		
         $result = DbSelect::fetchAll($db, $sql,[ $datestr,self::gamename ]);
         $sort=0;
         foreach ( $result as $v ) {
@@ -294,7 +298,8 @@ limit 50
             $db::table('bb_game_rewards')->insert([
                 'create_time' => $time,
                 'datestr' => $datestr,
-                'rand' => $sort,
+				'game'=>self::gamename,
+                'rank' => $sort,
                 'uid' => $v['uid'],
                 'score' => $v['score'],
                 'money' => $reward,
@@ -315,7 +320,7 @@ limit 50
 
             );
         }
-        return ['code'=>1 ];
+        return ['code'=>1,'$result'=>$result ,'$datestr'=>$datestr];
 
     }
 
