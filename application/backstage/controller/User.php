@@ -59,7 +59,13 @@ class User   extends Common
             });
         }
         
-        $paginator = $paginator->orderBy('height')->paginate($per_page, ['*'],'page',$page);
+        $paginator->orderBy('race_status');
+        $paginator->selectSub('MID(sort,1,1)','key')->orderBy('key');
+        $paginator->selectSub('MID(sort,2,10)+1','sort')->orderBy('sort');
+        $paginator->orderBy('height');
+
+        $paginator = $paginator->paginate($per_page, ['*'],'page',$page);
+
         $result=[];
         foreach ($paginator as $v) {
             $result[]= $v->id;
