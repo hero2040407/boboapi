@@ -20,7 +20,7 @@ class Weixinticket
         
         $string1 = "jsapi_ticket={$jsapi_ticket}&noncestr={$noncestr}&timestamp={$timestamp}&url={$url}";
         $signature = sha1($string1);
-        
+
         return [
                 'code'=>1,
                 'data'=>[
@@ -28,14 +28,13 @@ class Weixinticket
                         'timestamp'=>$timestamp,
                         'nonceStr'=>$noncestr,
                         'signature'=>$signature,
-                        
-                        
+
                 ],
                 
         ];
         
     }
-    
+
          
     private function getNonceStr($length = 32)
     {
