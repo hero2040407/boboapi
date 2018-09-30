@@ -6,7 +6,9 @@ use BBExtend\message\Message;
 
 /**
  * 天降红包奖励。
- *
+ * 用于活动游戏奖励消息
+ *     2018年2月   用于天降红包奖励信息
+ *     2018年10月  用于国庆马拉松游戏奖励信息
  */
 class Type178 extends WorkerJobPush
 {
@@ -27,7 +29,7 @@ class Type178 extends WorkerJobPush
         $money = $info['money'];
         //   【用户昵称】删除了视频#视频名称#，对您的邀请已经撤销！
         
-        $content = " 恭喜您取得了天降红包{$datestr}日的排名，获得{$money}个BO币奖励!";
+        $content = " 恭喜您进入国庆马拉松{$datestr}日排行榜，获得{$money}个BO币奖励!";
         
 //         $user = \app\user\model\UserModel::getinstance($other_uid);
 //         $nickname = $user->get_nickname();

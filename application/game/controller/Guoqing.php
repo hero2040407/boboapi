@@ -16,8 +16,8 @@ class  Guoqing
 {
     const gamename = '18Guoqing'; //游戏标示
     const starTime = 1533323200;  //测试用
-    //const starTime = 1538323200;  //2018-09-30 12:00:00s
-    const endTime =  1538280000; //2018-10-07 00:00:00
+    //const starTime = 1538323200;  //2018-10-01 00:00:00s
+    const endTime =  1538917200; //2018-10-07 21:00:00
     /**
      * 查是否是游戏的有效时间
      */
@@ -31,12 +31,11 @@ class  Guoqing
         if( self::starTime > $curent  ){
             return "游戏10月1日才开始哦~";
         }
-        if( self::starTime < $curent  &&  $curent >  self::endTime  ){
+        if(  $curent >  self::endTime  ){
             return "游戏已经结束啦，下次再来哦~";
         }
         return '';
     }
-
 
 
     //    获取我的今日数据
@@ -295,7 +294,7 @@ limit 50
                 'create_time' => $time,
                 'datestr' => $datestr,
 				'game'=>self::gamename,
-                'rank' => $sort,
+                'rank' =>    $sort  ,
                 'uid' => $v['uid'],
                 'score' => $v['score'],
                 'money' => $reward,
@@ -316,11 +315,7 @@ limit 50
 
             );
         }
-        return ['code'=>1,'$result'=>$result ,'$datestr'=>$datestr];
-
+        return ['code'=>1,'$result'=>$result ,'rank'=> $sort,'$datestr'=>$datestr];
     }
-
-
-
 }
 
