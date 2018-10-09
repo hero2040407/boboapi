@@ -24,9 +24,8 @@ class Pay  extends Controller
    }
 
 
-   public function order_for_like($ds_id ,$self_uid, $target_uid,$openid)
+   public function order_for_like($ds_id ,$self_uid, $target_uid,$openid,$type)
    {
-
 
        //Sys::display_all_error();
        //①、获取用户openid
@@ -46,6 +45,41 @@ class Pay  extends Controller
        }
    }
 
+    /**
+     *新的投票接口地址
+     */
+    public function vote_wxpay_like($ds_id,$self_uid,$target_uid,$openid,$type)
+    {
+        //读取json文件
+        $data = file_get_contents(APP_PATH.'/json/spec.json');
+        //json转换
+        $data = json_decode($data,true);
+        //类型
+        $spec = $data['price_vnum'];
+        //删除
+        unset($data);
+        //判断是否存在
+        if(!isset($spec[$type])) return  ['code' =>0,'message' => '非法访问' ] ;
+        //重新赋值
+        $spec = $spec[$type];
+        $spec['ds_id'] = $ds_id;
+        $spec['self_uid'] = $self_uid;
+        $spec['target_uid'] = $target_uid;
+        $spec['openid'] = $openid;
+        //生成签名
+        $help = new HelpWeb();
+        $order = $help->uniform_gener_wxrace_like($spec);
+        //生成微信支付签名
+        if ($order['code']==1) {
+            //①、获取用户openid
+            $tools = new \JsApiPay();
+            $jsApiParameters = $tools->GetJsApiParameters($order['data']);
+            $jsApiParameters = json_decode($jsApiParameters,true);
+            return  ['code' =>1,'data' => $jsApiParameters ] ;
+        }else {
+            return  ['code' =>0,'message' =>  $order['message'] ] ;
+        }
+    }
    public function create_html_v5($uid, $ds_id,$openid)
    {
 
