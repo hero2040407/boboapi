@@ -6,72 +6,72 @@ use think\Controller;
 use BBExtend\pay\wxpay\HelpWeb;
 use think\Session;
 use think\Db;
+use think\Redis;
 
 require_once realpath( EXTEND_PATH).'/WxpayAPI/lib/WxPay.Config.Web.php';
 require_once realpath( EXTEND_PATH). "/WxpayAPI/example/WxPay.JsApiPay.php";
 
 class Pay  extends Controller
 {
-   
+
    /**
-    * 谢烨 
+    * 谢烨
     * 这是支付前的一个demo页。
     */
    public function html()
    {
        echo $this->fetch();
    }
-   
-   
+
+
    public function order_for_like($ds_id ,$self_uid, $target_uid,$openid)
    {
-       
-       
+
+
        //Sys::display_all_error();
        //①、获取用户openid
        $tools = new \JsApiPay();
        //  $openId = $tools->GetOpenid();
-       
+
        $help = new HelpWeb();
        $order = $help->tongyi_xiadan_for_race_like($ds_id,  $self_uid, $target_uid,   $openid);
        if ($order['code']==1) {
            $jsApiParameters = $tools->GetJsApiParameters($order['data']);
-           
+
            $temp = json_decode($jsApiParameters  ,1  );
-           
+
            return  ['code' =>1,'data' =>  $temp ] ;
        }else {
            return  ['code' =>0,'message' =>  $order['message'] ] ;
        }
    }
-   
+
    public function create_html_v5($uid, $ds_id,$openid)
    {
-       
-      
+
        //Sys::display_all_error();
        //①、获取用户openid
        $tools = new \JsApiPay();
        //  $openId = $tools->GetOpenid();
-       
+
        $help = new HelpWeb();
        $order = $help->tongyi_xiadan_v5($ds_id, $uid, '', $openid);
        if ($order['code']==1) {
            $jsApiParameters = $tools->GetJsApiParameters($order['data']);
-           
+
            $temp = json_decode($jsApiParameters  ,1  );
-           
+
            return  ['code' =>1,'data' =>  $temp ] ;
        }else {
            return  ['code' =>0,'message' =>  $order['message'] ] ;
        }
    }
-   
-   
-   
+
+
+
   public function create_html($uid, $ds_id,$openid,$v=1)
    {
-      
+
        if ($v>=5) {
            return $this->create_html_v5($uid, $ds_id, $openid);
        }
@@ -80,20 +80,34 @@ class Pay  extends Controller
        //①、获取用户openid
        $tools = new \JsApiPay();
      //  $openId = $tools->GetOpenid();
-       
+
        $help = new HelpWeb();
        $order = $help->tongyi_xiadan_demo($ds_id, $uid, '', $openid);
        if ($order['code']==1) {
            $jsApiParameters = $tools->GetJsApiParameters($order['data']);
-           
+
            $temp = json_decode($jsApiParameters  ,1  );
-           
+
            return  ['code' =>1,'data' =>  $temp ] ;
        }else {
            return  ['code' =>0,'message' =>  $order['message'] ] ;
        }
    }
-   
+    /**
+     * 获取
+     */
+   public function spec()
+   {
+       //获取文件配置
+       $data = file_get_contents(APP_PATH.'/json/spec.json');
+       //json转换
+       $data = json_decode($data,true);
+       //存在redis里面
+       $redis = Sys::get_container_redis();
+       $redis->set('_boboapi_spec_price_vnum_',json_encode($data['price_vnum']));
+       //返回
+       return ['code' =>1,'data' =>  $data['spec']] ;
+   }
    /**
     * 这是支付发起请求的demo
     * 谢烨。
@@ -132,7 +146,7 @@ class Pay  extends Controller
         //①、获取用户openid
         $tools = new \JsApiPay();
         $openId = $tools->GetOpenid();
-        
+
         //②、统一下单
         $room_id = input('?param.room_id') ? input('param.room_id') : '';
         $money = input('?param.money') ? input('param.money') : '0';
@@ -152,7 +166,7 @@ class Pay  extends Controller
             abort(404, '本页禁止刷新!');
         }
     }
-   
-   
-   
+
+
+
 }
