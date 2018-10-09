@@ -103,8 +103,8 @@ class Pay  extends Controller
        //json转换
        $data = json_decode($data,true);
        //存在redis里面
-       $redis = Sys::get_container_redis();
-       $redis->set('_boboapi_spec_price_vnum_',json_encode($data['price_vnum']));
+//       $redis = Sys::get_container_redis();
+//       $redis->set('_boboapi_spec_price_vnum_',json_encode($data['price_vnum']));
        //返回
        return ['code' =>1,'data' =>  $data['spec']] ;
    }
