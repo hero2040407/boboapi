@@ -421,13 +421,13 @@ select count(*) from bb_advise_join
             
             $card_name_for_index='';
             if ($audition_card_type==1) {
-                $card_name_for_index='影视试镜卡';
+                $card_name_for_index='影视试镜服务';
             }
             if ($audition_card_type==2) {
-                $card_name_for_index='综艺试镜卡';
+                $card_name_for_index='综艺试镜服务';
             }
             if ($audition_card_type==3) {
-                $card_name_for_index='特殊试镜卡';
+                $card_name_for_index='特殊试镜服务';
             }
             
             
