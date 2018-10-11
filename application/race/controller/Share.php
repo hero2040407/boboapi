@@ -49,11 +49,11 @@ class Share extends Controller
             $sql="select id, uid,pic,name,ticket_count from ds_register_log 
                    where zong_ds_id=? 
                      and has_pay=1 
-                      and name =? 
+                      and name like ? 
                    order by ticket_count desc 
                    limit ?,?";
 
-            $user_arr = $db->fetchAll($sql,[ $race_id, $search, $startid, $length ]);
+            $user_arr = $db->fetchAll($sql,[ $race_id, $search.'%', $startid, $length ]);
         }else {
             $sql="select id, uid,pic,name,ticket_count from ds_register_log
                    where zong_ds_id=?
@@ -103,11 +103,20 @@ class Share extends Controller
         if ( $race->reward ) {
             $reward =  $race->reward;
         }
-
-        $sql="select count(*) from  ds_register_log 
+        if ($search) {
+            $sql="select count(*) from  ds_register_log 
+                   where zong_ds_id=? 
+                     and has_pay=1   and name like ? ";
+            $all_join_count = $db->fetchOne($sql,[ $race_id , $search.'%']);
+        }
+        else
+        {
+            $sql="select count(*) from  ds_register_log 
                    where zong_ds_id=? 
                      and has_pay=1 ";
-        $all_join_count = $db->fetchOne($sql,[ $race_id ]);
+            $all_join_count = $db->fetchOne($sql,[ $race_id ]);
+        }
+
 
 
         return ['code'=>1,'data' => [ 'list' =>$user_arr,'myinfo' =>$myinfo ,
