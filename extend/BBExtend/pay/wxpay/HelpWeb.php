@@ -570,7 +570,7 @@ class HelpWeb
             return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];
         }
         //判断用户是否报名
-        $log_id = Db::table('ds_register_log')->where(['zong_ds_id'=>$spec['ds_id'],'uid'=>$spec['target_uid']])->column('id');
+        $log_id = Db::table('ds_register_log')->where(['zong_ds_id'=>$spec['ds_id'],'uid'=>$spec['target_uid']])->value('id');
         if (!$log_id) {
             return ['code'=> -1 , 'message' => '大赛未报名，不可打赏' ];
         }
