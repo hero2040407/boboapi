@@ -576,10 +576,10 @@ class HelpWeb
         }
         //价格
         $time = time();
-        $price_fen = strval( intval( $spec['price'] * 100 )); //转换为微信的价格
+        $price_fen = strval( intval( $spec['price'] * 100 )); //转成分。
         if ( in_array($spec['self_uid'], get_test_userid_arr() ) ){
             $price = 0.01;
-            $price_fen = strval( intval( $price * 100 )); //转成为微信价格
+            $price_fen = strval( intval( $price * 100 )); //转成分。
         }
         //统一下单
         $input = new \WxPayUnifiedOrder();
