@@ -16,17 +16,17 @@ use BBExtend\common\PicPrefixUrl;
 use BBExtend\video\RaceStatus;
 /**
  * 大赛首页 app
- * 
+ *
  * @author xieye
  * 2017 03
  */
 class IndexV2 extends Controller
 {
-    
+
     private  $is_bottom_zhibo;
     private  $is_bottom_ds;
-    
-    
+
+
     private function fetch_user_addi_info($uid)
     {
         $db = \BBExtend\Sys::get_container_db();
@@ -49,15 +49,39 @@ select * from ds_dangan_config_user_history
         }
         return [];
     }
-    
-    
-    
+
+    /**
+     * @return array导入大赛用户数据
+     */
+    public function register_user($v=5, $phone='',$name='',$sex=1,$birthday='',$ds_id=0,$qudao_id=0,
+                                  $pic='',$uid,$addi_info)
+    {
+        //判断是否存在
+        $count = Db::table('ds_register_log')->where('uid',$uid)->count();
+        if($count) return ['code'=>0,'message'=>'此用户已经报名'];
+        //插入数据
+        $data = [ 'phone'=>$phone,
+                    'name'=>$name,
+                    'sex'=>$sex,
+                    'birthday'=>$birthday,
+                    'ds_id'=>$ds_id,
+                    'qudao_id'=>$qudao_id,
+                    'pic'=>$pic,
+                    'uid'=>$uid,
+                    'register_info'=>$addi_info];
+        //判断
+        $log_id = Db::table('ds_register_log')->insertGetId($data);
+        if(!$log_id) return ['code'=>0,'message'=>'插入失败'];
+        //返回
+        return ['code'=>1,'message'=>'插入成功'];
+    }
+
     public function select_field_v5()
     {
         $ds_id = input('param.ds_id/d');
         $uid =  input('param.uid/d');
         $token = input('param.token');
-        
+
         $user = \BBExtend\model\User::find( $uid );
         if (!$user) {
             return ['code'=>0];
@@ -65,20 +89,20 @@ select * from ds_dangan_config_user_history
         if (!$user->check_token($token)) {
             return ['code'=>0,'message' =>'uid err' ];
         }
-        
-        
+
+
         //    Sys::display_all_error();
         $result = \BBExtend\video\RaceStatus::get_status_v5($uid, $ds_id);
         if ($result['code'] == 0 ) {
             return $result;
         }
-       
+
         $race = \BBExtend\model\Race::find($ds_id);
         //
-        
+
         // 谢烨，查 个人参赛信息。
         $db = Sys::get_container_dbreadonly();
-        
+
         $sql="select * from ds_dangan_config where ds_id=?
                 order by sort desc 
 ";
@@ -90,7 +114,7 @@ select * from ds_dangan_config_user_history
             $new[]= $temp;
         }
         $config = $new;
-        
+
         //echo 43;exit;
         $sql="select * from ds_register_log
 where uid= ? and phone !=''
@@ -102,22 +126,22 @@ order by id desc limit 1";
                     'name'=>$row['name'],
                     'sex'=>$row['sex'],
                     'birthday'=>$row['birthday'],
-                   
+
                     'pic'=>$row['pic'],
                     'addi_info' =>$this->fetch_user_addi_info($uid),
             ];
         }else {
             $info=null;
         }
-        
+
         $arr= RaceStatus::get_status_v5($uid, $ds_id);
         $status = $arr['data']['status'];
-        
+
         if ($result['data']['status']==2  ) {
             $db = Sys::get_container_dbreadonly();
             $sql="select id,address,title,status from ds_race_field where race_id = ? and is_valid=1 ";
             $result = $db->fetchAll($sql,[ $ds_id ]);
-            
+
             // 谢烨，额外查一下
             $sql="select id                      from ds_race_field  where race_id = ? and is_valid=1 and
                     
@@ -130,15 +154,15 @@ order by id desc limit 1";
                     
 ";
             $ids = $db->fetchCol($sql,[   $ds_id, $uid]);
-            
+
             foreach ($result as $k => $v) {
                 if (in_array( $v['id'], $ids  )) {
                     $result[$k]['status'] = 0;
                 }
             }
-            
-            
-            return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config , 
+
+
+            return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'config'=>$config ,
                     'upload_type'=> $race->upload_type,
                     'money' => $race->money,
                     'status' =>$status,
@@ -150,11 +174,11 @@ order by id desc limit 1";
                     'status' =>$status,
                     'online_type'=> $race->online_type  ]  ];
         }
-        
-        
+
+
     }
-    
-    
+
+
     /**
      * 提供某个大赛的赛区列表。
      * @param unknown $uid
@@ -166,18 +190,16 @@ order by id desc limit 1";
         if ($v>=5) {
             return $this->select_field_v5();
         }
-        
-        
+
     //    Sys::display_all_error();
         $result = \BBExtend\video\RaceStatus::get_status($uid, $ds_id);
         $code = $result['code'];
         if ($code == 0 ) {
             return $result;
         }
-        
+
         $race = \BBExtend\model\Race::find($ds_id);
-        // 
-        
+        //
         // 谢烨，查 个人参赛信息。
         $db = Sys::get_container_dbreadonly();
         $sql="select * from ds_register_log 
@@ -199,12 +221,12 @@ order by id desc limit 1";
         }else {
             $info=null;
         }
-        
+
         if ($result['data']['status']==2  ) {
             $db = Sys::get_container_dbreadonly();
             $sql="select id,address,title,status from ds_race_field where race_id = ? and is_valid=1 ";
             $result = $db->fetchAll($sql,[ $ds_id ]);
-            
+
             // 谢烨，额外查一下
             $sql="select id                      from ds_race_field  where race_id = ? and is_valid=1 and
                     
@@ -217,25 +239,25 @@ order by id desc limit 1";
                     
 ";
             $ids = $db->fetchCol($sql,[   $ds_id, $uid]);
-            
+
             foreach ($result as $k => $v) {
                 if (in_array( $v['id'], $ids  )) {
                     $result[$k]['status'] = 0;
                 }
             }
-            
-            
+
+
             return ['code'=>1, 'data'=> ['list' => $result,'info'=>$info, 'online_type'=> $race->online_type  ]  ];
         } else {
             return ['code'=>1, 'data'=> ['list' => [],'info'=>$info,'online_type'=> $race->online_type  ]  ];
         }
-        
-        
+
+
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * 得到某个大赛的群信息
      *
@@ -267,14 +289,14 @@ order by id desc limit 1";
                     $qq_group['qrcode_pic'] = PicPrefixUrl::add_pic_prefix_https($qq_group['qrcode_pic'], 1);
                 }
             }
-            
+
         }
         return ['qq_group'=> $qq_group, 'wx_group'=>$wx_group];
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * 大赛列表
      * @param number $startid
@@ -288,10 +310,10 @@ order by id desc limit 1";
         $time =time();
         $startid=intval($startid);
         $length=intval($length);
-        
+
         $uid = intval($uid);
         $range = intval($range);
-        
+
         $time = time();
         $public_sql = "
 ,case
@@ -302,7 +324,7 @@ order by id desc limit 1";
  else 0
  end sort1 
 ";
-        
+
         $db = Sys::get_container_db();
         $sql ="
                 select *{$public_sql} from ds_race
@@ -320,10 +342,10 @@ order by id desc limit 1";
                 order by has_end asc, sort desc , start_time desc
                 limit {$startid},{$length}
                 ";
-            
+
         }
-        
-        
+
+
         if ($range==3) { // 已参加,视频上传未审核和已通过审核
             $sql ="
             select *{$public_sql} from ds_race
@@ -358,15 +380,15 @@ and id not between 198 and 203
             limit {$startid},{$length}
             ";
         }
-        
+
         $result = $db->fetchAll($sql);
         $ids = [];
         foreach ($result as $v) {
             $ids[]= $v["id"];
         }
-        
+
         $child = $lunbo= [];
-        
+
         if ($result) {
             $sql ="
             select * from ds_race_field
@@ -381,50 +403,50 @@ and id not between 198 and 203
             ";
             $lunbo = $db->fetchAll($db->quoteInto($sql, $ids));
         }
-        
+
         $temp = [];
         $time = time();
         foreach ($result as $v) {
             $t =[];
             $t['banner'] =Image::geturl($v['banner_bignew']);
             $t['gray_banner'] =Image::get_grayurl( $v['banner_bignew']);
-            
+
             $t['photo'] = BBUser::get_userpic($v['uid']);
             $t['master_nickname'] = BBUser::get_nickname($v['uid']);
-            
+
             $user =  \BBExtend\model\User::find($v['uid']);
-            
+
             // 防止测试服数据错误。
             if (!$user) {
                 continue;
             }
-            
+
             $t['role'] = $user->role;
             $t['frame'] = $user->get_frame();
             $t['badge'] = $user->get_badge();
-            
-            
+
+
             $t['master_uid'] = $v['uid'];
-            
+
             $t['money'] = floatval( $v['money']);
-            
+
             $t['end_time'] = $v['end_time'];
             $t['start_time'] = $v['start_time'];
             $t['register_end_time'] = $v['register_end_time'];
             $t['register_start_time'] = $v['register_start_time'];
-            
+
             $status_arr = \BBExtend\video\RaceStatus::get_status($uid, $v['id']);
             $t['status'] = $status_arr['data']['status'];
             $t['describe'] = $status_arr['data']['describe'];
-            
-            
-            
+
+
+
             $t['title'] =$v['title'];
             $sql ="select count(*) from ds_record where ds_id={$v['id']}";
             $t['count'] = $db->fetchOne($sql);
             $t['id'] = $v['id'];
             $t['current_time'] = $time;  // 当前时间，放到
-            
+
             $t['detail_url'] = \BBExtend\common\BBConfig::get_server_url()."/race/index/detail/ds_id/{$v['id']}";
             $t['summary'] = $v['summary']; //简介
             // 现在显示分区信息。
@@ -437,7 +459,7 @@ and id not between 198 and 203
                     ];
                 }
             }
-            
+
             // 轮播图
             $t['bigpic_list']=[];
             foreach ( $lunbo as $v2 ) {
@@ -449,11 +471,11 @@ and id not between 198 and 203
                     ];
                 }
             }
-            
+
             $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
             $t['app_qudao_id'] =$v['id'];
             $t['app_qudao_id'] = intval($t['app_qudao_id']);
-            
+
             //加入大赛群信息
             $groups = $this->get_ds_groups($v['id']);
             $t['wx_group'] = $groups['wx_group'];
@@ -461,33 +483,33 @@ and id not between 198 and 203
             // 加入 是否有直播
             $ds  = \BBExtend\model\Race::find($v['id']);
             $t['has_live_video'] = $ds->has_live_video();
-            
+
             $t['upload_type'] = $v['upload_type'];
-            
+
             $temp[]= $t;
         }
-        
+
         return [
                 'code'=>1,
                 'data' =>[
                         'is_bottom' => (count($temp )== $length) ? 0:1,
                         'list' => $temp,
                 ],
-                
+
 //                 'data' => $temp,
         ];
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
     /**
      * 大赛列表
      * @param number $startid
@@ -501,21 +523,21 @@ and id not between 198 and 203
         $time =time();
         $startid=intval($startid);
         $length=intval($length);
-        
+
         $uid = intval($uid);
         $range = intval($range);
-        
+
         $db = Sys::get_container_db();
-        
+
         if ( \BBExtend\model\User::is_test($uid) ) {
-        
+
         $sql ="
                 select * from ds_race 
                 where is_active=1 and parent=0 
                 order by has_end asc, sort desc , start_time desc
                 limit {$startid},{$length}
                 ";
-        
+
         }else {
             $sql ="
                 select * from ds_race
@@ -524,9 +546,9 @@ and id not between 198 and 203
                 order by has_end asc, sort desc , start_time desc
                 limit {$startid},{$length}
                 ";
-            
+
         }
-        
+
         if ($range==3) { // 已参加,视频上传未审核和已通过审核
             $sql ="
             select * from ds_race
@@ -573,15 +595,15 @@ and id not between 198 and 203
             limit {$startid},{$length}
             ";
         }
-        
+
         $result = $db->fetchAll($sql);
         $ids = [];
         foreach ($result as $v) {
             $ids[]= $v["id"];
         }
-        
+
         $child = $lunbo= [];
-        
+
         if ($result) {
             $sql ="
             select * from ds_race
@@ -596,38 +618,38 @@ and id not between 198 and 203
             ";
             $lunbo = $db->fetchAll($db->quoteInto($sql, $ids));
         }
-        
+
         $temp = [];
         $time = time();
         foreach ($result as $v) {
             $t =[];
             $t['banner'] =Image::geturl($v['banner_bignew']);
             $t['gray_banner'] =Image::get_grayurl( $v['banner_bignew']);
-            
+
             $t['photo'] = BBUser::get_userpic($v['uid']);
             $t['master_nickname'] = BBUser::get_nickname($v['uid']);
-            
+
             $user =  \BBExtend\model\User::find($v['uid']);
-            
+
             // 防止测试服数据错误。
             if (!$user) {
                 continue;
             }
-            
+
             $t['role'] = $user->role;
             $t['frame'] = $user->get_frame();
             $t['badge'] = $user->get_badge();
-            
-            
+
+
             $t['master_uid'] = $v['uid'];
-            
+
             $t['money'] = floatval( $v['money']);
-            
+
             $t['end_time'] = $v['end_time'];
             $t['start_time'] = $v['start_time'];
             $t['register_end_time'] = $v['register_end_time'];
             $t['register_start_time'] = $v['register_start_time'];
-            
+
             if ($time > $v['start_time'] && $time < $v['end_time'] ) {
                 $t['status_word'] ='进行中';
                 $t['status_word_color'] =0xff2400;
@@ -642,13 +664,13 @@ and id not between 198 and 203
                 $t['status_word'] ='已结束';
                 $t['status_word_color'] =0x575757;
             }
-            
+
             $t['title'] =$v['title'];
             $sql ="select count(*) from ds_record where ds_id={$v['id']}";
             $t['count'] = $db->fetchOne($sql);
             $t['id'] = $v['id'];
             $t['current_time'] = $time;  // 当前时间，放到
-            
+
             $t['detail_url'] = \BBExtend\common\BBConfig::get_server_url()."/race/index/detail/ds_id/{$v['id']}";
             $t['summary'] = $v['summary']; //简介
             // 现在显示分区信息。
@@ -661,7 +683,7 @@ and id not between 198 and 203
                     ];
                 }
             }
-            
+
             // 轮播图
             $t['bigpic_list']=[];
             foreach ( $lunbo as $v2 ) {
@@ -673,11 +695,11 @@ and id not between 198 and 203
                     ];
                 }
             }
-            
+
             $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
             $t['app_qudao_id'] =$v['id'];
             $t['app_qudao_id'] = intval($t['app_qudao_id']);
-            
+
             //加入大赛群信息
              $groups = $this->get_ds_groups($v['id']);
             $t['wx_group'] = $groups['wx_group'];
@@ -685,10 +707,10 @@ and id not between 198 and 203
             // 加入 是否有直播
             $ds  = \BBExtend\model\Race::find($v['id']);
             $t['has_live_video'] = $ds->has_live_video();
-            
+
             $temp[]= $t;
         }
-        
+
         return [
             'code'=>1,
             'is_bottom' => (count($temp )== $length) ? 0:1,
@@ -696,16 +718,16 @@ and id not between 198 and 203
         ];
     }
 
-    
-    
+
+
     public function ds_one_new_v5($ds_id,$uid=10000){
-        
-        
+
+
         $ds_id = intval($ds_id);
         $uid=intval($uid);
-        
+
         $time =time();
-        
+
         $db = Sys::get_container_db();
         $sql ="
         select * from ds_race
@@ -723,49 +745,49 @@ and id not between 198 and 203
         //         order by sort desc , start_time desc
         //         ";
         //         $child = $db->fetchAll($sql);
-        
+
         $sql ="
             select * from ds_race_field
             where is_valid=1 and race_id =?
             order by id desc
             ";
         $child = $db->fetchAll($sql, $ds_id);
-        
-        
-        
+
+
+
         $sql ="
         select * from ds_lunbo
         where ds_id  ={$ds_id}
         order by sort desc
         ";
         $lunbo = $db->fetchAll($sql);
-        
+
         $t =[];
         $t['banner'] =Image::geturl($v['banner_bignew']);
         $t['gray_banner'] =Image::get_grayurl( $v['banner_bignew']);
-        
+
         $t['photo'] = BBUser::get_userpic($v['uid']);
-        
-        
+
+
         $user_detail = \BBExtend\model\User::find( $v['uid'] );
-        
+
         $t['role'] = $user_detail->role;
         $t['frame'] = $user_detail->get_frame();
         $t['badge'] = $user_detail->get_badge();
-        
-        
-        
+
+
+
         $t['master_uid'] = $v['uid'];
         $t['master_nickname'] = \BBExtend\BBUser::get_nickname( $v['uid']);
-        
-        
+
+
         $t['money'] = floatval( $v['money']);
-        
+
         $t['end_time'] = $v['end_time'];
         $t['start_time'] = $v['start_time'];
         $t['register_end_time'] = $v['register_end_time'];
         $t['register_start_time'] = $v['register_start_time'];
-        
+
         if ($time > $v['start_time'] && $time < $v['end_time'] ) {
             $t['status_word'] ='比赛进行中';
             $t['status_word_color'] =0xff2400;
@@ -780,18 +802,18 @@ and id not between 198 and 203
             $t['status_word'] ='已结束';
             $t['status_word_color'] =0x575757;
         }
-        
+
         $status_arr = \BBExtend\video\RaceStatus::get_status_v5($uid, $v['id']);
         $t['status'] = $status_arr['data']['status'];
         $t['describe'] = $status_arr['data']['describe'];
-        
-        
+
+
         $t['title'] =$v['title'];
         $sql ="select count(*) from ds_record where ds_id={$v['id']}";
         $t['count'] = $db->fetchOne($sql);
         $t['id'] = $v['id'];
         $t['current_time'] = $time;  // 当前时间，放到
-        
+
         $t['detail_url'] = \BBExtend\common\BBConfig::get_server_url()."/race/index/detail/ds_id/{$v['id']}";
         $t['summary'] = $v['summary']; //简介
         // 现在显示分区信息。
@@ -804,7 +826,7 @@ and id not between 198 and 203
                 ];
             }
         }
-        
+
         // 轮播图
         $t['bigpic_list']=[];
         foreach ( $lunbo as $v2 ) {
@@ -816,31 +838,31 @@ and id not between 198 and 203
                 ];
             }
         }
-        
+
         $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
         $t['app_qudao_id'] =$v['id'];
         $t['app_qudao_id'] = intval($t['app_qudao_id']);
-        
+
         //群
         $groups = $this->get_ds_groups($ds_id);
         $t['wx_group'] = $groups['wx_group'];
         $t['qq_group'] = $groups['qq_group'];
-        
+
         // 谢烨，这里，多了一个最新报名情况。
         $sql="select uid,pic from ds_register_log where zong_ds_id=? and has_pay=1 order by id desc limit 14";
         $result = $db->fetchAll($sql,[ $ds_id ]);
-        
+
         $t['recent_list'] = $result;
-        
+
         $t['upload_type'] = $v['upload_type'];
-        
+
 //         // 谢烨，这里多了一个动态列表。
 //         $t['dynamic_list'] =[];
 //         $sql="select * from ds_user_log
 // where ds_id=? and uid =?
 // order by id desc ";
 //         $result = $db->fetchAll($sql,[ $ds_id, $uid ]);
-        
+
 //         foreach ($result as $v) {
 //             $t['dynamic_list'][]= [
 //                     'title' => $v['title'],
@@ -848,26 +870,26 @@ and id not between 198 and 203
 //                     'content' => $v['content'],
 //             ];
 //         }
-        
+
         return ['code'=>1,       'data' => $t,     ];
-       
-        
+
+
     }
-    
-    
-    
-    
+
+
+
+
     public function ds_one_new( $v=1, $ds_id,$uid=10000)
     {
         if ($v>=5) {
             return $this->ds_one_new_v5($ds_id,$uid);
         }
-        
+
         $ds_id = intval($ds_id);
         $uid=intval($uid);
-        
+
         $time =time();
-        
+
         $db = Sys::get_container_db();
         $sql ="
         select * from ds_race
@@ -885,49 +907,49 @@ and id not between 198 and 203
 //         order by sort desc , start_time desc
 //         ";
 //         $child = $db->fetchAll($sql);
-        
+
         $sql ="
             select * from ds_race_field
             where is_valid=1 and race_id =?
             order by id desc
             ";
         $child = $db->fetchAll($sql, $ds_id);
-        
-        
-        
+
+
+
         $sql ="
         select * from ds_lunbo
         where ds_id  ={$ds_id}
         order by sort desc
         ";
         $lunbo = $db->fetchAll($sql);
-        
+
         $t =[];
         $t['banner'] =Image::geturl($v['banner_bignew']);
         $t['gray_banner'] =Image::get_grayurl( $v['banner_bignew']);
-        
+
         $t['photo'] = BBUser::get_userpic($v['uid']);
-        
-        
+
+
         $user_detail = \BBExtend\model\User::find( $v['uid'] );
-        
+
         $t['role'] = $user_detail->role;
         $t['frame'] = $user_detail->get_frame();
         $t['badge'] = $user_detail->get_badge();
-        
-        
-        
+
+
+
         $t['master_uid'] = $v['uid'];
         $t['master_nickname'] = \BBExtend\BBUser::get_nickname( $v['uid']);
-        
-        
+
+
         $t['money'] = floatval( $v['money']);
-        
+
         $t['end_time'] = $v['end_time'];
         $t['start_time'] = $v['start_time'];
         $t['register_end_time'] = $v['register_end_time'];
         $t['register_start_time'] = $v['register_start_time'];
-        
+
         if ($time > $v['start_time'] && $time < $v['end_time'] ) {
             $t['status_word'] ='比赛进行中';
             $t['status_word_color'] =0xff2400;
@@ -942,18 +964,18 @@ and id not between 198 and 203
             $t['status_word'] ='已结束';
             $t['status_word_color'] =0x575757;
         }
-        
+
         $status_arr = \BBExtend\video\RaceStatus::get_status($uid, $v['id']);
         $t['status'] = $status_arr['data']['status'];
         $t['describe'] = $status_arr['data']['describe'];
-        
-        
+
+
         $t['title'] =$v['title'];
         $sql ="select count(*) from ds_record where ds_id={$v['id']}";
         $t['count'] = $db->fetchOne($sql);
         $t['id'] = $v['id'];
         $t['current_time'] = $time;  // 当前时间，放到
-        
+
         $t['detail_url'] = \BBExtend\common\BBConfig::get_server_url()."/race/index/detail/ds_id/{$v['id']}";
         $t['summary'] = $v['summary']; //简介
         // 现在显示分区信息。
@@ -966,7 +988,7 @@ and id not between 198 and 203
                 ];
             }
         }
-        
+
         // 轮播图
         $t['bigpic_list']=[];
         foreach ( $lunbo as $v2 ) {
@@ -978,23 +1000,23 @@ and id not between 198 and 203
                 ];
             }
         }
-        
+
         $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
         $t['app_qudao_id'] =$v['id'];
         $t['app_qudao_id'] = intval($t['app_qudao_id']);
-        
+
         //群
         $groups = $this->get_ds_groups($ds_id);
         $t['wx_group'] = $groups['wx_group'];
         $t['qq_group'] = $groups['qq_group'];
-        
+
         // 谢烨，这里多了一个动态列表。
         $t['dynamic_list'] =[];
         $sql="select * from ds_user_log 
 where ds_id=? and uid =?
 order by id desc ";
         $result = $db->fetchAll($sql,[ $ds_id, $uid ]);
-        
+
         foreach ($result as $v) {
             $t['dynamic_list'][]= [
                     'title' => $v['title'],
@@ -1002,15 +1024,15 @@ order by id desc ";
                     'content' => $v['content'],
             ];
         }
-        
+
         return ['code'=>1,       'data' => $t,     ];
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     /**
      * 单个大赛的信息
      *
@@ -1021,7 +1043,7 @@ order by id desc ";
     {
         $ds_id = intval($ds_id);
         $time =time();
-        
+
         $db = Sys::get_container_db();
         $sql ="
         select * from ds_race
@@ -1039,40 +1061,40 @@ order by id desc ";
         order by sort desc , start_time desc
         ";
         $child = $db->fetchAll($sql);
-        
+
         $sql ="
         select * from ds_lunbo
         where ds_id  ={$ds_id}
         order by sort desc
         ";
         $lunbo = $db->fetchAll($sql);
-        
+
         $t =[];
         $t['banner'] =Image::geturl($v['banner_bignew']);
         $t['gray_banner'] =Image::get_grayurl( $v['banner_bignew']);
-        
+
         $t['photo'] = BBUser::get_userpic($v['uid']);
-        
-        
+
+
         $user_detail = \BBExtend\model\User::find( $v['uid'] );
-        
+
         $t['role'] = $user_detail->role;
         $t['frame'] = $user_detail->get_frame();
         $t['badge'] = $user_detail->get_badge();
-        
-        
-        
+
+
+
         $t['master_uid'] = $v['uid'];
         $t['master_nickname'] = \BBExtend\BBUser::get_nickname( $v['uid']);
-        
-        
+
+
         $t['money'] = floatval( $v['money']);
-        
+
         $t['end_time'] = $v['end_time'];
         $t['start_time'] = $v['start_time'];
         $t['register_end_time'] = $v['register_end_time'];
         $t['register_start_time'] = $v['register_start_time'];
-        
+
         if ($time > $v['start_time'] && $time < $v['end_time'] ) {
             $t['status_word'] ='比赛进行中';
             $t['status_word_color'] =0xff2400;
@@ -1087,13 +1109,13 @@ order by id desc ";
             $t['status_word'] ='已结束';
             $t['status_word_color'] =0x575757;
         }
-        
+
         $t['title'] =$v['title'];
         $sql ="select count(*) from ds_record where ds_id={$v['id']}";
         $t['count'] = $db->fetchOne($sql);
         $t['id'] = $v['id'];
         $t['current_time'] = $time;  // 当前时间，放到
-        
+
         $t['detail_url'] = \BBExtend\common\BBConfig::get_server_url()."/race/index/detail/ds_id/{$v['id']}";
         $t['summary'] = $v['summary']; //简介
         // 现在显示分区信息。
@@ -1106,7 +1128,7 @@ order by id desc ";
                 ];
             }
         }
-        
+
         // 轮播图
         $t['bigpic_list']=[];
         foreach ( $lunbo as $v2 ) {
@@ -1118,19 +1140,19 @@ order by id desc ";
                 ];
             }
         }
-        
+
         $sql = "select id from ds_race where parent = {$v['id']} and  is_app=1";
         $t['app_qudao_id'] =$db->fetchOne($sql);
         $t['app_qudao_id'] = intval($t['app_qudao_id']);
-        
+
         //群
         $groups = $this->get_ds_groups($ds_id);
         $t['wx_group'] = $groups['wx_group'];
         $t['qq_group'] = $groups['qq_group'];
-        
+
         return ['code'=>1,       'data' => $t,     ];
     }
-   
-   
-   
+
+
+
 }
