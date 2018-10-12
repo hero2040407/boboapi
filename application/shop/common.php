@@ -34,7 +34,7 @@ function get_test_userid_arr()
 {
     
     // 这是一个保险的设置
-    $time = strtotime("2018-09-01 00:00:00");
+    $time = strtotime("2018-10-01 00:00:00");
     $time+= 30  *24*3600;
     if (time() > $time ) {
         return [];
@@ -44,7 +44,10 @@ function get_test_userid_arr()
     //10023 沈德志
     // 12138 小宋
     // 10007 沈德志
-    return [10010,8064553,1001199,10023,8071461 ];
+	// 8055938 姜雯
+	// 7474492 qiushuqiu
+	//  8075630 lianghuixiang
+    return [10010,8064553,1001199,10023,8071461 ,8055938,7474492,8075630];
     
 }
 

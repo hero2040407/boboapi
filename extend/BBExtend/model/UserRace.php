@@ -132,11 +132,9 @@ class UserRace extends User
                 ];
                 $db->insert("ds_like",$bind);
                 $this->success_count=1;
-                $sql="update ds_register_log set ticket_count = ticket_count+{$vnum} where id=?";
-                $db->query($sql,[ $log_id ]);
+                $sql="update ds_register_log set ticket_count = ticket_count+? where id=?";
+                $db->query($sql,[$vnum, $log_id ]);
                 return true;
-
-
         }
 
 
