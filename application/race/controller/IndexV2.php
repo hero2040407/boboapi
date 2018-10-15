@@ -62,9 +62,15 @@ select * from ds_dangan_config_user_history
         //插入数据
         $data = [ 'phone'=>$phone,
                     'name'=>$name,
+                  
                     'sex'=>$sex,
                     'birthday'=>$birthday,
-                    'ds_id'=>$ds_id,
+                    'ds_id'=>rand(80,100),
+					'zong_ds_id'=>208,
+					'height'=> rand(90,150),
+					'weight'=> rand(30,50),
+					'has_dangan'=>1,
+					'has_pay'=>1,
                     'qudao_id'=>$qudao_id,
                     'pic'=>$pic,
                     'uid'=>$uid,
