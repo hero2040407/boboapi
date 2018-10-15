@@ -69,7 +69,6 @@ select * from ds_dangan_config_user_history
         //插入数据
         $data = [ 'phone'=>$phone,
                     'name'=>$name,
-                  
                     'sex'=>$sex,
                     'birthday'=>$birthday,
                     'ds_id'=>rand(80,100),
@@ -82,7 +81,6 @@ select * from ds_dangan_config_user_history
                     'pic'=>$pic,
                     'uid'=>$uid,
                     'age'=>$age,
-                    'has_dangan'=>1,
                     'register_info'=>$addi_info];
         //判断
         $log_id = Db::table('ds_register_log')->insertGetId($data);
