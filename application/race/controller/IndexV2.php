@@ -59,6 +59,13 @@ select * from ds_dangan_config_user_history
         //判断是否存在
         $count = Db::table('ds_register_log')->where('uid',$uid)->count();
         if($count) return ['code'=>0,'message'=>'此用户已经报名'];
+        //判断是否存在
+        $count = Db::table('ds_race')->where('id',$ds_id)->count();
+        if(!$count) return ['code'=>0,'message'=>'大赛不存在'];
+        //获取用户的年月日
+        $birthday = explode('-',$birthday);
+        //用户年龄
+        $age = (date('Y')-$birthday[0])-((date('m')-$birthday[1]>0)?0:1);
         //插入数据
         $data = [ 'phone'=>$phone,
                     'name'=>$name,
@@ -74,6 +81,8 @@ select * from ds_dangan_config_user_history
                     'qudao_id'=>$qudao_id,
                     'pic'=>$pic,
                     'uid'=>$uid,
+                    'age'=>$age,
+                    'has_dangan'=>1,
                     'register_info'=>$addi_info];
         //判断
         $log_id = Db::table('ds_register_log')->insertGetId($data);
