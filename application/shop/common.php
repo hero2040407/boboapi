@@ -1,7 +1,5 @@
 <?php
 
-
-
 define('SHOP_TYPE_HEAD',100);//热门
 define('SHOP_TYPE_REC',101);//推荐
 define('SHOP_TYPE_ZHE',102);//折扣
@@ -16,7 +14,7 @@ function ali_gateway()
 {
     return 'https://bobo.yimwing.com/shop/api/alipay_notify';
    // return 'http://test.yimwing.com/shop/api/alipay_notify';
-    
+
 }
 /**
  * 支付用微信网关回调
@@ -32,15 +30,15 @@ function wx_gateway()
  */
 function get_test_userid_arr()
 {
-    
+
     // 这是一个保险的设置
     $time = strtotime("2018-10-01 00:00:00");
     $time+= 30  *24*3600;
     if (time() > $time ) {
         return [];
     }
-  
-     
+
+
     //10023 沈德志
     // 12138 小宋
     // 10007 沈德志
@@ -48,7 +46,7 @@ function get_test_userid_arr()
 	// 7474492 qiushuqiu
 	//  8075630 lianghuixiang
     return [10010,8064553,1001199,10023,8071461 ,8055938,7474492,8075630];
-    
+
 }
 
 
