@@ -16,7 +16,7 @@ class UserRace extends User
     public $err_msg='';
     public $success_count =0;
 
-    public function like($self_uid, $log_id,$type)
+    public function like($self_uid, $log_id,$type,$vnum=1)
     {
         $db = Sys::get_container_db();
         $sql="select * from ds_register_log where id=?";
@@ -125,18 +125,16 @@ class UserRace extends User
                         'self_uid' =>$self_uid,
                         'target_uid' =>$uid,
                         'race_id' => $race_id,
-                        'count' =>1,
+                        'count' =>$vnum,
                         'datestr' =>$datestr,
                         'type' =>4,
 
                 ];
                 $db->insert("ds_like",$bind);
                 $this->success_count=1;
-                $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
-                $db->query($sql,[ $log_id ]);
+                $sql="update ds_register_log set ticket_count = ticket_count+? where id=?";
+                $db->query($sql,[$vnum, $log_id ]);
                 return true;
-
-
         }
 
 

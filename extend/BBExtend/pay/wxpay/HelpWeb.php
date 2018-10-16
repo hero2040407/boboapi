@@ -202,7 +202,7 @@ class HelpWeb
 
         // 谢烨，现在获取此人的个人信息。
         $info2 = new \BBExtend\model\UserRace();
-        $result = $info2->like ($json['self_uid'] , $json['log_id'] , 4);
+        $result = $info2->like ($json['self_uid'] , $json['log_id'] , 4,$json['vnum']);
 
 
         return $this->success;
@@ -570,7 +570,7 @@ class HelpWeb
             return ['code'=> -1 , 'message' => '大赛不存在或未激活' ];
         }
         //判断用户是否报名
-        $log_id = Db::table('ds_register_log')->where(['zong_ds_id'=>$spec['ds_id'],'uid'=>$spec['target_uid']])->column('id');
+        $log_id = Db::table('ds_register_log')->where(['zong_ds_id'=>$spec['ds_id'],'uid'=>$spec['target_uid']])->value('id');
         if (!$log_id) {
             return ['code'=> -1 , 'message' => '大赛未报名，不可打赏' ];
         }
@@ -590,7 +590,7 @@ class HelpWeb
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", $time + 600));
         $input->SetGoods_tag("test");
-        $input->SetNotify_url("https://bobo.yimwing.com/race/notify/wxindex");//设置我们的服务器异步回调
+        $input->SetNotify_url("https://bobo.yimwing.com/race/notify/index");//设置我们的服务器异步回调
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($spec['openid']); //必须设置，否则无法支付。
         $return_arr = \WxPayApi::unifiedOrder($input);
