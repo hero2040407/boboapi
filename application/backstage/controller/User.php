@@ -177,7 +177,6 @@ exists(
 
         if (!empty($uid)) $map['uid'] = $uid;
         if (!empty($phone)) $map['phone'] = $phone;
-        if (!empty($name)) $map['name'] = $name;
         if (!empty($sort)) $map['sort'] = $sort;
         if ($age) $age = explode(',', $age);
 
@@ -186,8 +185,11 @@ exists(
 
         $db = Sys::get_container_db_eloquent();
         $paginator = $db::table('ds_register_log')
-        ->where($map)
-        ->whereExists(function ($query) {
+        ->where($map);
+
+        if (!empty($name)) $paginator = $paginator->where('name','like',trim($name).'%');
+
+        $paginator->whereExists(function ($query) {
             $db = Sys::get_container_db_eloquent();
             $query->select($db::raw(1))
             ->from('ds_race')
