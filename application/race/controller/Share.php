@@ -103,11 +103,21 @@ class Share extends Controller
         if ( $race->reward ) {
             $reward =  $race->reward;
         }
+        if ($search) {
+            $sql="select count(*) from  ds_register_log 
+                   where zong_ds_id=? 
+                     and has_pay=1   and name like ? ";
+            $all_join_count = $db->fetchOne($sql,[ $race_id , $search.'%']);
+        }
+        else
+        {
+            $sql="select count(*) from  ds_register_log 
+                   where zong_ds_id=? 
+                     and has_pay=1 ";
+            $all_join_count = $db->fetchOne($sql,[ $race_id ]);
+        }
 
-        $sql="select count(*) from  ds_register_log 
-               where zong_ds_id=? 
-                 and has_pay=1 ";
-        $all_join_count = $db->fetchOne($sql,[ $race_id ]);
+
 
         return ['code'=>1,'data' => [ 'list' =>$user_arr,'myinfo' =>$myinfo ,
                 'all_join_count' =>$all_join_count,
@@ -127,21 +137,22 @@ select count(*)   from ds_like
                      and type=1
                      and self_uid=?
                      and target_uid=?
+                     and datestr=?
                 
 ";
         //$this->list = $join_id_arr = $db->fetchCol($sql,[ $race_id ]);
-        return $db->fetchOne($sql,[ $race_id, $self_uid, $target_uid ]);
+        return $db->fetchOne($sql,[ $race_id, $self_uid, $target_uid,date("Ymd") ]);
     }
-
-
-
+    
+    
+    
     private function get_rank_by_one($race_id,$uid)
     {
         $rank=0;
         if ($this->list) {
-
+            
         }else {
-
+        
           $db = Sys::get_container_dbreadonly();
           $sql="
 select uid   from ds_register_log
