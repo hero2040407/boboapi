@@ -34,8 +34,8 @@ class UserRace extends User
 //         $user = User::find( $uid );
 
         if ($type==1) {
-            $sql="select * from  ds_like where self_uid=? and type=1 and register_log_id=?";
-            $row = $db->fetchRow($sql,[ $self_uid, $log_id]);
+            $sql="select * from  ds_like where self_uid=? and type=1 and register_log_id=? and datestr=?";
+            $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
             if ($row) {
                 $this->err_msg='您已经投过票,请不要重复投票';
                 return false;
@@ -49,7 +49,6 @@ class UserRace extends User
                     'count' =>1,
                     'datestr' =>$datestr,
                     'type' =>1,
-
             ];
             $db->insert("ds_like",$bind);
             $this->success_count=1;
