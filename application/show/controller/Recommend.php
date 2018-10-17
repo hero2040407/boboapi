@@ -18,6 +18,7 @@ class Recommend
     
    /**
     * 推荐，app首页。重要。
+    * 直播部分已经移到 首页接口 /api/index/index
     * @param number $uid
     * @param number $startid
     * @param number $length
@@ -29,22 +30,23 @@ class Recommend
         $length=intval($length);
         $time1 = $this->microtime_float();
         
-        $zhibo_list = $this->zhibo_list($uid,$startid, $length);     // 谢烨，请单独写这句，勿删
-        $time2 = $this->microtime_float();
-        $cha = $time2 - $time1;
-       // Sys::debug($uid." ==1== " . $cha);
+        // hanrea 20181017 直播已经放在 /api/index/index 接口 重新启动栏目功能
+        // $zhibo_list = $this->zhibo_list($uid,$startid, $length);     // 谢烨，请单独写这句，勿删
+        // $time2 = $this->microtime_float();
+        // $cha = $time2 - $time1;
+        // Sys::debug($uid." ==1== " . $cha);
         
         
         $subject_list = $this->subject_list($uid); // 谢烨，请单独写这句，勿删
-        $time3 = $this->microtime_float();
-        $cha2 = $time3 - $time2;
-    //    Sys::debug($uid." ==1== " . $cha." ==2== " . $cha2);
+        // $time3 = $this->microtime_float();
+        // $cha2 = $time3 - $time2;
+       //    Sys::debug($uid." ==1== " . $cha." ==2== " . $cha2);
         
         return [
             'code'=>1,
             'data' => [
-                'zhibo_list' => $zhibo_list,
-                'is_bottom'  => $this->is_bottom,
+                // 'zhibo_list' => $zhibo_list,
+                // 'is_bottom'  => $this->is_bottom,
                 'subject_list' => $subject_list,
              ]
         ];
@@ -317,20 +319,18 @@ and exists (
                          where bb_subject.is_show=1
                            and bb_subject.id = bb_subject_movie.subject_id
                        )
-                   order by bb_subject_movie.sort desc
+                    order by bb_subject_movie.sort desc
                     limit 800
                     ";
             $records = $db->fetchAll($sql); // 这是所有的推荐的短视频的集合
             $redis->set($key, serialize($records) );
-        //    $redis->setTimeout($key, 15 * 60 );
+            //    $redis->setTimeout($key, 15 * 60 );
         }else {
-            
             $records = unserialize($records);
         }
         
         shuffle($records); // 2017 03 20
         $result =[];
-        
         // 谢烨2017 03 运营要求，不能有重复，于是我加数组
         $unique_arr=[];
         
@@ -343,33 +343,23 @@ and exists (
             ];
             $i=0;
             foreach ($records as $record) {
-                
                 if ($record['subject_id'] == $v['id'] && (!in_array($record['id'], $unique_arr))  ) {
-                    
                     $i++;
-                    $subject['record_list'] []= BBRecord::get_subject_detail_by_row($record, $uid);
-                    $unique_arr[]= $record['id'];
-                    if ($i ==4) {
+                    if ($i ==3) {
                         break;
                     }
+                    $subject['record_list'] []= BBRecord::get_subject_detail_by_row($record, $uid);
+                    $unique_arr[]= $record['id'];
+                   
                 }
             }
-            // 2017 03 谢烨，最终情况是，只能有2个或4个，超出不要，3个要减1个，1个完全不要。
-            if (count($subject['record_list'])==3 ) {
-                array_pop($subject['record_list']);
-            }
-            
-            $result[] = $subject;
+           // Hanrea  结果每组有且只有两条数据
+            if (count($subject['record_list'])==2) {
+                $result[] = $subject;
+            }  
         }
-        //xieye特别要求，201703，必须至少2个才可以。
-        $result2 =[];
-        foreach ($result as $v) {
-            if (count( $v['record_list']) >= 2 ) {
-                $result2[]= $v;
-            }
-        }
-        
-        return $result2;
+
+        return $result;
     }
     
    
