@@ -38,13 +38,30 @@ class Share
     
     
     // type=1 普通，type=2 分享投票，type=3 波币购买投票。
-    public function like($uid,$race_id ,$self_uid, $token,$type=1  )
+    public function like($uid,$race_id ,$self_uid, $token,$type=1,$spec_id=''  )
     {
         if ( !in_array($type, [1,2, 3]) ) {
             return ['code'=>0,'message' => 'type error' ];
         }
-        
-        
+        if ($spec_id){
+            //读取json文件
+            $data = file_get_contents(APP_PATH.'/json/spec.json');
+            //json转换
+            $data = json_decode($data,true);
+            //类型
+            $spec = $data['price_vnum'];
+            //删除
+            unset($data);
+            //判断是否存在
+            if(!isset($spec[$spec_id])) return  ['code' =>0,'message' => '非法访问' ] ;
+            $gold = $spec[$spec_id]['price'] * 100;
+            $vnum = $spec[$spec_id]['vnum'];
+        }
+        else{
+            $gold = 100;
+            $vnum = 1;
+        }
+
         $db = Sys::get_container_dbreadonly();
         $selfuser = \BBExtend\model\User::find($self_uid );
         if (!$selfuser) {
@@ -64,7 +81,7 @@ class Share
       
         // 谢烨，现在获取此人的个人信息。
         $info2 = new \BBExtend\model\UserRace();
-        $result = $info2->like ( $self_uid, $row['id'], $type);
+        $result = $info2->like ( $self_uid, $row['id'], $type,$vnum,$gold);
         if ($result) {
             return ['code'=>1,'data' =>['count' =>$info2->success_count ] ];
         }else {

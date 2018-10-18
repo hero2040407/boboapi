@@ -16,7 +16,7 @@ class UserRace extends User
     public $err_msg='';
     public $success_count =0;
 
-    public function like($self_uid, $log_id,$type,$vnum=1)
+    public function like($self_uid, $log_id,$type,$vnum=1,$gold=100)
     {
         $db = Sys::get_container_db();
         $sql="select * from ds_register_log where id=?";
@@ -26,16 +26,16 @@ class UserRace extends User
         $datestr = date("Ymd");
         $race  = \BBExtend\model\Race::find( $race_id );
 
-        if ( time() > $race->end_time  ) {
-            $this->success_count=0;
-            return true;
-        }
+//        if ( time() > $race->end_time  ) {
+//            $this->success_count=0;
+//            return true;
+//        }
 //         $race = Race::find( $row['zong_ds_id'] );
 //         $user = User::find( $uid );
 
         if ($type==1) {
-            $sql="select * from  ds_like where self_uid=? and type=1 and register_log_id=?";
-            $row = $db->fetchRow($sql,[ $self_uid, $log_id]);
+            $sql="select * from  ds_like where self_uid=? and type=1 and register_log_id=? and datestr=?";
+            $row = $db->fetchRow($sql,[ $self_uid, $log_id, $datestr ]);
             if ($row) {
                 $this->err_msg='您已经投过票,请不要重复投票';
                 return false;
@@ -49,7 +49,6 @@ class UserRace extends User
                     'count' =>1,
                     'datestr' =>$datestr,
                     'type' =>1,
-
             ];
             $db->insert("ds_like",$bind);
             $this->success_count=1;
@@ -88,7 +87,7 @@ class UserRace extends User
 
         if ($type==3) {
             $result = \BBExtend\Currency::add_bobi($self_uid,
-                    -100, '声援大赛好友');
+                    -$gold, '声援大赛好友');
             if ($result!==false ) {
                 $bind=[
                         'register_log_id' =>$log_id,
@@ -96,15 +95,15 @@ class UserRace extends User
                         'self_uid' =>$self_uid,
                         'target_uid' =>$uid,
                         'race_id' => $race_id,
-                        'count' =>1,
+                        'count' =>$vnum,
                         'datestr' =>$datestr,
                         'type' =>2,
 
                 ];
                 $db->insert("ds_like",$bind);
                 $this->success_count=1;
-                $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
-                $db->query($sql,[ $log_id ]);
+                $sql="update ds_register_log set ticket_count = ticket_count+? where id=?";
+                $db->query($sql,[$vnum,$log_id]);
                 return true;
 
             }else {
