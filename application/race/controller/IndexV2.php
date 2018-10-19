@@ -71,7 +71,7 @@ select * from ds_dangan_config_user_history
                     'name'=>$name,
                     'sex'=>$sex,
                     'birthday'=>$birthday,
-                    'ds_id'=>rand(80,100),
+                    'ds_id'=>rand(62,104),
 					'zong_ds_id'=>208,
 					'height'=> rand(90,150),
 					'weight'=> rand(30,50),
