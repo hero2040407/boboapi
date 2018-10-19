@@ -140,8 +140,11 @@ class Recommend
                 $result []= BBRecord::get_subject_detail_by_row($record, $uid);
 //             }
         }
+
+        $subrow = $db->fetchOne("select title from bb_subject where id = {$subject_id}" );
         return ['code'=>1,
             'data' => $result,
+            'title'=> $subrow,
             'is_bottom' => count($result)== $length ? 0 :1,
         ];
     }
