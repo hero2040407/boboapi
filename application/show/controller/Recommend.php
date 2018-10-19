@@ -324,7 +324,7 @@ and exists (
                     ";
             $records = $db->fetchAll($sql); // 这是所有的推荐的短视频的集合
             $redis->set($key, serialize($records) );
-            //    $redis->setTimeout($key, 15 * 60 );
+            $redis->setTimeout($key, 15 * 60 );
         }else {
             $records = unserialize($records);
         }
