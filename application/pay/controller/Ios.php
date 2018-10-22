@@ -33,16 +33,37 @@ class Ios
             switch ($product_id)
             {
                 case 'BoVCoin60':
+                    $count = 60;
+                    break;
                 case 'PBoVCoin60':
                     $count = 60;
                     break;
+                case 'BoVCoin80':
+                    $count = 160;
+                    break;
+                case 'BoVCoin180':
+                    $count = 380;
+                    break;
                 case 'BoVCoin300':
+                    $count = 350;
+                    break;
                 case 'PBoVCoin300':
                     $count = 350;
                     break;
                 case 'BoVCoin600':
+                    $count = 1200;
+                    break;
                 case 'PBoVCoin600':
                     $count = 1200;
+                    break;
+                case 'BoVCoin880':
+                    $count = 2180;
+                    break;
+                case 'BoVCoin1880':
+                    $count = 5880;
+                    break;
+                case 'BoVCoin5880':
+                    $count = 20000;
                     break;
                 default:
                     return  ['message'=>'product_id错误','code'=>0];

@@ -56,7 +56,7 @@ class Android extends Controller
     {
         $uid = intval($uid);
         $count = intval($count);
-        if (!in_array($count, array(60, 350, 1200))) {
+        if (!in_array($count, array(60, 160, 380, 2180, 350, 1200, 5880, 20000))) {
             return ['message'=>'非法的数量','code'=>0];
         }
         if (\app\user\model\Exists::userhExists($uid) <= 0){
@@ -79,8 +79,13 @@ class Android extends Controller
         }else {
             $price_arr = array(
                 60 => 6, //应该6
+                160 => 8,
+                380 => 18,
                 350 => 30, //应该30
+                2180 => 88,
                 1200 => 60, //应该60
+                5880 => 188,
+                20000 => 588
             );
         }
         
@@ -135,9 +140,6 @@ class Android extends Controller
             $help = new \BBExtend\pay\wxpay\Help();
             return $help->tongyi_xiadan("充值", $serial, (int)($price_arr[$count] * 100));
         } //微信支付end
-        
-        return ["data"=>$data, "code"=>1 ];
-        
     }
    
     //产生订单号
