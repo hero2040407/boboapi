@@ -826,7 +826,8 @@ and id not between 198 and 203
         $t['count'] = $db->fetchOne($sql);
         $t['id'] = $v['id'];
         $t['current_time'] = $time;  // 当前时间，放到
-        $t['reward'] = $v['reward'];
+        $t['prize'] = $v['prize'];
+
         $t['detail_url'] = \BBExtend\common\BBConfig::get_server_url()."/race/index/detail/ds_id/{$v['id']}";
         $t['summary'] = $v['summary']; //简介
         // 现在显示分区信息。

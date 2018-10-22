@@ -148,7 +148,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1,$money=0,$upload_type=1)
+            $group_or_person=1,$money=0,$upload_type=1,$prize = '')
     {
         
         $admin = \BBExtend\model\BackstageAdmin::find( $proxy_id );
@@ -168,6 +168,7 @@ class Race  extends Common
         }
 
        $race =new \BBExtend\backmodel\Race();
+       $race->prize = $prize;
        $race->title = $title;
        $race->is_active=0;
        $race->proxy_id = $proxy_id;
@@ -216,7 +217,7 @@ class Race  extends Common
             $min_age=0, $max_age=0,$reward='',$online_type=2,
             $has_group=0,$group_code='',$group_title='',
             $group_content='',$group_pic='',$group_qrcode_pic='',
-            $group_or_person=1 , $money=0,$upload_type=1,$reward=''
+            $group_or_person=1 , $money=0,$upload_type=1,$reward='',$prize = ''
             )
     {
   //      Sys::display_all_error();
@@ -256,6 +257,7 @@ class Race  extends Common
         $race->register_end_time = intval( $register_end_time );
         $race->start_time = intval( $start_time );
         $race->end_time = intval( $end_time );
+        $race->prize = $prize;
 
         $race->uid = intval( $uid );
         $race->title = strval( $title );
