@@ -73,8 +73,13 @@ class Android extends Controller
             
             $price_arr = array(
                 60 => 0.01, //应该6
+                160 => 0.01,
+                380 => 0.01,
                 350 => 0.01, //应该30
+                2180 => 0.01,
                 1200 => 0.01, //应该60
+                5880 => 0.01,
+                20000 => 0.01
             );
         }else {
             $price_arr = array(
