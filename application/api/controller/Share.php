@@ -43,6 +43,8 @@ class Share
         if ( !in_array($type, [1,2, 3]) ) {
             return ['code'=>0,'message' => 'type error' ];
         }
+        $vnum = 1;
+
         if ($spec_id){
             //读取json文件
             $data = file_get_contents(APP_PATH.'/json/spec.json');
@@ -54,12 +56,7 @@ class Share
             unset($data);
             //判断是否存在
             if(!isset($spec[$spec_id])) return  ['code' =>0,'message' => '非法访问' ] ;
-            $gold = $spec[$spec_id]['price'] * 100;
             $vnum = $spec[$spec_id]['vnum'];
-        }
-        else{
-            $gold = 100;
-            $vnum = 1;
         }
 
         $db = Sys::get_container_dbreadonly();
@@ -81,11 +78,11 @@ class Share
       
         // 谢烨，现在获取此人的个人信息。
         $info2 = new \BBExtend\model\UserRace();
-        $result = $info2->like ( $self_uid, $row['id'], $type,$vnum,$gold);
+        $result = $info2->like ( $self_uid, $row['id'], $type,$vnum);
         if ($result) {
             return ['code'=>1,'data' =>['count' =>$info2->success_count ] ];
         }else {
-            return ['code'=>0, 'message' =>$info2->err_msg  ];
+            return ['code'=> $info2->error_code, 'message' =>$info2->err_msg  ];
         }
         
         

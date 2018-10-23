@@ -2,30 +2,35 @@
   "spec":[{
     "id":1,
     "name":"神奇斗篷(588点)--(价值2000人气)",
+    "client":"神奇斗篷(20000Bo币)--(价值2000人气)",
     "vnum":2000,
     "icon":"http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/icon/thumbsup/cloak.png"
   },
   {
     "id":2,
     "name":"宝石面具(188点)--(价值588人气)",
+    "client":"宝石面具(5880Bo币)--(价值588人气)",
     "vnum":588,
     "icon":"http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/icon/thumbsup/mask.png"
   },
   {
     "id":3,
     "name":"权杖(88点)--(价值218人气)",
+    "client":"权杖(2180Bo币)--(价值218人气)",
     "vnum":218,
     "icon":"http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/icon/thumbsup/wand.png"
   },
   {
     "id":4,
     "name":"项链(18点)--(价值38人气)",
+    "client":"项链(380Bo币)--(价值38人气)",
     "vnum":38,
     "icon":"http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/icon/thumbsup/necklace.png"
   },
   {
     "id":5,
     "name":"戒指(8点)--(价值16人气)",
+    "client":"戒指(160Bo币)--(价值16人气)",
     "vnum":16,
     "icon":"http://bobo-upload.oss-cn-beijing.aliyuncs.com/public/icon/thumbsup/ring.png"
   }],

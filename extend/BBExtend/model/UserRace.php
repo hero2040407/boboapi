@@ -15,8 +15,9 @@ class UserRace extends User
 {
     public $err_msg='';
     public $success_count =0;
+    public $error_code = 0;
 
-    public function like($self_uid, $log_id,$type,$vnum=1,$gold=100)
+    public function like($self_uid, $log_id,$type,$vnum=1)
     {
         $db = Sys::get_container_db();
         $sql="select * from ds_register_log where id=?";
@@ -56,6 +57,7 @@ class UserRace extends User
             $db->query($sql,[ $log_id ]);
             return true;
         }
+
         if ($type==2) {
             $sql="select *  from ds_like where self_uid=? and type=2 and register_log_id=? ";
             $row = $db->fetchRow($sql,[ $self_uid, $log_id,  ]);
@@ -81,13 +83,11 @@ class UserRace extends User
             $sql="update ds_register_log set ticket_count = ticket_count+1 where id=?";
             $db->query($sql,[ $log_id ]);
             return true;
-
-
         }
 
         if ($type==3) {
             $result = \BBExtend\Currency::add_bobi($self_uid,
-                    -$gold, '声援大赛好友');
+                    -($vnum * 10), '声援大赛好友');
             if ($result!==false ) {
                 $bind=[
                         'register_log_id' =>$log_id,
@@ -108,8 +108,8 @@ class UserRace extends User
 
             }else {
                 $this->err_msg='您的BO币余额不足，不可以投票，请充值';
+                $this->error_code = -202;
                 return false;
-
             }
         }
 
@@ -135,10 +135,6 @@ class UserRace extends User
                 $db->query($sql,[$vnum, $log_id ]);
                 return true;
         }
-
-
-
-
 
         return false;
 
