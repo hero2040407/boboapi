@@ -3,6 +3,7 @@ namespace BBExtend\video;
 
 
 
+use app\backstage\service\SetRaceStatus;
 use BBExtend\fix\MessageType;
 use BBExtend\common\Str;
 use BBExtend\Sys;
@@ -141,7 +142,7 @@ class RaceNew
         
         
         $online_type = $this->online_type = $race->online_type;// 1线上， 2线下。
-        
+
         if ( $is_upload==0 ) {
             if ( $online_type == 1  && $qudao_id != 0 ) {
                 $this->err_msg='大赛和渠道参数配置错误';
@@ -158,7 +159,6 @@ class RaceNew
                 $this->err_msg='现在不在大赛报名时间内，无法报名';
                 return false;
             }
-            
             
             if ( $online_type==2 ) {
                 // 验证 赛区id是否真实准确。
@@ -450,6 +450,12 @@ class RaceNew
                         $find =1;
                     }
                 }
+                if ( preg_match('#体重#', $key) ) {
+                    $value = floatval( $arr[$key] );
+                    if ($value < 10){
+                        throwErrorMessage('体重不符合要求');
+                    }
+                }
             }
             if ( $find ) {
                 return \BBExtend\common\Json::encode($arr);
@@ -464,8 +470,11 @@ class RaceNew
             $uid=0,$phone='',$name='',$sex=1,$birthday='',
             $pic,$record_url, $pic_list, $addi_info,$is_upload, $record_pic)
     {
+        $group = (new SetRaceStatus())->getGroup($ds_id, $birthday);
+        if (!$group) throwErrorMessage('此用户的年龄不能参加大赛');
+
         $addi_info = $this->change_addi($addi_info);
-        
+
         if ($this->has_err() ) {
             return false;
         }
