@@ -7,9 +7,7 @@
  */
 namespace app\backstage\controller;
 
-use think\Controller;
-
-class Present extends Controller implements CommonInterface
+class Present extends Common implements CommonInterface
 {
     function index()
     {
@@ -37,7 +35,7 @@ class Present extends Controller implements CommonInterface
         if (empty($json))
             $this->error('json不得为空');
 
-        $res = file_put_contents(APP_PATH.'/json/spec.json', $json);
+        $res = file_put_contents(APP_PATH.'/json/spec.json', json_encode($json));
         if ($res)
             $this->success('修改成功');
         else

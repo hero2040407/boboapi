@@ -364,7 +364,7 @@ select count(*) from bb_advise_join
             $all += ord( $s[$i] );
         }
         $add_count = $all % 150;
-        if ($add_count < 50 ) {
+        if ($add_count < 200 ) {
             $add_count+= 200;
         }
         

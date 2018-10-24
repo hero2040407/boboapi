@@ -101,7 +101,7 @@ class UserRace extends User
                     'type' =>2,
                     ];
                 $db->insert("ds_like",$bind);
-                $this->success_count = $vnum;
+                $this->success_count = 1;
                 $this->gold = $result['gold'];
                 $sql="update ds_register_log set ticket_count = ticket_count+? where id=?";
                 $db->query($sql,[$vnum,$log_id]);
