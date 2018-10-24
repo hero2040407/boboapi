@@ -78,7 +78,7 @@ class Share
       
         // 谢烨，现在获取此人的个人信息。
         $info2 = new \BBExtend\model\UserRace();
-        $result = $info2->like ( $self_uid, $row['id'], $type,$vnum);
+        $result = $info2->like ($self_uid, $row['id'], $type, $vnum);
         if ($result) {
             return ['code'=>1,'data' =>['count' =>$info2->success_count, 'gold' => $info2->gold ] ];
         }else {
