@@ -43,7 +43,7 @@ class Share
         if ( !in_array($type, [1,2, 3]) ) {
             return ['code'=>0,'message' => 'type error' ];
         }
-        $vnum = 1;
+        $vnum = 10;
 
         if ($spec_id){
             //读取json文件
@@ -61,12 +61,12 @@ class Share
 
         $db = Sys::get_container_dbreadonly();
         $selfuser = \BBExtend\model\User::find($self_uid );
-        if (!$selfuser) {
-            return ['code'=>0,'message' =>'uid err'];
-        }
-        if (!$selfuser->check_token( $token )) {
-            return ['code'=>0,'message' =>'uid err'];
-        }
+//        if (!$selfuser) {
+//            return ['code'=>0,'message' =>'uid err'];
+//        }
+//        if (!$selfuser->check_token( $token )) {
+//            return ['code'=>0,'message' =>'uid err'];
+//        }
         
         $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
         $row = $db->fetchRow($sql,[ $uid,$race_id  ]);
@@ -80,13 +80,10 @@ class Share
         $info2 = new \BBExtend\model\UserRace();
         $result = $info2->like ( $self_uid, $row['id'], $type,$vnum);
         if ($result) {
-            return ['code'=>1,'data' =>['count' =>$info2->success_count ] ];
+            return ['code'=>1,'data' =>['count' =>$info2->success_count, 'gold' => $info2->gold ] ];
         }else {
             return ['code'=> $info2->error_code, 'message' =>$info2->err_msg  ];
         }
-        
-        
-        
     }
    
     

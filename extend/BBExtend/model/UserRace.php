@@ -16,6 +16,7 @@ class UserRace extends User
     public $err_msg='';
     public $success_count =0;
     public $error_code = 0;
+    public $gold = 0;
 
     public function like($self_uid, $log_id,$type,$vnum=1)
     {
@@ -89,19 +90,19 @@ class UserRace extends User
             $result = \BBExtend\Currency::add_bobi($self_uid,
                     -($vnum * 10), '声援大赛好友');
             if ($result!==false ) {
-                $bind=[
-                        'register_log_id' =>$log_id,
-                        'create_time' =>time(),
-                        'self_uid' =>$self_uid,
-                        'target_uid' =>$uid,
-                        'race_id' => $race_id,
-                        'count' =>$vnum,
-                        'datestr' =>$datestr,
-                        'type' =>2,
-
-                ];
+                $bind = [
+                    'register_log_id' =>$log_id,
+                    'create_time' =>time(),
+                    'self_uid' =>$self_uid,
+                    'target_uid' =>$uid,
+                    'race_id' => $race_id,
+                    'count' =>$vnum,
+                    'datestr' =>$datestr,
+                    'type' =>2,
+                    ];
                 $db->insert("ds_like",$bind);
-                $this->success_count=1;
+                $this->success_count = 1;
+                $this->gold = $result['gold'];
                 $sql="update ds_register_log set ticket_count = ticket_count+? where id=?";
                 $db->query($sql,[$vnum,$log_id]);
                 return true;
