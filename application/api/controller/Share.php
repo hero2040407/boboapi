@@ -61,12 +61,12 @@ class Share
 
         $db = Sys::get_container_dbreadonly();
         $selfuser = \BBExtend\model\User::find($self_uid );
-//        if (!$selfuser) {
-//            return ['code'=>0,'message' =>'uid err'];
-//        }
-//        if (!$selfuser->check_token( $token )) {
-//            return ['code'=>0,'message' =>'uid err'];
-//        }
+        if (!$selfuser) {
+            return ['code'=>0,'message' =>'uid err'];
+        }
+        if (!$selfuser->check_token( $token )) {
+            return ['code'=>0,'message' =>'uid err'];
+        }
         
         $sql="select * from ds_register_log where uid=? and zong_ds_id=? and has_pay=1";
         $row = $db->fetchRow($sql,[ $uid,$race_id  ]);
