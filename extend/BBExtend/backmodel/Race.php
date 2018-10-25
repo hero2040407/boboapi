@@ -116,7 +116,7 @@ order by like_count desc
                 'is_active'=>$this->is_active,
                 'uid'=>$this->uid,
                 'money'=>$this->money,
-                
+                'prize' => $this->prize,
 
                 'summary' => $this->summary,
                 'detail' => $this->detail,
